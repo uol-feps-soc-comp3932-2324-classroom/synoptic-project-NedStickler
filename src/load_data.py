@@ -1,11 +1,12 @@
 
 import numpy as np
 import tensorflow_datasets as tfds
-import os
-from pathlib import Path
+from tensorflow_datasets.core.dataset_utils import _IterableDataset
 
 
-def load_data(venv_name: str) -> np.array:
-    dataset = tfds.load("resisc45", data_dir=f".\\{venv_name}\\Lib\\site-packages\\tensorflow_datasets\\")
+def load_data(venv_path: str) -> _IterableDataset:
+    dataset = tfds.load("resisc45", data_dir=f"{venv_path}\\Lib\\site-packages\\tensorflow_datasets\\")
     dataset_as_numpy = tfds.as_numpy(dataset)
-    return np.array([img.get("image") for img in dataset_as_numpy.get("train")])
+    images = np.array([feature.get("image") for feature in dataset_as_numpy.get("train")])
+    dataset_as_numpy = None
+    return images
