@@ -16,5 +16,4 @@ def load_data(package_path: str | Path) -> np.array:
     dataset = tfds.load("resisc45", data_dir=package_path)
     dataset_as_numpy = tfds.as_numpy(dataset)
     images = np.array([feature.get("image") for feature in dataset_as_numpy.get("train")])
-    dataset_as_numpy = None
     return images
