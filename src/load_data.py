@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def load_data(package_path: str | Path) -> np.array:
-    """Load the RESICS45 dataset using tensorflow_datasets.
+    """Load the RESISC45 dataset using tensorflow_datasets.
     
     Args:
         package_path: Path to the 'tensorflow_datasets' package (./venv/Lib/site-packages/tensorflow_datasets/).
