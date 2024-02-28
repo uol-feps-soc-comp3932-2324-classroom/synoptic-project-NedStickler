@@ -1,12 +1,29 @@
-\documentclass{article}
+\documentclass[11pt,a4paper,oneside]{book}
 
-\title{Template}
-\author{Ned Stickler}
-\date{February 2024}
+% Include the configuration file for layout.
+\input{config.tex}
 
 \begin{document}
 
-\maketitle
+% The prelude is everything up to the start of chapter 1, and is contained
+% in a file called "prelude.tex".
+\include{./sections/other/prelude}
 
-\section{Introduction}
+% Include as many chapters as you have.
+% The "chapter1.tex" etc. files should be in a directory called "chapters"
+\include{./sections/chapters/chapter1}
+\include{./sections/chapters/chapter2}
+\include{./sections/chapters/chapter3}
+\include{./sections/chapters/chapter4}
+
+% Adds references to the table of contents.
+\addcontentsline{toc}{chapter}{References}
+
+% All your bibtex entries should go in the file called "refs.bib".
+\bibliography{refs}
+
+% All appendices you have go in a file called "appendices.tex".
+\include{./sections/other/appendices}
+
 \end{document}
+
