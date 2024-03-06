@@ -168,12 +168,13 @@ class SRGAN(keras.Model):
 
 
 if __name__ == "__main__":
-    residual_blocks = 5
+    residual_blocks = 16
     downsample_factor = 4
 
-    package_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets"
-    dataset, _ = load_data(package_path)
-    dataset = dataset[:2048, :, :, :]
+    # package_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets"
+    # dataset, _ = load_data(package_path)
+    # dataset = dataset[:2048, :, :, :]
+    dataset = np.load("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/datasets/resics45_s2048.npy")
     lr_dataset = np.array([image[::downsample_factor, ::downsample_factor, :] for image in dataset])
     
     vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
@@ -184,4 +185,4 @@ if __name__ == "__main__":
 
     srgan.fit(lr_dataset, dataset, epochs=75)
 
-    srgan.generator.save(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\trained_models\srgan_s2048e75b32.keras")
+    srgan.generator.save(r"/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/srgan_s2048e75b32_1.keras")
