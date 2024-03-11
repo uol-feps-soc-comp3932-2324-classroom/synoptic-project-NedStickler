@@ -21,7 +21,7 @@ class PixelShuffle(keras.Layer):
 
 def d_residual_block(x, n_filters, n_strides):
     x = layers.Conv2D(n_filters, kernel_size=3, strides=n_strides, padding="same")(x)
-    x = layers.BatchNormalization()(x)
+    # x = layers.BatchNormalization()(x)
     x = layers.LeakyReLU(0.2)(x)
     return x
 
@@ -32,10 +32,10 @@ def d_downsample_pair(x, n_filters):
 
 def g_residual_block(x_in):
     x = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
-    x = layers.BatchNormalization()(x)
+    # x = layers.BatchNormalization()(x)
     x = layers.PReLU(shared_axes=[1, 2])(x)
     x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
-    x = layers.BatchNormalization()(x)
+    # x = layers.BatchNormalization()(x)
     x = layers.Add()([x_in, x])
     return x
 
@@ -77,7 +77,7 @@ def generator(residual_blocks):
     
     # Residual block without activation functions
     x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
-    x = layers.BatchNormalization()(x)
+    # x = layers.BatchNormalization()(x)
     x = layers.Add()([x_in, x])
 
     # Upscaling blocks
@@ -183,6 +183,6 @@ if __name__ == "__main__":
     srgan = SRGAN(discriminator=discriminator(), generator=generator(residual_blocks), vgg=vgg)
     srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
 
-    srgan.fit(lr_dataset, dataset, epochs=75)
-
-    srgan.generator.save(r"/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/srgan_s2048e75b32_1.keras")
+    srgan.fit(lr_dataset, dataset, epochs=300)
+    
+    srgan.generator.save(r"/tmp/sc20ns/generators/srgan_s2048e300b32.keras")
