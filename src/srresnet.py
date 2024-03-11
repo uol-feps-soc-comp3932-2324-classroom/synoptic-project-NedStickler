@@ -64,7 +64,7 @@ if __name__ == "__main__":
     residual_blocks = 16
     downsample_factor = 4
 
-    save_checkpoint = ModelCheckpoint("/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srresnet_s2048e300b32.keras", monitor="loss", save_best_only=True, mode="auto", period=50)
+    save_checkpoint = ModelCheckpoint("/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srresnet_s2048e300b32.keras", monitor="loss", save_best_only=True, mode="auto", save_freq=64)
 
     dataset = np.load("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/datasets/resics45_s2048.npy")
     lr_dataset = np.array([image[::downsample_factor, ::downsample_factor, :] for image in dataset])
