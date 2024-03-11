@@ -5,6 +5,7 @@ from load_data import load_data
 import tensorflow as tf
 from tensorflow.nn import depth_to_space
 import matplotlib.pyplot as plt
+from keras.callbacks import ModelCheckpoint
 
 
 @keras.saving.register_keras_serializable()
@@ -158,6 +159,7 @@ class SRGAN(keras.Model):
         self.g_optimiser.apply_gradients(zip(gradients,self.generator.trainable_weights))
 
         losses = {
+            "loss": g_total_loss,
             "d_loss": d_loss,
             "g_total_loss": g_total_loss,
             "g_loss": g_loss,
@@ -171,6 +173,8 @@ if __name__ == "__main__":
     residual_blocks = 16
     downsample_factor = 4
 
+    save_checkpoint = ModelCheckpoint("/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srgan_s2048e300b32.keras", monitor="loss", save_best_only=True, mode="auto", save_freq=64)
+
     dataset = np.load("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/datasets/resics45_s2048.npy")
     lr_dataset = np.array([image[::downsample_factor, ::downsample_factor, :] for image in dataset])
     
@@ -179,11 +183,11 @@ if __name__ == "__main__":
     vgg = keras.Model(vgg.input, vgg.layers[20].output)
 
     # Pre-trained SRResNet generator
-    srresnet = keras.saving.load_model("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/srresnet_s2048e15b32.keras")
+    srresnet = keras.saving.load_model("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/srresnet_1_s2048e300b32/srresnet_s2048e300b32.keras")
 
     # Train SRGAN
     srgan = SRGAN(discriminator=discriminator(), generator=srresnet, vgg=vgg)
     srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
-    srgan.fit(lr_dataset, dataset, epochs=15)
+    srgan.fit(lr_dataset, dataset, epochs=3)
     
-    srgan.generator.save(r"/tmp/sc20ns/generators/srgan_s2048e15b32.keras")
+    srgan.generator.save(r"/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srgan_s2048e300b32_final.keras")
