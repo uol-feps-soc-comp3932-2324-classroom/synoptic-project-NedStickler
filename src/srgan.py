@@ -21,7 +21,7 @@ class PixelShuffle(keras.Layer):
 
 def d_residual_block(x, n_filters, n_strides):
     x = layers.Conv2D(n_filters, kernel_size=3, strides=n_strides, padding="same")(x)
-    # x = layers.BatchNormalization()(x)
+    x = layers.BatchNormalization()(x)
     x = layers.LeakyReLU(0.2)(x)
     return x
 
@@ -32,10 +32,10 @@ def d_downsample_pair(x, n_filters):
 
 def g_residual_block(x_in):
     x = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
-    # x = layers.BatchNormalization()(x)
+    x = layers.BatchNormalization()(x)
     x = layers.PReLU(shared_axes=[1, 2])(x)
     x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
-    # x = layers.BatchNormalization()(x)
+    x = layers.BatchNormalization()(x)
     x = layers.Add()([x_in, x])
     return x
 
@@ -77,7 +77,7 @@ def generator(residual_blocks):
     
     # Residual block without activation functions
     x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
-    # x = layers.BatchNormalization()(x)
+    x = layers.BatchNormalization()(x)
     x = layers.Add()([x_in, x])
 
     # Upscaling blocks
@@ -171,18 +171,21 @@ if __name__ == "__main__":
     residual_blocks = 16
     downsample_factor = 4
 
-    # package_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets"
-    # dataset, _ = load_data(package_path)
-    # dataset = dataset[:2048, :, :, :]
     dataset = np.load("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/datasets/resics45_s2048.npy")
     lr_dataset = np.array([image[::downsample_factor, ::downsample_factor, :] for image in dataset])
     
+    # Initialise VGG for loss function
     vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
     vgg = keras.Model(vgg.input, vgg.layers[20].output)
 
-    srgan = SRGAN(discriminator=discriminator(), generator=generator(residual_blocks), vgg=vgg)
-    srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
+    # Pre-train generator (SRResNet)
+    generator = generator(residual_blocks)
+    generator.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0003), loss=keras.losses.MeanSquaredError())
+    generator.fit(lr_dataset, epochs=15)
 
-    srgan.fit(lr_dataset, dataset, epochs=300)
+    # Train SRGAN
+    srgan = SRGAN(discriminator=discriminator(), generator=generator, vgg=vgg)
+    srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
+    srgan.fit(lr_dataset, dataset, epochs=15)
     
-    srgan.generator.save(r"/tmp/sc20ns/generators/srgan_s2048e300b32.keras")
+    srgan.generator.save(r"/tmp/sc20ns/generators/srgan_s2048e15b32.keras")
