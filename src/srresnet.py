@@ -74,4 +74,4 @@ if __name__ == "__main__":
     pre_trained_generator.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0003), loss=keras.losses.MeanSquaredError())
     pre_trained_generator.fit(lr_dataset, dataset, epochs=300, callbacks=[save_checkpoint])
     
-    # pre_trained_generator.save(r"/tmp/sc20ns/generators/srresnet_s2048e15b32.keras")
+    pre_trained_generator.save(r"/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srresnet_s2048e300b32_final.keras")
