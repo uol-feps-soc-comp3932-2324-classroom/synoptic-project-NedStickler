@@ -178,13 +178,11 @@ if __name__ == "__main__":
     vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
     vgg = keras.Model(vgg.input, vgg.layers[20].output)
 
-    # Pre-train generator (SRResNet)
-    generator = generator(residual_blocks)
-    generator.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0003), loss=keras.losses.MeanSquaredError())
-    generator.fit(lr_dataset, dataset, epochs=15)
+    # Pre-trained SRResNet generator
+    srresnet = keras.saving.load_model("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/srresnet_s2048e15b32.keras")
 
     # Train SRGAN
-    srgan = SRGAN(discriminator=discriminator(), generator=generator, vgg=vgg)
+    srgan = SRGAN(discriminator=discriminator(), generator=srresnet, vgg=vgg)
     srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
     srgan.fit(lr_dataset, dataset, epochs=15)
     
