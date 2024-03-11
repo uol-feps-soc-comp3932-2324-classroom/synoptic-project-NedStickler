@@ -2,6 +2,7 @@ import keras
 from keras import layers
 from tensorflow.nn import depth_to_space
 import numpy as np
+from keras.callbacks import ModelCheckpoint
 
 
 @keras.saving.register_keras_serializable()
@@ -63,12 +64,14 @@ if __name__ == "__main__":
     residual_blocks = 16
     downsample_factor = 4
 
+    save_checkpoint = ModelCheckpoint("/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srresnet_s2048e300b32.keras", monitor="loss", save_best_only=True, mode="auto", period=50)
+
     dataset = np.load("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/datasets/resics45_s2048.npy")
     lr_dataset = np.array([image[::downsample_factor, ::downsample_factor, :] for image in dataset])
     
     # Pre-train generator (SRResNet)
     pre_trained_generator = generator(residual_blocks)
     pre_trained_generator.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0003), loss=keras.losses.MeanSquaredError())
-    pre_trained_generator.fit(lr_dataset, dataset, epochs=15)
+    pre_trained_generator.fit(lr_dataset, dataset, epochs=300, callbacks=[save_checkpoint])
     
-    pre_trained_generator.save(r"/tmp/sc20ns/generators/srresnet_s2048e15b32.keras")
+    # pre_trained_generator.save(r"/tmp/sc20ns/generators/srresnet_s2048e15b32.keras")
