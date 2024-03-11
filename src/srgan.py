@@ -181,7 +181,7 @@ if __name__ == "__main__":
     # Pre-train generator (SRResNet)
     generator = generator(residual_blocks)
     generator.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0003), loss=keras.losses.MeanSquaredError())
-    generator.fit(lr_dataset, epochs=15)
+    generator.fit(lr_dataset, dataset, epochs=15)
 
     # Train SRGAN
     srgan = SRGAN(discriminator=discriminator(), generator=generator, vgg=vgg)
