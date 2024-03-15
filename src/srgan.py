@@ -188,6 +188,6 @@ if __name__ == "__main__":
     # Train SRGAN
     srgan = SRGAN(discriminator=discriminator(), generator=srresnet, vgg=vgg)
     srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=10e-4), g_optimiser=keras.optimizers.Adam(learning_rate=10e-4), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
-    srgan.fit(lr_dataset, dataset, epochs=30)
+    srgan.fit(lr_dataset, dataset, epochs=30, callbacks=[save_checkpoint])
     
     srgan.generator.save(r"/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srgan_s2048e30b32_final.keras")
