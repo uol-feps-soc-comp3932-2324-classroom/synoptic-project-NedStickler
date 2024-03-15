@@ -181,12 +181,11 @@ class GANCheckpoint(keras.callbacks.Callback):
     def __init__(self, save_path=None):
         super().__init__()
         # self.save_path = save_path.replace(".keras", "")
-        # self.folder_path = "/".join(save_path.split("/")[:-1]) + "/"
     
     def on_epoch_end(self, epoch, logs=None):
-        print(self.model.best_loss)
-        self.model.best_loss -= 1
-        # self.model.generator.save(self.save_path + f"_{logs.get("generator_loss")}.keras")
+        if logs.get("generator_loss") < self.model.best_loss:
+            self.model.best_loss = logs.get("generator_loss")
+            print("BANG!")
 
 
 if __name__ == "__main__":
