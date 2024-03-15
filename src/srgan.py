@@ -104,6 +104,7 @@ class SRGAN(keras.Model):
         self.discriminator = discriminator
         self.vgg = vgg
         self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
+        self.best_loss = 999_999_999
 
     def compile(self, d_optimiser, g_optimiser, bce_loss, mse_loss):
         super().compile()
@@ -177,11 +178,15 @@ class SRGAN(keras.Model):
 
 
 class GANCheckpoint(keras.callbacks.Callback):
-    def __init__(self):
+    def __init__(self, save_path=None):
         super().__init__()
+        # self.save_path = save_path.replace(".keras", "")
+        # self.folder_path = "/".join(save_path.split("/")[:-1]) + "/"
     
     def on_epoch_end(self, epoch, logs=None):
-        print(list(logs.keys()))
+        print(self.model.best_loss)
+        self.model.best_loss -= 1
+        # self.model.generator.save(self.save_path + f"_{logs.get("generator_loss")}.keras")
 
 
 if __name__ == "__main__":
@@ -200,7 +205,7 @@ if __name__ == "__main__":
     vgg = keras.Model(vgg.input, vgg.layers[20].output)
 
     # Pre-trained SRResNet generator
-    srresnet = keras.saving.load_model(f"/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/model_1_s2048e300b32/srresnet_s2048e300b32.keras")
+    srresnet = keras.saving.load_model("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/model_1_s2048e300b32/srresnet_s2048e300b32.keras")
 
     # Train SRGAN
     srgan = SRGAN(discriminator=discriminator(), generator=srresnet, vgg=vgg)
