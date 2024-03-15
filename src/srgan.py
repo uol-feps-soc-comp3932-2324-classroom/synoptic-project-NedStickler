@@ -193,7 +193,7 @@ if __name__ == "__main__":
     vgg = keras.Model(vgg.input, vgg.layers[20].output)
 
     # Pre-trained SRResNet generator
-    srresnet = keras.saving.load_model(f"/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/model_1_s2048e300b32/srresnet_s{size}e{epochs}b{batch_size}.keras")
+    srresnet = keras.saving.load_model(f"/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/model_1_s2048e300b32/srresnet_s2048e300b32.keras")
 
     # Train SRGAN
     srgan = SRGAN(discriminator=discriminator(), generator=srresnet, vgg=vgg)
