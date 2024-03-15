@@ -180,11 +180,11 @@ class GANCheckpoint(keras.callbacks.Callback):
     def __init__(self, save_path):
         super().__init__()
         self.best_loss = 999_999_999
+        self.save_path = save_path
     
     def on_epoch_end(self, epoch, logs=None):
         if logs.get("generator_loss") < self.best_loss:
             self.best_loss = logs.get("generator_loss")
-            print(self.best_loss)
             self.model.generator.save(self.save_path)
 
 
@@ -194,7 +194,7 @@ if __name__ == "__main__":
     lr_dataset = np.array([image[::downsample_factor, ::downsample_factor, :] for image in dataset])
 
     size = dataset.shape[0]
-    epochs = 3
+    epochs = 30 
     batch_size = 32
 
     save_checkpoint = ModelCheckpoint(f"/tmp/sc20ns/generators/model_1_s2048e300b32/srgan_s{size}e{epochs}b{batch_size}.keras", monitor="loss", save_best_only=True, mode="auto", save_freq=64)
@@ -209,6 +209,4 @@ if __name__ == "__main__":
     # Train SRGAN
     srgan = SRGAN(discriminator=discriminator(), generator=srresnet, vgg=vgg)
     srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
-    srgan.fit(lr_dataset, dataset, epochs=epochs, callbacks=[GANCheckpoint()])
-    
-    srgan.generator.save(f"/tmp/sc20ns/generators/model_1_s2048e300b32/srgan_s{size}e{epochs}b{batch_size}_final.keras")
+    srgan.fit(lr_dataset, dataset, epochs=epochs, callbacks=[GANCheckpoint(f"/tmp/sc20ns/generators/model_1_s2048e300b32/srgan_s{size}e{epochs}b{batch_size}.keras")])
