@@ -171,7 +171,7 @@ class SRGAN(keras.Model):
 
 class GANCheckpoint(keras.callbacks.Callback):
     def __init__(self):
-        self.super().__init__()
+        super().__init__()
     
     def on_epoch_end(self, epoch, logs=None):
         print(epoch, logs)
