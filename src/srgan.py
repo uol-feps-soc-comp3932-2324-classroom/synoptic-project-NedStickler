@@ -173,7 +173,7 @@ if __name__ == "__main__":
     residual_blocks = 16
     downsample_factor = 4
 
-    save_checkpoint = ModelCheckpoint("/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srgan_s2048e300b32.keras", monitor="loss", save_best_only=True, mode="auto", save_freq=64)
+    save_checkpoint = ModelCheckpoint("/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srgan_s2048e30b32.keras", monitor="loss", save_best_only=True, mode="auto", save_freq=64)
 
     dataset = np.load("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/datasets/resics45_s2048.npy")
     lr_dataset = np.array([image[::downsample_factor, ::downsample_factor, :] for image in dataset])
@@ -187,7 +187,7 @@ if __name__ == "__main__":
 
     # Train SRGAN
     srgan = SRGAN(discriminator=discriminator(), generator=srresnet, vgg=vgg)
-    srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
-    srgan.fit(lr_dataset, dataset, epochs=300)
+    srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=10e-4), g_optimiser=keras.optimizers.Adam(learning_rate=10e-4), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
+    srgan.fit(lr_dataset, dataset, epochs=30)
     
-    srgan.generator.save(r"/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srgan_s2048e300b32_final.keras")
+    srgan.generator.save(r"/tmp/sc20ns/generators/srresnet_1_s2048e300b32/srgan_s2048e30b32_final.keras")
