@@ -103,6 +103,7 @@ class SRGAN(keras.Model):
         self.generator = generator
         self.discriminator = discriminator
         self.vgg = vgg
+        self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
 
     def compile(self, d_optimiser, g_optimiser, bce_loss, mse_loss):
         super().compile()
@@ -121,6 +122,10 @@ class SRGAN(keras.Model):
     @classmethod
     def from_config(cls, config):
         return cls(**config)
+    
+    @property
+    def metrics(self):
+        return [self.g_loss_tracker]
 
     def train_step(self, data):
         lr_images, hr_images = data
@@ -158,6 +163,8 @@ class SRGAN(keras.Model):
         gradients = tape.gradient(g_total_loss, self.generator.trainable_weights)
         self.g_optimiser.apply_gradients(zip(gradients,self.generator.trainable_weights))
 
+        self.g_loss_tracker.update_state(g_total_loss)
+
         losses = {
             "loss": g_total_loss,
             "d_loss": d_loss,
@@ -174,7 +181,7 @@ class GANCheckpoint(keras.callbacks.Callback):
         super().__init__()
     
     def on_epoch_end(self, epoch, logs=None):
-        print(epoch, logs)
+        print(list(logs.keys()))
 
 
 if __name__ == "__main__":
