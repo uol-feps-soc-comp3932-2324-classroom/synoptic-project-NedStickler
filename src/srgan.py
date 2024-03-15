@@ -104,7 +104,6 @@ class SRGAN(keras.Model):
         self.discriminator = discriminator
         self.vgg = vgg
         self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
-        self.best_loss = 999_999_999
 
     def compile(self, d_optimiser, g_optimiser, bce_loss, mse_loss):
         super().compile()
@@ -178,14 +177,15 @@ class SRGAN(keras.Model):
 
 
 class GANCheckpoint(keras.callbacks.Callback):
-    def __init__(self, save_path=None):
+    def __init__(self, save_path):
         super().__init__()
-        # self.save_path = save_path.replace(".keras", "")
+        self.best_loss = 999_999_999
     
     def on_epoch_end(self, epoch, logs=None):
-        if logs.get("generator_loss") < self.model.best_loss:
-            self.model.best_loss = logs.get("generator_loss")
-            print("BANG!")
+        if logs.get("generator_loss") < self.best_loss:
+            self.best_loss = logs.get("generator_loss")
+            print(self.best_loss)
+            self.model.generator.save(self.save_path)
 
 
 if __name__ == "__main__":
