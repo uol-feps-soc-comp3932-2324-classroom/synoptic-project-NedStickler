@@ -186,18 +186,18 @@ if __name__ == "__main__":
     epochs = 3
     batch_size = 32
 
-    save_checkpoint = ModelCheckpoint(f"/tmp/sc20ns/generators/model_1_s{size}e{epochs}b{batch_size}/srgan_s{size}e{epochs}b{batch_size}.keras", monitor="loss", save_best_only=True, mode="auto", save_freq=64)
+    save_checkpoint = ModelCheckpoint(f"/tmp/sc20ns/generators/model_1_s2048e300b32/srgan_s{size}e{epochs}b{batch_size}.keras", monitor="loss", save_best_only=True, mode="auto", save_freq=64)
     
     # Initialise VGG for loss function
     vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
     vgg = keras.Model(vgg.input, vgg.layers[20].output)
 
     # Pre-trained SRResNet generator
-    srresnet = keras.saving.load_model(f"/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/model_1_s{size}e{epochs}b{batch_size}/srresnet_s{size}e{epochs}b{batch_size}.keras")
+    srresnet = keras.saving.load_model(f"/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/generators/model_1_s2048e300b32/srresnet_s{size}e{epochs}b{batch_size}.keras")
 
     # Train SRGAN
     srgan = SRGAN(discriminator=discriminator(), generator=srresnet, vgg=vgg)
     srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003), bce_loss=keras.losses.BinaryCrossentropy(), mse_loss=keras.losses.MeanSquaredError())
     srgan.fit(lr_dataset, dataset, epochs=epochs, callbacks=[GANCheckpoint()])
     
-    srgan.generator.save(f"/tmp/sc20ns/generators/model_1_s{size}e{epochs}b{batch_size}/srgan_s{size}e{epochs}b{batch_size}_final.keras")
+    srgan.generator.save(f"/tmp/sc20ns/generators/model_1_s2048e300b32/srgan_s{size}e{epochs}b{batch_size}_final.keras")
