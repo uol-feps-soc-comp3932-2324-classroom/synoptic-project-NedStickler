@@ -18,7 +18,7 @@ def train_srresnet(epochs, save_path):
 if __name__ == "__main__":
     model = "srresnet-mse"
 
-    epochs = 5
+    epochs = 1
     save_path = f"/tmp/sc20ns/generators/{model}/{model}-e{epochs}-resics45.keras"
     downsample_factor = 4
 
