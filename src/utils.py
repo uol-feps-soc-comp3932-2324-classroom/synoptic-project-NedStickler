@@ -1,8 +1,21 @@
+import keras
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def visualise_generator(generator, lr_imgs, hr_imgs) -> None:
+class GANSaver(keras.callbacks.Callback):
+    def __init__(self, save_path) -> None:
+        super().__init__()
+        self.best_loss = 999_999_999
+        self.save_path = save_path
+    
+    def on_epoch_end(self, epoch: int, logs: dict = None) -> None:
+        if logs.get("generator_loss") < self.best_loss:
+            self.best_loss = logs.get("generator_loss")
+            self.model.generator.save(self.save_path)
+
+
+def visualise_generator(generator: keras.Model, lr_imgs: np.array, hr_imgs: np.array) -> None:
     sr_imgs = generator(lr_imgs)
     num_sr_imgs = len(sr_imgs)
 
