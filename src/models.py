@@ -4,7 +4,7 @@ from keras import layers
 import numpy as np
 
 
-@keras.saving.register_keras_serializable()
+# @keras.saving.register_keras_serializable()
 class PixelShuffle(keras.Layer):
     def call(self, x):
         return tf.nn.depth_to_space(x, 2)
@@ -17,7 +17,7 @@ class PixelShuffle(keras.Layer):
         return cls(**config)
 
 
-@keras.saving.register_keras_serializable()
+# @keras.saving.register_keras_serializable()
 class SRGAN(keras.Model):
     def __init__(self, residual_blocks, vgg):
         super().__init__()
