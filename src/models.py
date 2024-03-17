@@ -4,20 +4,7 @@ from keras import layers
 import numpy as np
 
 
-# @keras.saving.register_keras_serializable()
-class PixelShuffle(keras.Layer):
-    def call(self, x):
-        return tf.nn.depth_to_space(x, 2)
-    
-    def get_config(self):
-        return {}
-    
-    @classmethod
-    def from_config(cls, config):
-        return cls(**config)
-
-
-# @keras.saving.register_keras_serializable()
+@keras.saving.register_keras_serializable()
 class SRGAN(keras.Model):
     def __init__(self, residual_blocks, vgg):
         super().__init__()
@@ -27,6 +14,18 @@ class SRGAN(keras.Model):
         self.bce_loss = keras.losses.BinaryCrossentropy()
         self.mse_loss = keras.losses.MeanSquaredError()
         self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
+    
+    @keras.saving.register_keras_serializable()
+    class PixelShuffle(keras.Layer):
+        def call(self, x):
+            return tf.nn.depth_to_space(x, 2)
+        
+        def get_config(self):
+            return {}
+        
+        @classmethod
+        def from_config(cls, config):
+            return cls(**config)
     
     def _d_residual_block(self, x, n_filters: int, n_strides: int):
         x = layers.Conv2D(n_filters, kernel_size=3, strides=n_strides, padding="same")(x)
