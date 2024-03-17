@@ -2,7 +2,19 @@ import keras
 from keras import layers
 import numpy as np
 import tensorflow as tf
-from layers import PixelShuffle
+
+
+@keras.saving.register_keras_serializable()
+class PixelShuffle(keras.Layer):
+    def call(self, x):
+        return tf.nn.depth_to_space(x, 2)
+    
+    def get_config(self):
+        return {}
+    
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
 
 
 @keras.saving.register_keras_serializable()
@@ -144,5 +156,5 @@ class SRGAN(keras.Model):
             "g_loss": g_loss,
             "pereceptual_loss": perceptual_loss
         }
-        
+
         return losses
