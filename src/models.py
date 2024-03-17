@@ -84,10 +84,10 @@ class SRGAN(keras.Model):
         x = layers.Add()([x_in, x])
         # Upscaling blocks
         x = layers.Conv2D(256, kernel_size=3, padding="same")(x)
-        x = PixelShuffle()(x)
+        x = self.PixelShuffle()(x)
         x = layers.PReLU(shared_axes=[1, 2])(x)
         x = layers.Conv2D(256, kernel_size=3, padding="same")(x)
-        x = PixelShuffle()(x)
+        x = self.PixelShuffle()(x)
         x = layers.PReLU(shared_axes=[1, 2])(x)
         # Final convolve
         x = layers.Conv2D(3, kernel_size=3, padding="same")(x)
