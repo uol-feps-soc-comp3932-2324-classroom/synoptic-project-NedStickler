@@ -1,11 +1,11 @@
 import keras
-from tensorflow.nn import depth_to_space
+import tensorflow as tf
 
 
 @keras.saving.register_keras_serializable()
 class PixelShuffle(keras.Layer):
     def call(self, x):
-        return depth_to_space(x, 2)
+        return tf.nn.depth_to_space(x, 2)
     
     def get_config(self):
         return {}
