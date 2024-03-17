@@ -12,7 +12,6 @@ class SRGAN(keras.Model):
         self.discriminator = self.get_discriminator()
         self.generator = self.get_generator(residual_blocks)
         self.vgg = vgg
-        
         self.bce_loss = keras.losses.BinaryCrossentropy()
         self.mse_loss = keras.losses.MeanSquaredError()
         self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
@@ -41,17 +40,14 @@ class SRGAN(keras.Model):
         # HR/SR input
         inputs = layers.Input((None, None, 3))
         x = layers.Rescaling(scale=1/127.5, offset=-1)(inputs)
-        
         # First convolution blocks
         x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
         x = layers.LeakyReLU(0.2)(x)
-        
         # Residual downsampling blocks
         x = self._d_residual_block(x, 64, 2)
         x = self._d_downsample_pair(x, 128)
         x = self._d_downsample_pair(x, 256)
         x = self._d_downsample_pair(x, 512)
-
         # Flatten and classify
         x = layers.GlobalAveragePooling2D()(x)
         x = layers.LeakyReLU(0.2)(x)
@@ -63,7 +59,6 @@ class SRGAN(keras.Model):
         # LR input
         inputs = layers.Input((None, None, 3))
         x_in = layers.Rescaling(scale=1/255)(inputs)
-
         # First convolution
         x_in = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
         x_in = x = layers.PReLU(shared_axes=[1, 2])(x_in)
@@ -71,21 +66,18 @@ class SRGAN(keras.Model):
         # Residual block set
         for _ in range(residual_blocks):
             x = self._g_residual_block(x)
-        
+
         # Residual block without activation functions
         x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
         x = layers.BatchNormalization()(x)
         x = layers.Add()([x_in, x])
-
         # Upscaling blocks
         x = layers.Conv2D(256, kernel_size=3, padding="same")(x)
         x = PixelShuffle()(x)
         x = layers.PReLU(shared_axes=[1, 2])(x)
-        
         x = layers.Conv2D(256, kernel_size=3, padding="same")(x)
         x = PixelShuffle()(x)
         x = layers.PReLU(shared_axes=[1, 2])(x)
-
         # Final convolve
         x = layers.Conv2D(3, kernel_size=3, padding="same")(x)
         x = layers.Rescaling(scale=127.5, offset=127.5)(x)
@@ -133,21 +125,16 @@ class SRGAN(keras.Model):
         with tf.GradientTape() as tape:
             generated_images = self.generator(lr_images)
             predictions = self.discriminator(generated_images)
-            
             g_loss = 0.001 * self.bce_loss(misleading_labels, predictions)
-
             sr_vgg = tf.keras.applications.vgg19.preprocess_input(generated_images)
             sr_vgg = self.vgg(sr_vgg) / 12.75
-
             hr_vgg = tf.keras.applications.vgg19.preprocess_input(hr_images)
             hr_vgg = self.vgg(hr_vgg) / 12.75
-
             perceptual_loss = self.mse_loss(hr_vgg, sr_vgg)
             g_total_loss = g_loss + perceptual_loss
         
         gradients = tape.gradient(g_total_loss, self.generator.trainable_weights)
         self.g_optimiser.apply_gradients(zip(gradients,self.generator.trainable_weights))
-
         self.g_loss_tracker.update_state(g_total_loss)
 
         losses = {
@@ -157,5 +144,5 @@ class SRGAN(keras.Model):
             "g_loss": g_loss,
             "pereceptual_loss": perceptual_loss
         }
-
+        
         return losses
