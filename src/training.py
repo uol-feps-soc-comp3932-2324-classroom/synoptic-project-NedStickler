@@ -8,7 +8,7 @@ from utils import GANSaver
 def train_srresnet(epochs, save_path):
     save_checkpoint = ModelCheckpoint(save_path, monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
     srresnet = SRResNet(16)
-    srresnet.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0003), loss=keras.losses.MeanSquaredError())
+    srresnet.compile(optimizer=keras.optimizers.Adam(learning_rate=10e-4), loss=keras.losses.MeanSquaredError())
     srresnet.fit(lr_dataset, hr_dataset, epochs=epochs, callbacks=[save_checkpoint])
     
 
@@ -25,9 +25,9 @@ def train_srgan(epochs, save_path):
 
 
 if __name__ == "__main__":
-    model = "srgan"
+    model = "srresnet-mse"
 
-    epochs = 3
+    epochs = 1000
     save_path = f"/tmp/sc20ns/generators/{model}/{model}-e{epochs}-resics45.keras"
     downsample_factor = 4
 
