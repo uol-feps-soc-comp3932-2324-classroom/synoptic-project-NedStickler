@@ -4,21 +4,7 @@ from keras import layers
 import numpy as np
 
 
-# TODO:
-# Implement SRResNet into separate class?
-
-
-@keras.saving.register_keras_serializable()
-class SRGAN(keras.Model):
-    def __init__(self, residual_blocks, vgg):
-        super().__init__()
-        self.discriminator = self.get_discriminator()
-        self.generator = self.get_generator(residual_blocks)
-        self.vgg = vgg
-        self.bce_loss = keras.losses.BinaryCrossentropy()
-        self.mse_loss = keras.losses.MeanSquaredError()
-        self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
-    
+def srresnet(residual_blocks: int) -> keras.Model:
     @keras.saving.register_keras_serializable()
     class PixelShuffle(keras.Layer):
         def call(self, x):
@@ -30,6 +16,54 @@ class SRGAN(keras.Model):
         @classmethod
         def from_config(cls, config):
             return cls(**config)
+        
+    def g_residual_block(x_in):
+        x = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
+        x = layers.BatchNormalization()(x)
+        x = layers.PReLU(shared_axes=[1, 2])(x)
+        x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.Add()([x_in, x])
+        return x
+    
+    # LR input
+    inputs = layers.Input((None, None, 3))
+    x_in = layers.Rescaling(scale=1/255)(inputs)
+    # First convolution
+    x_in = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
+    x_in = x = layers.PReLU(shared_axes=[1, 2])(x_in)
+
+    # Residual block set
+    for _ in range(residual_blocks):
+        x = g_residual_block(x)
+
+    # Residual block without activation functions
+    x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Add()([x_in, x])
+    # Upscaling blocks
+    x = layers.Conv2D(256, kernel_size=3, padding="same")(x)
+    x = PixelShuffle()(x)
+    x = layers.PReLU(shared_axes=[1, 2])(x)
+    x = layers.Conv2D(256, kernel_size=3, padding="same")(x)
+    x = PixelShuffle()(x)
+    x = layers.PReLU(shared_axes=[1, 2])(x)
+    # Final convolve
+    x = layers.Conv2D(3, kernel_size=3, padding="same")(x)
+    x = layers.Rescaling(scale=127.5, offset=127.5)(x)
+    return keras.Model(inputs, x)
+
+
+@keras.saving.register_keras_serializable()
+class SRGAN(keras.Model):
+    def __init__(self, generator, vgg):
+        super().__init__()
+        self.discriminator = self.get_discriminator()
+        self.generator = self.get_generator
+        self.vgg = vgg
+        self.bce_loss = keras.losses.BinaryCrossentropy()
+        self.mse_loss = keras.losses.MeanSquaredError()
+        self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
     
     def _d_residual_block(self, x, n_filters: int, n_strides: int):
         x = layers.Conv2D(n_filters, kernel_size=3, strides=n_strides, padding="same")(x)
@@ -40,15 +74,6 @@ class SRGAN(keras.Model):
     def _d_downsample_pair(self, x, n_filters: int):
         x = self._d_residual_block(x, n_filters, 1)
         x = self._d_residual_block(x, n_filters, 2)
-        return x
-
-    def _g_residual_block(self, x_in):
-        x = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
-        x = layers.BatchNormalization()(x)
-        x = layers.PReLU(shared_axes=[1, 2])(x)
-        x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Add()([x_in, x])
         return x
     
     def get_discriminator(self) -> keras.Model:
@@ -67,35 +92,6 @@ class SRGAN(keras.Model):
         x = layers.GlobalAveragePooling2D()(x)
         x = layers.LeakyReLU(0.2)(x)
         x = layers.Dense(1, activation="sigmoid")(x)
-
-        return keras.Model(inputs, x)
-    
-    def get_generator(self, residual_blocks: int) -> keras.Model:
-        # LR input
-        inputs = layers.Input((None, None, 3))
-        x_in = layers.Rescaling(scale=1/255)(inputs)
-        # First convolution
-        x_in = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
-        x_in = x = layers.PReLU(shared_axes=[1, 2])(x_in)
-
-        # Residual block set
-        for _ in range(residual_blocks):
-            x = self._g_residual_block(x)
-
-        # Residual block without activation functions
-        x = layers.Conv2D(64, kernel_size=3, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Add()([x_in, x])
-        # Upscaling blocks
-        x = layers.Conv2D(256, kernel_size=3, padding="same")(x)
-        x = self.PixelShuffle()(x)
-        x = layers.PReLU(shared_axes=[1, 2])(x)
-        x = layers.Conv2D(256, kernel_size=3, padding="same")(x)
-        x = self.PixelShuffle()(x)
-        x = layers.PReLU(shared_axes=[1, 2])(x)
-        # Final convolve
-        x = layers.Conv2D(3, kernel_size=3, padding="same")(x)
-        x = layers.Rescaling(scale=127.5, offset=127.5)(x)
 
         return keras.Model(inputs, x)
     
