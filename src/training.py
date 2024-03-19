@@ -16,7 +16,8 @@ def train_srgan(epochs, save_path):
     gan_saver = GANSaver(save_path)
     vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
     vgg = keras.Model(vgg.input, vgg.layers[20].output)
-
+    
+    SRResNet(16)
     srresnet = keras.saving.load_model("/tmp/sc20ns/generators/srresnet-mse/srresnet-mse-e100-resics45.keras")
     srgan = SRGAN(generator=srresnet, vgg=vgg)
     srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=0.0003), g_optimiser=keras.optimizers.Adam(learning_rate=0.0003))
