@@ -7,7 +7,7 @@ import paths
 
 
 def train_srresnet_mse():
-    save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + "/srresnet-mse/srresnet-mse-e{epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
+    save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
     srresnet = SRResNet(16)
     srresnet.compile(optimizer=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
     srresnet.fit(lr_dataset, hr_dataset, epochs=epochs, callbacks=[save_checkpoint])
@@ -34,8 +34,8 @@ def train_srgan_vgg22(first_pass: bool = True):
 
 
 if __name__ == "__main__":
-    model = "srgan-vgg22"
-    epochs = 1
+    model = "srresnet-mse"
+    epochs = 1000
     details = {
         "model": model,
         "epochs": epochs,
@@ -47,5 +47,5 @@ if __name__ == "__main__":
 
     if model.lower() == "srresnet-mse":
         train_srresnet_mse()
-    if model.lower() == "srgan":
+    if model.lower() == "srgan-vgg22":
         train_srgan_vgg22(first_pass=True)
