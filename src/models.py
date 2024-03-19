@@ -4,7 +4,7 @@ from keras import layers
 import numpy as np
 
 
-def srresnet(residual_blocks: int) -> keras.Model:
+def SRResNet(residual_blocks: int) -> keras.Model:
     @keras.saving.register_keras_serializable()
     class PixelShuffle(keras.Layer):
         def call(self, x):
