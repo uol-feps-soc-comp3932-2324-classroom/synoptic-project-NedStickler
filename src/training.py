@@ -14,19 +14,20 @@ def train_srresnet_mse():
     
 
 def train_srgan_vgg22(first_pass: bool = True):
+    if first_pass:
+        discriminator = None
+        lr = 10**-4
+    else:
+        discriminator = keras.saving.load_model()
+        lr = 10**-5
+
+    details["lr"] = lr
     gan_saver = GANSaver(paths.SAVE_PATH, details)
     vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
     vgg = keras.Model(vgg.input, vgg.layers[5].output)
 
-    if first_pass:
-        discriminator = None
-        lr = 10e-4
-    else:
-        discriminator = keras.saving.load_model()
-        lr = 10e-5
-
     # Change the next line manually to switch pre-trained generators
-    srresnet = keras.saving.load_model(paths.REPO_PATH + "/generators/srresnet-mse/srresnet-mse-e1000-lr0.001-resics45.keras")
+    srresnet = keras.saving.load_model(paths.REPO_PATH + "/generators/srresnet-mse/srresnet-mse-e1000-resics45.keras")
     srgan = SRGAN(generator=srresnet, vgg=vgg, discriminator=discriminator)
     srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
     srgan.fit(lr_dataset, hr_dataset, epochs=epochs, callbacks=[gan_saver])
@@ -34,12 +35,10 @@ def train_srgan_vgg22(first_pass: bool = True):
 
 if __name__ == "__main__":
     model = "srgan-vgg22"
-    lr = 10e-4
     epochs = 1
     details = {
         "model": model,
         "epochs": epochs,
-        "lr": lr
     }
     
     downsample_factor = 4
