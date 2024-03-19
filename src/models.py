@@ -59,7 +59,7 @@ class SRGAN(keras.Model):
     def __init__(self, generator, vgg):
         super().__init__()
         self.discriminator = self.get_discriminator()
-        self.generator = self.get_generator
+        self.generator = generator
         self.vgg = vgg
         self.bce_loss = keras.losses.BinaryCrossentropy()
         self.mse_loss = keras.losses.MeanSquaredError()
