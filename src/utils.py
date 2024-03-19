@@ -8,10 +8,10 @@ class GANSaver(keras.callbacks.Callback):
     def __init__(self, save_path: str, details: dict) -> None:
         super().__init__()
         self.best_loss = 999_999_999
-        self.root_path = f"{save_path}/{details.model}/{details.model}-e{details.epochs}-lr{details.lr}-resics45/"
+        self.root_path = f"{save_path}/{details.get('model')}/{details.get('model')}-e{details.get('epochs')}-lr{details.get('lr')}-resics45/"
         if not os.path.exists(self.root_path):
             os.mkdir(self.root_path)
-
+    
     def on_epoch_end(self, epoch: int, logs: dict = None) -> None:
         if logs.get("generator_loss") < self.best_loss:
             self.best_loss = logs.get("generator_loss")

@@ -33,7 +33,7 @@ def train_srgan(first_pass: bool = True):
 if __name__ == "__main__":
     model = "srgan"
     lr = 10e-4
-    epochs = 100
+    epochs = 1
     details = {
         "model": model,
         "epochs": epochs,
