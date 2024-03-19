@@ -34,8 +34,8 @@ def train_srgan_vgg22(first_pass: bool = True):
 
 
 if __name__ == "__main__":
-    model = "srresnet-mse"
-    epochs = 1000
+    model = "srgan-vgg22"
+    epochs = 100
     details = {
         "model": model,
         "epochs": epochs,
