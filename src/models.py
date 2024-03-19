@@ -4,6 +4,10 @@ from keras import layers
 import numpy as np
 
 
+# TODO:
+# Implement SRResNet into separate class?
+
+
 @keras.saving.register_keras_serializable()
 class SRGAN(keras.Model):
     def __init__(self, residual_blocks, vgg):
