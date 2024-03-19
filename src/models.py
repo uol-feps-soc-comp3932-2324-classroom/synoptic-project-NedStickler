@@ -2,21 +2,10 @@ import tensorflow as tf
 import keras
 from keras import layers
 import numpy as np
+from layers import PixelShuffle
 
 
 def SRResNet(residual_blocks: int) -> keras.Model:
-    @keras.saving.register_keras_serializable()
-    class PixelShuffle(keras.Layer):
-        def call(self, x):
-            return tf.nn.depth_to_space(x, 2)
-        
-        def get_config(self):
-            return {}
-        
-        @classmethod
-        def from_config(cls, config):
-            return cls(**config)
-        
     def g_residual_block(x_in):
         x = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
         x = layers.BatchNormalization()(x)
@@ -56,9 +45,10 @@ def SRResNet(residual_blocks: int) -> keras.Model:
 
 @keras.saving.register_keras_serializable()
 class SRGAN(keras.Model):
-    def __init__(self, generator, vgg):
+    def __init__(self, generator: keras.Model, vgg: keras.Model, discriminator: keras.Model = None):
         super().__init__()
-        self.discriminator = self.get_discriminator()
+        if discriminator is None: self.discriminator = self.get_discriminator()
+        else: self.discriminator = discriminator
         self.generator = generator
         self.vgg = vgg
         self.bce_loss = keras.losses.BinaryCrossentropy()
