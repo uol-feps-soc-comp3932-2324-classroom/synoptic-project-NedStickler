@@ -7,9 +7,9 @@ import paths
 
 
 def train_srresnet_mse():
-    save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + "/srresnet-mse/srresnet-mse-e{epochs}-lr{lr}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
+    save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + "/srresnet-mse/srresnet-mse-e{epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
     srresnet = SRResNet(16)
-    srresnet.compile(optimizer=keras.optimizers.Adam(learning_rate=lr), loss=keras.losses.MeanSquaredError())
+    srresnet.compile(optimizer=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
     srresnet.fit(lr_dataset, hr_dataset, epochs=epochs, callbacks=[save_checkpoint])
     
 
