@@ -5,10 +5,10 @@ import os
 
 
 class GANSaver(keras.callbacks.Callback):
-    def __init__(self, save_path: str, details: dict) -> None:
+    def __init__(self, save_path: str, model: str, epochs: int, lr: float) -> None:
         super().__init__()
         self.best_loss = 999_999_999
-        self.root_path = f"{save_path}/{details.get('model')}/{details.get('model')}-e{details.get('epochs')}-lr{details.get('lr')}-resics45/"
+        self.root_path = f"{save_path}/{model}/{model}-e{epochs}-lr{lr}-resics45/"
         if not os.path.exists(self.root_path):
             os.mkdir(self.root_path)
     
