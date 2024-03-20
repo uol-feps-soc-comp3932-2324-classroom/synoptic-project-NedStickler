@@ -35,8 +35,8 @@ def train_srgan_vgg22(first_pass: bool, discriminator_path: str = None, generato
 
 
 if __name__ == "__main__":
-    model = "srgan-vgg22"
-    epochs = 100
+    model = "srgan-vgg54"
+    epochs = 2
     details = {
         "model": model,
         "epochs": epochs,
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     if model.lower() == "srresnet-mse":
         train_srresnet_mse()
-    if model.lower() == "srgan-vgg22":
+    if model.lower() == "srgan-vgg54":
         discriminator_path = paths.REPO_PATH + "/generators/srgan-vgg22/srgan-vgg22-e100-lr0.0001-resics45/discriminator.keras"
         generator_path = paths.REPO_PATH + "/generators/srgan-vgg22/srgan-vgg22-e100-lr0.0001-resics45/generator.keras"
         train_srgan_vgg22(first_pass=False, discriminator_path=discriminator_path, generator_path=generator_path)
