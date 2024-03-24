@@ -22,13 +22,17 @@ def load_resics45(package_path: str | Path) -> np.array:
     return images, labels
 
 
-def load_resics45_subset() -> np.array:
-    dataset = np.load(paths.REPO_PATH + "/datasets/resics45_s2048.npy")
+def load_resics45_subset(size: int = 2048, downsample_factor: int = 4) -> np.array:
+    if size > 2048:
+        size = 2048
+
+    dataset = np.load(paths.REPO_PATH + "/datasets/resics45_s2048.npy")[:size]
     lr_dataset = []
     hr_dataset = []
     
     for image in dataset:
-        lr_image, hr_image = crop_and_resize(image, 4)
-        lr_dataset.append(lr_image)
-        hr_dataset.append(hr_image)
+        for _ in range(16):
+            lr_image, hr_image = crop_and_resize(image, downsample_factor)
+            lr_dataset.append(lr_image)
+            hr_dataset.append(hr_image)
     return np.array(lr_dataset), np.array(hr_dataset)
