@@ -30,5 +30,5 @@ def load_resics45_subset() -> np.array:
     for image in dataset:
         lr_image, hr_image = crop_and_resize(image, 4)
         lr_dataset.append(lr_image)
-        hr_image.append(hr_image)
-    return lr_dataset, hr_dataset
+        hr_dataset.append(hr_image)
+    return np.array(lr_dataset), np.array(hr_dataset)
