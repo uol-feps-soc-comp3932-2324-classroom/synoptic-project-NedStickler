@@ -12,7 +12,7 @@ class Training():
     def __init__(self, model: str, epochs: int) -> None:
         self.model = model
         self.epochs = epochs
-        self.lr_dataset, self.hr_dataset = load_resics45_subset()
+        self.lr_dataset, self.hr_dataset = load_resics45_subset(size=16)
     
     def train_srresnet_mse(self) -> None:
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
@@ -57,5 +57,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=150)
+    training = Training(model="srgan-vgg22", epochs=6)
     training.train()
