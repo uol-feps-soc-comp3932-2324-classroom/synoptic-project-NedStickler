@@ -1,8 +1,10 @@
+
 import keras
 from keras.callbacks import ModelCheckpoint
 import numpy as np
 from models import SRGAN, SRResNet
 from utils import GANSaver
+from loaders import load_resics45_subset
 import paths
 
 
@@ -10,9 +12,7 @@ class Training():
     def __init__(self, model: str, epochs: int) -> None:
         self.model = model
         self.epochs = epochs
-        downsample_factor = 4
-        self.hr_dataset = np.load(paths.REPO_PATH + "/datasets/resics45_s2048.npy")
-        self.lr_dataset = np.array([image[::downsample_factor, ::downsample_factor, :] for image in self.hr_dataset])
+        self.lr_dataset, self.hr_dataset = load_resics45_subset()
     
     def train_srresnet_mse(self) -> None:
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
@@ -49,11 +49,11 @@ class Training():
         elif self.model == "srgan-vgg22":
             discriminator_path = paths.REPO_PATH + "/generators/srgan-vgg22/srgan-vgg22-e100-lr0.0001-resics45/discriminator.keras"
             generator_path = paths.REPO_PATH + "/generators/srgan-vgg22/srgan-vgg22-e100-lr0.0001-resics45/generator.keras"
-            self.train_srgan(first_pass=False, vgg=22, discriminator_path=discriminator_path, generator_path=generator_path)
+            self.train_srgan(first_pass=True, vgg=22, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "srgan-vgg54":
             discriminator_path = paths.REPO_PATH + "/generators/srgan-vgg54/srgan-vgg54-e100-lr0.0001-resics45/discriminator.keras"
             generator_path = paths.REPO_PATH + "/generators/srgan-vgg54/srgan-vgg54-e100-lr0.0001-resics45/generator.keras"
-            self.train_srgan(first_pass=False, vgg=54, discriminator_path=discriminator_path, generator_path=generator_path)
+            self.train_srgan(first_pass=True, vgg=54, discriminator_path=discriminator_path, generator_path=generator_path)
 
 
 if __name__ == "__main__":
