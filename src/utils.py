@@ -47,9 +47,9 @@ def crop_and_resize_image(image: np.array, downsample_factor: int) -> keras.Mode
 def crop_and_resize_batch(batch: np.array, downsample_factor: int) -> np.array:
     lr_images = [] 
     hr_images = []
-    for i in range(batch.shape[0]):
+    for image in batch:
         for _ in range(16):
-            lr_image, hr_image = crop_and_resize_image(batch[i], downsample_factor)
+            lr_image, hr_image = crop_and_resize_image(image, downsample_factor)
             lr_images.append(lr_image)
             hr_images.append(hr_image)
     return np.array(lr_images), np.array(hr_images)

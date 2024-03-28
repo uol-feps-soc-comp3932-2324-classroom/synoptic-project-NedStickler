@@ -103,9 +103,8 @@ class SRResNet(keras.Model):
         self.loss = loss
 
     def train_step(self, data):
-        _, hr = data
-        lr_images, hr_images = crop_and_resize_batch(hr, self.downsample_factor)
         with tf.GradientTape() as tape:
+            lr_images, hr_images = crop_and_resize_batch(data, self.downsample_factor)
             sr_images = self.model(lr_images)
             loss = self.loss(hr_images, sr_images)
         gradients = tape.gradient(loss, self.model.trainable_weights)
