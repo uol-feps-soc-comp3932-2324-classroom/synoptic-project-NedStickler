@@ -52,6 +52,12 @@ class CropAndResize(keras.Model):
         self.downsample_factor = downsample_factor
         self.random_crop = RandomCrop(96, 96)
         self.resize = Resizing(96 // downsample_factor, 96 // downsample_factor, interpolation="bicubic")
+
+    def get_config(self):
+        return {
+            "random_crop": self.random_crop,
+            "resize": self.resize
+        }
     
     def call(self, inputs):
         hr_patch = self.random_crop(inputs)
@@ -65,16 +71,15 @@ class SRResNet(keras.Model):
         super().__init__()
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
-        self.model = self.get_model()
         self.crop_and_resize = CropAndResize(downsample_factor)
+        self.model = self.get_model()
     
     def get_config(self) -> dict:
-        return {"model": self.model}
-    
-    @classmethod
-    def from_config(cls, config) -> dict:
-        return cls(**config)
-    
+        return {
+            "model": self.model,
+            "crop_and_resize": self.crop_and_resize
+        }
+
     def _residual_block(self, x_in):
         x = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
         x = layers.BatchNormalization()(x)
