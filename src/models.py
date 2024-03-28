@@ -2,9 +2,10 @@
 import tensorflow as tf
 import keras
 from keras import layers
+from keras import ops
 import numpy as np
 from layers import PixelShuffle
-from utils import crop_and_resize_batch
+from keras.layers import RandomCrop, Resizing
 
 
 # def SRResNet(residual_blocks: int) -> keras.Model:
@@ -43,6 +44,19 @@ from utils import crop_and_resize_batch
 #     x = layers.Conv2D(3, kernel_size=3, padding="same")(x)
 #     x = layers.Rescaling(scale=127.5, offset=127.5)(x)
 #     return keras.Model(inputs, x)
+
+@keras.saving.register_keras_serializable()
+class CropAndResize(keras.Model):
+    def __init__(self, downsample_factor):
+        super().__init__()
+        self.downsample_factor = downsample_factor
+        self.random_crop = RandomCrop(96, 96)
+        self.resize = Resizing(96 // downsample_factor, 96 // downsample_factor, interpolation="bicubic")
+    
+    def call(self, inputs):
+        hr_patch = self.random_crop(inputs)
+        lr_patch = self.resize(hr_patch)
+        return lr_patch, hr_patch
 
 
 @keras.saving.register_keras_serializable()
@@ -103,7 +117,15 @@ class SRResNet(keras.Model):
         self.loss = loss
 
     def train_step(self, data):
-        lr_images, hr_images = crop_and_resize_batch(data, self.downsample_factor)
+        lr_list = []
+        hr_list = []
+        for _ in range(16):
+            lr_batch, hr_batch = CropAndResize(downsample_factor=self.downsample_factor)(data)
+            lr_list.append(lr_batch)
+            hr_list.append(hr_batch)
+        lr_images = ops.concatenate(lr_list)
+        hr_images = ops.concatenate(hr_list)
+        
         with tf.GradientTape() as tape:
             sr_images = self.model(lr_images)
             loss = self.loss(hr_images, sr_images)
