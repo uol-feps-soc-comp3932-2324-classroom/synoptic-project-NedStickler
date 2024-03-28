@@ -66,6 +66,7 @@ class SRResNet(keras.Model):
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
         self.model = self.get_model()
+        self.crop_and_resize = CropAndResize(downsample_factor)
     
     def get_config(self) -> dict:
         return {"model": self.model}
@@ -120,7 +121,7 @@ class SRResNet(keras.Model):
         lr_list = []
         hr_list = []
         for _ in range(16):
-            lr_batch, hr_batch = CropAndResize(downsample_factor=self.downsample_factor)(data)
+            lr_batch, hr_batch = self.crop_and_resize(data)
             lr_list.append(lr_batch)
             hr_list.append(hr_batch)
         lr_images = ops.concatenate(lr_list)
