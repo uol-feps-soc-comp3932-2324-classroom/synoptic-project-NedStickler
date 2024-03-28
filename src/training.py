@@ -15,7 +15,7 @@ class Training():
     
     def train_srresnet_mse(self) -> None:
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
-        srresnet = SRResNet(residual_blocks=16, downsample_factor=4)
+        srresnet = SRResNet(self.dataset, residual_blocks=16, downsample_factor=4)
         srresnet.compile(optimiser=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
         srresnet.fit(self.dataset, epochs=self.epochs, callbacks=[save_checkpoint])
     

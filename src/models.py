@@ -47,8 +47,9 @@ from utils import crop_and_resize_batch
 
 @keras.saving.register_keras_serializable()
 class SRResNet(keras.Model):
-    def __init__(self, residual_blocks: int, downsample_factor: int) -> None:
+    def __init__(self, dataset: np.array, residual_blocks: int, downsample_factor: int) -> None:
         super().__init__()
+        self.dataset = dataset
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
         self.model = self.get_model()
@@ -103,8 +104,9 @@ class SRResNet(keras.Model):
         self.loss = loss
 
     def train_step(self, data):
+        print(data)
+        lr_images, hr_images = crop_and_resize_batch(data, self.downsample_factor)
         with tf.GradientTape() as tape:
-            lr_images, hr_images = crop_and_resize_batch(data, self.downsample_factor)
             sr_images = self.model(lr_images)
             loss = self.loss(hr_images, sr_images)
         gradients = tape.gradient(loss, self.model.trainable_weights)
