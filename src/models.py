@@ -71,8 +71,8 @@ class SRResNet(keras.Model):
     def get_config(self):
         config = super().get_config()
         config.update({
-            'arg1': self.arg1,
-            'arg2': self.arg2
+            "residual_block": self.residual_blocks,
+            'downsample_factor': self.downsample_factor
         })
         return config
 
