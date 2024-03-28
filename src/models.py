@@ -136,6 +136,9 @@ class SRResNet(keras.Model):
         gradients = tape.gradient(loss, self.model.trainable_weights)
         self.optimiser.apply_gradients(zip(gradients, self.model.trainable_weights))
         return {"loss": loss}
+    
+    def call(self, inputs):
+        return self.model(inputs)
 
 
 @keras.saving.register_keras_serializable()
