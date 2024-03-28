@@ -108,7 +108,7 @@ class SRResNet(keras.Model):
             sr_images = self.model(lr_images)
             loss = self.loss(hr_images, sr_images)
         gradients = tape.gradient(loss, self.model.trainable_weights)
-        self.optimiser.apply(gradients(zip(gradients, self.model.trainable_weights)))
+        self.optimiser.apply_gradients(zip(gradients, self.model.trainable_weights))
         return {"loss": loss}
 
 
