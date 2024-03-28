@@ -4,7 +4,6 @@ from keras.callbacks import ModelCheckpoint
 import numpy as np
 from models import SRGAN, SRResNet
 from utils import GANSaver
-from loaders import load_resics45_subset
 import paths
 
 
@@ -57,5 +56,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-vgg22", epochs=6)
+    training = Training(model="srresnet-mse", epochs=20)
     training.train()

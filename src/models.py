@@ -60,7 +60,7 @@ class SRResNet(keras.Model):
     def from_config(cls, config) -> dict:
         return cls(**config)
     
-    def _residual_block(x_in):
+    def _residual_block(self, x_in):
         x = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
         x = layers.BatchNormalization()(x)
         x = layers.PReLU(shared_axes=[1, 2])(x)
