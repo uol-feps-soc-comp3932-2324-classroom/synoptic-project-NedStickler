@@ -70,7 +70,7 @@ class SRResNet(keras.Model):
     
     def get_config(self):
         return {
-            "residual_block": self.residual_blocks,
+            "residual_blocks": self.residual_blocks,
             'downsample_factor': self.downsample_factor
         }
         
