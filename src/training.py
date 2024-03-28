@@ -12,13 +12,13 @@ class Training():
     def __init__(self, model: str, epochs: int) -> None:
         self.model = model
         self.epochs = epochs
-        self.lr_dataset, self.hr_dataset = load_resics45_subset(size=16)
+        self.dataset = np.load(paths.REPO_PATH + "/datasets/resics45_s2048.npy")
     
     def train_srresnet_mse(self) -> None:
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
-        srresnet = SRResNet(16)
-        srresnet.compile(optimizer=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
-        srresnet.fit(self.lr_dataset, self.hr_dataset, epochs=self.epochs, callbacks=[save_checkpoint])
+        srresnet = SRResNet(residual_blocks=16, downsample_factor=4)
+        srresnet.compile(optimiser=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
+        srresnet.fit(self.dataset, epochs=self.epochs, callbacks=[save_checkpoint])
     
     def train_srgan(self, first_pass: bool, vgg: int, discriminator_path: str = None, generator_path: str = None) -> None:
         if first_pass:
