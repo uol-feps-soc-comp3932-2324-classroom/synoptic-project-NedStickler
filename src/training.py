@@ -56,5 +56,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=3)
+    training = Training(model="srresnet-mse", epochs=100)
     training.train()
