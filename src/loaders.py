@@ -22,6 +22,9 @@ def load_resics45(package_path: str | Path) -> np.array:
     return images, labels
 
 
+def split_resisc45()
+
+
 def load_resics45_subset(size: int = 2048, downsample_factor: int = 4) -> np.array:
     if size > 2048:
         size = 2048
