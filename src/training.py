@@ -16,9 +16,9 @@ class Training():
     
     def train_srresnet_mse(self) -> None:
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
-        srresnet = SRResNet(residual_blocks=16, downsample_factor=4)
+        srresnet = SRResNet(residual_blocks=16, downsample_factor=4, patch=True)
         srresnet.compile(optimiser=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
-        srresnet.fit(self.dataset, batch_size=25, epochs=self.epochs, callbacks=[save_checkpoint])
+        srresnet.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[save_checkpoint])
     
     def train_srgan(self, first_pass: bool, vgg: int, discriminator_path: str = None, generator_path: str = None) -> None:
         if first_pass:
@@ -57,5 +57,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=100)
+    training = Training(model="srresnet-mse", epochs=6)
     training.train()

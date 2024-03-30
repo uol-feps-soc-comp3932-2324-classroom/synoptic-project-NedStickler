@@ -37,4 +37,4 @@ def generate_resisc45_files(path: str | Path) -> None:
 def load_resisc45(train: bool = True) -> np.array:
     if train: suffix = "train"
     else: suffix = "test"
-    return np.load(paths.REPO_PATH + f"/datasets/resics45_{suffix}.npy")
+    return np.load(paths.REPO_PATH + f"/datasets/resisc45_{suffix}.npy")
