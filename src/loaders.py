@@ -3,10 +3,10 @@ import numpy as np
 import tensorflow_datasets as tfds
 import paths
 from pathlib import Path
-from utils import crop_and_resize
+from sklearn.model_selection import train_test_split
 
 
-def load_resics45(package_path: str | Path) -> np.array:
+def load_resisc45(package_path: str | Path) -> tuple[np.array, np.array]:
     """Load the RESISC45 dataset using tensorflow_datasets.
     
     Args:
@@ -22,20 +22,19 @@ def load_resics45(package_path: str | Path) -> np.array:
     return images, labels
 
 
-def split_resisc45()
+def train_test_split_resisc45(package_path: str | Path) -> tuple[np.array, np.array]:
+    images, labels = load_resisc45(package_path)
+    X_train, X_test = train_test_split(images, train_size=2250/31500, test_size=225/31500, random_state=42, stratify=labels)
+    return X_train, X_test
 
 
-def load_resics45_subset(size: int = 2048, downsample_factor: int = 4) -> np.array:
-    if size > 2048:
-        size = 2048
+def generate_resisc45_files(path: str | Path) -> None:
+    train, test = train_test_split_resisc45(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets")
+    np.save(path + r"\resisc45_train.npy", train)
+    np.save(path + r"\resisc45_test.npy", test)
 
-    dataset = np.load(paths.REPO_PATH + "/datasets/resics45_s2048.npy")[:size]
-    lr_dataset = []
-    hr_dataset = []
-    
-    for image in dataset:
-        for _ in range(16):
-            lr_image, hr_image = crop_and_resize(image, downsample_factor)
-            lr_dataset.append(lr_image)
-            hr_dataset.append(hr_image)
-    return np.array(lr_dataset), np.array(hr_dataset)
+
+def load_resisc45(train: bool = True) -> np.array:
+    if train: suffix = "train"
+    else: suffix = "test"
+    return np.load(paths.REPO_PATH + f"/datasets/resics45_{suffix}.npy")

@@ -37,19 +37,3 @@ def visualise_generator(generator: keras.Model, lr_imgs: np.array, hr_imgs: np.a
         axs[i, 1].imshow(hr_imgs[i])
         axs[i, 2].imshow(img.numpy().astype(np.uint8))
     plt.show()
-
-
-def crop_and_resize_image(image: np.array, downsample_factor: int) -> keras.Model:
-    hr_patch = RandomCrop(96, 96)(image)
-    lr_patch = Resizing(96 // downsample_factor, 96 // downsample_factor, interpolation="bicubic")(hr_patch)
-    return lr_patch, hr_patch
-
-
-def crop_and_resize_batch(batch: np.array, downsample_factor: int) -> np.array:
-    lr_images = []
-    hr_images = []
-    for _ in range(16):
-        lr_image, hr_image = crop_and_resize_image(batch, downsample_factor)
-        lr_images.append(lr_image)
-        hr_images.append(hr_image)
-    return ops.concatenate(lr_images), ops.concatenate(hr_images)

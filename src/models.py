@@ -24,12 +24,13 @@ class CropAndResize(keras.Model):
 
 @keras.saving.register_keras_serializable()
 class SRResNet(keras.Model):
-    def __init__(self, residual_blocks: int, downsample_factor: int) -> None:
-        # OPTION TO USE PATCH OR FULL IMAGE
+    def __init__(self, residual_blocks: int, downsample_factor: int, patch: bool = True) -> None:
         super().__init__()
+        self.patch = patch
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
         self.crop_and_resize = CropAndResize(downsample_factor)
+        self.resize = Resizing(256 // downsample_factor, 256 // downsample_factor, interpolation="bicubic")
         self.model = self.get_model()
     
     def get_config(self):
@@ -85,14 +86,18 @@ class SRResNet(keras.Model):
         self.loss = loss
 
     def train_step(self, data):
-        lr_list = []
-        hr_list = []
-        for _ in range(16):
-            lr_batch, hr_batch = self.crop_and_resize(data)
-            lr_list.append(lr_batch)
-            hr_list.append(hr_batch)
-        lr_images = ops.concatenate(lr_list)
-        hr_images = ops.concatenate(hr_list)
+        if self.patch:
+            lr_list = []
+            hr_list = []
+            for _ in range(16):
+                lr_batch, hr_batch = self.crop_and_resize(data)
+                lr_list.append(lr_batch)
+                hr_list.append(hr_batch)
+            lr_images = ops.concatenate(lr_list)
+            hr_images = ops.concatenate(hr_list)
+        else:
+            hr_images = data
+            lr_images = self.resize(data)
         
         with tf.GradientTape() as tape:
             sr_images = self.model(lr_images)
