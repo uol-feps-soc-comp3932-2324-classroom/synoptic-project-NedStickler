@@ -9,14 +9,15 @@ import paths
 
 
 class Training():
-    def __init__(self, model: str, epochs: int) -> None:
+    def __init__(self, model: str, epochs: int, patch: bool) -> None:
         self.model = model
         self.epochs = epochs
+        self.patch = patch
         self.dataset = load_resisc45(train=True)
     
     def train_srresnet_mse(self) -> None:
-        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
-        srresnet = SRResNet(residual_blocks=16, downsample_factor=4, patch=False)
+        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45-{self.patch}.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
+        srresnet = SRResNet(residual_blocks=16, downsample_factor=4, patch=self.patch)
         srresnet.compile(optimiser=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
         srresnet.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[save_checkpoint])
     
@@ -57,5 +58,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=6)
+    training = Training(model="srresnet-mse", epochs=667, patch=False)
     training.train()
