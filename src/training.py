@@ -63,5 +63,5 @@ class Training():
 
 if __name__ == "__main__":
     resume_train_model = keras.saving.load_model(paths.REPO_PATH + "/generators/srresnet-mse/srresnet-mse-e667-resics45-True.keras")
-    training = Training(model="srresnet-mse", epochs=359, patch=True, resume_train_model=resume_train_model)
+    training = Training(model="srresnet-mse", epochs=667, patch=True)
     training.train()
