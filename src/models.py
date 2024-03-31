@@ -29,9 +29,12 @@ class SRResNet(keras.Model):
         self.patch = patch
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
+
         self.crop_and_resize = CropAndResize(downsample_factor)
         self.resize = Resizing(256 // downsample_factor, 256 // downsample_factor, interpolation="bicubic")
+
         self.model = self.get_model()
+        self.loss_tracker = keras.metrics.Mean(name="loss")
     
     def get_config(self):
         return {
@@ -42,6 +45,10 @@ class SRResNet(keras.Model):
     @classmethod
     def from_config(cls, config):
         return cls(**config)
+    
+    @property
+    def metrics(self) -> list:
+        return [self.loss_tracker]
 
     def _residual_block(self, x_in):
         x = layers.Conv2D(64, kernel_size=3, padding="same")(x_in)
@@ -104,6 +111,8 @@ class SRResNet(keras.Model):
             loss = self.loss(hr_images, sr_images)
         gradients = tape.gradient(loss, self.model.trainable_weights)
         self.optimiser.apply_gradients(zip(gradients, self.model.trainable_weights))
+
+        self.loss_tracker.update_state(loss)
         return {"loss": loss}
     
     def call(self, inputs):
