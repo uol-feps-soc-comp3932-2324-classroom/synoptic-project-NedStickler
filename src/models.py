@@ -186,7 +186,7 @@ class SRGAN(keras.Model):
     def train_step(self, data: np.array) -> dict:
         lr_list = []
         hr_list = []
-        for _ in range(10):
+        for _ in range(9):
             lr_batch, hr_batch = self.crop_and_resize(data)
             lr_list.append(lr_batch)
             hr_list.append(hr_batch)
