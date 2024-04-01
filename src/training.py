@@ -13,7 +13,14 @@ class Training():
         self.model = model
         self.epochs = epochs
         self.patch = patch
+        self.vgg_base = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
         self.dataset = load_resisc45(train=True)
+
+    def _get_model_paths(self, vgg: str) -> tuple[str, str]:
+        discriminator_path = paths.REPO_PATH + f"/generators/srgan-{vgg}/srgan-{vgg}-e67-lr0.0001-resics45/discriminator.keras"
+        generator_path = paths.REPO_PATH + f"/generators/srgan-{vgg}/srgan-{vgg}-e67-lr0.0001-resics45/generator.keras"
+        return discriminator_path, generator_path
+        
     
     def train_srresnet_mse(self) -> None:
         if self.patch:
@@ -36,32 +43,24 @@ class Training():
             generator = keras.saving.load_model(generator_path)
             lr = 10**-5
 
-        if vgg == 22:
-            vgg_layer = 5
-        elif vgg == 54:
-            vgg_layer = 20
-
         gan_saver = GANSaver(paths.SAVE_PATH, self.model, self.epochs, lr)
-        vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
-        vgg = keras.Model(vgg.input, vgg.layers[vgg_layer].output)
-
         srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
-        srgan.fit(self.lr_dataset, self.hr_dataset, epochs=self.epochs, callbacks=[gan_saver])
+        srgan.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[gan_saver])
     
     def train(self) -> None:
         if self.model == "srresnet-mse":
             self.train_srresnet_mse()
         elif self.model == "srgan-vgg22":
-            discriminator_path = paths.REPO_PATH + "/generators/srgan-vgg22/srgan-vgg22-e100-lr0.0001-resics45/discriminator.keras"
-            generator_path = paths.REPO_PATH + "/generators/srgan-vgg22/srgan-vgg22-e100-lr0.0001-resics45/generator.keras"
-            self.train_srgan(first_pass=True, vgg=22, discriminator_path=discriminator_path, generator_path=generator_path)
+            discriminator_path, generator_path = self._get_model_paths("vgg22")
+            vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[5].output)  
+            self.train_srgan(first_pass=True, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "srgan-vgg54":
-            discriminator_path = paths.REPO_PATH + "/generators/srgan-vgg54/srgan-vgg54-e100-lr0.0001-resics45/discriminator.keras"
-            generator_path = paths.REPO_PATH + "/generators/srgan-vgg54/srgan-vgg54-e100-lr0.0001-resics45/generator.keras"
-            self.train_srgan(first_pass=True, vgg=54, discriminator_path=discriminator_path, generator_path=generator_path)
+            discriminator_path, generator_path = self._get_model_paths("vgg54")
+            vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[20].output)  
+            self.train_srgan(first_pass=True, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=667, patch=False)
+    training = Training(model="srgan-vgg22", epochs=5, patch=True)
     training.train()

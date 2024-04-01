@@ -128,7 +128,7 @@ class SRGAN(keras.Model):
         else: self.discriminator = discriminator
         self.generator = generator
         self.vgg = vgg
-
+        self.crop_and_resize = CropAndResize(4)
         self.bce_loss = keras.losses.BinaryCrossentropy()
         self.mse_loss = keras.losses.MeanSquaredError()
         self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
@@ -184,7 +184,14 @@ class SRGAN(keras.Model):
         self.g_optimiser = g_optimiser
 
     def train_step(self, data: np.array) -> dict:
-        lr_images, hr_images = data
+        lr_list = []
+        hr_list = []
+        for _ in range(16):
+            lr_batch, hr_batch = self.crop_and_resize(data)
+            lr_list.append(lr_batch)
+            hr_list.append(hr_batch)
+        lr_images = ops.concatenate(lr_list)
+        hr_images = ops.concatenate(hr_list)
         batch_size = lr_images.shape[0]
 
         # Train the discriminator
