@@ -1,6 +1,8 @@
 \chapter{Methods}
 \label{chapter2}
 
+\section{Tools}
+
 \section{Data}
 Learning-based models require data to learn from. In the case of super-resolution, the data consists of pairs of images: a high-resolution and low-resolution version of each training instance, where the model will attempt to learn some `mapping' from LR to HR.\@ The learnt mapping can then be applied to unseen low-resolution imagery where a super-resolution representation is generated. Thus, the relevance and quality of dataset contents is monumental in producing a successful SR reconstruction model.\ \textcolor{blue}{Definitely needs more!}
 
@@ -34,11 +36,13 @@ Table~\ref{table:datasets_table} shows the remote sensing imagery datasets as li
 
 Following these requirements removes the WHU-RS19, UCAS-AOD, and ITCUD datasets for having too few images, along with DOTA for having too large of a resolution. This yields the AID, RSSCN7, UC Merced, NWPU-RESISC45, RSC11, SIRI-WHU and DIOR datasets. Any of these datasets would prove effective for training the SRGAN model. Therefore, selection of a training dataset is based off personal preference. 
 
-Notably, the NWPU-RESISC45 dataset contains the most images with the most image classes, meaning more opportunity for the model to capture nuances within categories of remote sensing imagery and produce better SR results~\cite{ref}. The dataset is also accompanied by a pre-built data loader as a part of the Python libary tensorflow-datasets~\cite{ref}. This makes loading and processing the data convenient and efficient. With the large size of the dataset, selecting subsets of images for training, test and validation becomes easy.\ \textcolor{blue}{Need to mention why the others are a bad choice.} Note that the imposed hardware requirements renders training with the entire dataset infeasible. For these reasons the SRGAN models proposed in this project will be trained, tested, and validated on a subset of the NWPU-RESISC45 dataset.
+Notably, the NWPU-RESISC45 dataset contains the most images with the most image classes, meaning more opportunity for the model to capture nuances within categories of remote sensing imagery and produce better SR results~\cite{ref}. The dataset is also accompanied by a pre-built data loader as a part of the Python libary tensorflow-datasets~\cite{ref}. This makes loading and processing the data convenient and efficient. With the large size of the dataset, selecting subsets of images for training, test and validation becomes easy.\ \textcolor{blue}{Need to mention why the others are a bad choice.} Note that the imposed hardware requirements renders training with the entire dataset infeasible. For these reasons the SRGAN models proposed in this project will be trained and evaluated using the NWPU-RESISC45 dataset.
+
+\subsection{NWPU-RESISC45 aerial imagery dataset}
 
 
 \subsection{Data preparation}
-Need to speak about the train, test, validation split. Mention equality of classes etc. Speak about data loader function.
+The data we use to train machine learning models must be correctly prepared to ensure efficient training and good results~\cite{ref}. The degree of preparation required greatly depends on the type of data the model will learn from. In the case of this project, our model learns from image data.
 
 \section{Model design}
 \lipsum[7]

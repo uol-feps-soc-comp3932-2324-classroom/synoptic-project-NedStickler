@@ -24,7 +24,7 @@ class CropAndResize(keras.Model):
 
 @keras.saving.register_keras_serializable()
 class SRResNet(keras.Model):
-    def __init__(self, residual_blocks: int, downsample_factor: int, patch: bool = True) -> None:
+    def __init__(self, residual_blocks: int, downsample_factor: int, patch: bool) -> None:
         super().__init__()
         self.patch = patch
         self.residual_blocks = residual_blocks
@@ -39,7 +39,8 @@ class SRResNet(keras.Model):
     def get_config(self):
         return {
             "residual_blocks": self.residual_blocks,
-            'downsample_factor': self.downsample_factor
+            'downsample_factor': self.downsample_factor,
+            "patch": self.patch
         }
         
     @classmethod
@@ -127,6 +128,7 @@ class SRGAN(keras.Model):
         else: self.discriminator = discriminator
         self.generator = generator
         self.vgg = vgg
+
         self.bce_loss = keras.losses.BinaryCrossentropy()
         self.mse_loss = keras.losses.MeanSquaredError()
         self.g_loss_tracker = keras.metrics.Mean(name="generator_loss")
