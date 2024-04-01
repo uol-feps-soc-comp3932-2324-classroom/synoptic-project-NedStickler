@@ -38,8 +38,8 @@ Following these requirements removes the WHU-RS19, UCAS-AOD, and ITCUD datasets 
 
 Notably, the NWPU-RESISC45 dataset contains the most images with the most image classes, meaning more opportunity for the model to capture nuances within categories of remote sensing imagery and produce better SR results~\cite{ref}. The dataset is also accompanied by a pre-built data loader as a part of the Python libary tensorflow-datasets~\cite{ref}. This makes loading and processing the data convenient and efficient. With the large size of the dataset, selecting subsets of images for training, test and validation becomes easy.\ \textcolor{blue}{Need to mention why the others are a bad choice.} Note that the imposed hardware requirements renders training with the entire dataset infeasible. For these reasons the SRGAN models proposed in this project will be trained and evaluated using the NWPU-RESISC45 dataset.
 
-\subsection{NWPU-RESISC45 aerial imagery dataset}
-
+\subsection{NWPU-RESISC45 dataset}
+The Northwestern Polytechnical University REmote Sensing Image Scene Classification dataset consists of 31500 remote sensing images gathered from Google Earth~\cite{resisc45}. 
 
 \subsection{Data preparation}
 The data we use to train machine learning models must be correctly prepared to ensure efficient training and good results~\cite{ref}. The degree of preparation required greatly depends on the type of data the model will learn from. In the case of this project, our model learns from image data.

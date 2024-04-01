@@ -8,7 +8,7 @@ from loaders import load_resisc45
 
 
 if __name__ == "__main__":
-    generator_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\generators\srresnet-mse\srresnet-mse-e667-resics45-patch.keras"
+    generator_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\generators\srgan-vgg22\srgan-vgg22-e67-lr0.0001-resics45\generator.keras"
     hr_images = np.load(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets\resisc45_test.npy")
     lr_images = Resizing(256 // 4, 256 // 4, interpolation="bicubic")(hr_images).numpy().astype(np.uint8)
 
