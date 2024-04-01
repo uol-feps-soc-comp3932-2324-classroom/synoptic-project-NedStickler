@@ -45,14 +45,24 @@ The Northwestern Polytechnical University REmote Sensing Image Scene Classificat
 The data we use to train machine learning models must be correctly prepared to ensure efficient training and good results~\cite{ref}. The degree of preparation required greatly depends on the type of data the model will learn from. In the case of this project, our model learns from image data.
 
 \section{Model design}
-\lipsum[7]
 
 \subsection{Novel feature}
-\lipsum[8]
 
-\section{Model training}
-\lipsum[9]
+\section{Training}
 
+\subsection{Training hardware}
+GPUs, university machines, restarts.
+
+\subsection{SRGAN training guidance}
+\textcolor{blue}{Will need to move lots of the following section into here.}
+
+\subsection{Training procedures}
+\textcolor{blue}{Still need to talk about model training prior to selecting dataset and reference!}\ The SRGAN model was trained in accordance with the training details and guidance provided by Ledig et al.~\cite{srgan} with minor deviations to account for encountered limitations. Firstly, the SRGAN model was trained on the subset of the NWPU-RESISC45 dataset as explained in [put section here] instead of the ImageNet database subset of size $n \approx 350000$. The ImageNet database contains a far higher inter- and intra-class variance due to the dataset being composed of many image categories, not just remote sensing imagery\ \textcolor{blue}{Not sure if needed here or in a previous section.} The training and test image sets are completely distinct from eachother to accurately evaluate the effectiveness of the model when applied to new images.\ \textcolor{blue}{Hmm not sure.} The LR images were generated with the same method used by Ledig et al., where they used a bicubic kernel with a downsample factor $r=4$. This achieves the affect of reducing the image resolution by a factor of 4. We use the Adam optimiser~\cite{ref} with $\beta_1 = 0.9$. Prior to SRGAN training, the SRResNet models were pretrained to help avoid unwanted local optima in adversarial training. In the guidance Ledig et al.\ use $10^6$ update iterations with a learning rate of $10^{-4}$ to pretrain the SRResNet model. Training the model on hardware accessible for the during of this project, with the selected dataset, batch size and image patches would take $~80$ hours. Training on University of Leeds machines requires training to be completed within less than 24 hours due to the daily restart that the machines undergo. Therefore, for this project it was deemed necessary to reduce the number of update iterations to save time, avoid failing training cycles and keep the pace of the project up. It is still important to preserve as much of the original training advice as possible to effectively compare the difficulties the SRGAN model encounters we applied to remote sensing imagery. Therefore, the number of update iterations was reduced by a factor of 10 to $10^5$, yielding a training time of just over 8 hours.
+
+Following the successful pretraining of the SRResNet model various SRGAN models were trained as shown in [figure]. The SRGAN models were trained twice, firstly with a learning rate of $10^{-4}$, then again for the same number of update iterations but with a learning rate of $10^{-5}$, effectively working as `fine tuning' training~\cite{srgan}. Ledig et al.\ train their model for $10^5$ update iterations, but due to the time-saving reduction employed for this project we opted to reduce this number to $10^4$ update iterations. This falls in line with the factor of 10 decrease in update iterations for the SRResNet pretraining.
+
+When training both the SRResNet and SRGAN models, patches are taken from each training image in each batch. 16 random $96 \times 96$ sized patches are taken from the each image instance. These act as the HR image inputs. The downscaled LR representations are taken from these image patches using the bicubic downsampling kernel [as described earlier]. This results in 240 unique image pairs for training for each update iteration (15 images per batch, 16 patches per image). It was intended for 16 image patches to be taken from each training image in both the SRResNet and SRGAN models, however due to the enhanced memory requirements of the SRGAN model we could not generate 240 patches and the program threw out of memory errors. To remediate this issue we reduced the number of patches taken per training instance until we no longer received out of memory errors. By systemaically testing less and less patches per image we arrived at $n=10$ patches per image, resulting in 150 image pairs per update iteration. This is only applicable for the SRGAN model training and the SRResNet model was trained with 16 image patches as orginally intended. This issue was unavoidable on the University machines due to amount of RAM available to the GPU in training.\ \textcolor{blue}{Describe why enhanced memory requirements.} 
+ 
 <Everything that comes under the `Methods' criterion in the mark scheme should be described in one, or possibly more than one, chapter(s).>
 
 <Methods requirements. Is it clear that\dots
