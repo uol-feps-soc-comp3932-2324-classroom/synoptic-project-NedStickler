@@ -4,7 +4,7 @@ from keras.callbacks import ModelCheckpoint
 import numpy as np
 from models import SRGAN, SRResNet
 from utils import GANSaver
-from loaders import load_resisc45
+from loaders import load_resisc45_subset
 import paths
 
 
@@ -14,13 +14,12 @@ class Training():
         self.epochs = epochs
         self.patch = patch
         self.vgg_base = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
-        self.dataset = load_resisc45(train=True)
+        self.dataset, self.labels = load_resisc45_subset(train=True)
 
     def _get_model_paths(self, vgg: str) -> tuple[str, str]:
         discriminator_path = paths.REPO_PATH + f"/generators/srgan-{vgg}/srgan-{vgg}-e67-lr0.0001-resics45/discriminator.keras"
         generator_path = paths.REPO_PATH + f"/generators/srgan-{vgg}/srgan-{vgg}-e67-lr0.0001-resics45/generator.keras"
         return discriminator_path, generator_path
-        
     
     def train_srresnet_mse(self) -> None:
         if self.patch:
@@ -48,6 +47,11 @@ class Training():
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
         srgan.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[gan_saver])
     
+    def train_vgg(self) -> None:
+        vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights=None, classes=45)
+        vgg.compile()
+        vgg.fit(self.dataset, self.labels, epochs=self.epochs)
+    
     def train(self) -> None:
         if self.model == "srresnet-mse":
             self.train_srresnet_mse()
@@ -59,8 +63,10 @@ class Training():
             discriminator_path, generator_path = self._get_model_paths("vgg54")
             vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[20].output)  
             self.train_srgan(first_pass=False, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
+        elif self.model == "vgg":
+            self.train_vgg() 
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-vgg54", epochs=67, patch=True)
+    training = Training(model="vgg", epochs=5, patch=True)
     training.train()

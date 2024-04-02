@@ -9,7 +9,7 @@ Learning-based models require data to learn from. In the case of super-resolutio
 \subsection{Datasets}
 A series of image datasets have been widely accepted by the community as effective at training learning-based super-resolution reconstruction methods. Wang et al.~\cite{remoteSensingDeepLearningReview, remoteSensingGANsReview} overview such datasets in two papers exploring learning based-solutions. Both remote sensing and non-remote sensing datasets are visited. As the goal of this report is to identify the effectiveness of the SRGAN model when applied to remote sensing data, our training dataset must be composed entirely of remote sensing images. Otherwise, the performance metrics we collect after model training will not accurately capture the applicability of the SRGAN model to remote sensing imagery.\ \textcolor{blue}{Needs expanding!} Consequently, we can focus our attention towards the remote sensing image datasets provided by Wang et al. and ignore the general image datasets.
 
-\begin{table}[h]
+\begin{table}
     \centering
     \begin{tabular}{|cccc|}
         \hline
@@ -50,13 +50,13 @@ The data we use to train machine learning models must be correctly prepared to e
 
 \section{Training}
 
-\subsection{Training hardware}
+\subsection{Hardware}
 GPUs, university machines, restarts.
 
-\subsection{SRGAN training guidance}
+\subsection{Existing guidance}
 \textcolor{blue}{Will need to move lots of the following section into here.}
 
-\subsection{Training procedures}
+\subsection{Procedure}
 \textcolor{blue}{Still need to talk about model training prior to selecting dataset and reference!}\ The SRGAN model was trained in accordance with the training details and guidance provided by Ledig et al.~\cite{srgan} with minor deviations to account for encountered limitations. Firstly, the SRGAN model was trained on the subset of the NWPU-RESISC45 dataset as explained in [put section here] instead of the ImageNet database subset of size $n \approx 350000$. The ImageNet database contains a far higher inter- and intra-class variance due to the dataset being composed of many image categories, not just remote sensing imagery\ \textcolor{blue}{Not sure if needed here or in a previous section.} The training and test image sets are completely distinct from eachother to accurately evaluate the effectiveness of the model when applied to new images.\ \textcolor{blue}{Hmm not sure.} The LR images were generated with the same method used by Ledig et al., where they used a bicubic kernel with a downsample factor $r=4$. This achieves the affect of reducing the image resolution by a factor of 4. We use the Adam optimiser~\cite{ref} with $\beta_1 = 0.9$. Prior to SRGAN training, the SRResNet models were pretrained to help avoid unwanted local optima in adversarial training. In the guidance Ledig et al.\ use $10^6$ update iterations with a learning rate of $10^{-4}$ to pretrain the SRResNet model. Training the model on hardware accessible for the during of this project, with the selected dataset, batch size and image patches would take $~80$ hours. Training on University of Leeds machines requires training to be completed within less than 24 hours due to the daily restart that the machines undergo. Therefore, for this project it was deemed necessary to reduce the number of update iterations to save time, avoid failing training cycles and keep the pace of the project up. It is still important to preserve as much of the original training advice as possible to effectively compare the difficulties the SRGAN model encounters we applied to remote sensing imagery. Therefore, the number of update iterations was reduced by a factor of 10 to $10^5$, yielding a training time of just over 8 hours.
 
 Following the successful pretraining of the SRResNet model various SRGAN models were trained as shown in [figure]. The SRGAN models were trained twice, firstly with a learning rate of $10^{-4}$, then again for the same number of update iterations but with a learning rate of $10^{-5}$, effectively working as `fine tuning' training~\cite{srgan}. Ledig et al.\ train their model for $10^5$ update iterations, but due to the time-saving reduction employed for this project we opted to reduce this number to $10^4$ update iterations. This falls in line with the factor of 10 decrease in update iterations for the SRResNet pretraining.

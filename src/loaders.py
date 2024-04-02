@@ -24,17 +24,19 @@ def load_resisc45(package_path: str | Path) -> tuple[np.array, np.array]:
 
 def train_test_split_resisc45(package_path: str | Path) -> tuple[np.array, np.array]:
     images, labels = load_resisc45(package_path)
-    X_train, X_test = train_test_split(images, train_size=2250/31500, test_size=225/31500, random_state=42, stratify=labels)
-    return X_train, X_test
+    X_train, X_test, y_train, y_test = train_test_split(images, labels, train_size=2250/31500, test_size=225/31500, random_state=42, stratify=labels)
+    return X_train, X_test, y_train, y_test
 
 
 def generate_resisc45_files(path: str | Path) -> None:
-    train, test = train_test_split_resisc45(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets")
-    np.save(path + r"\resisc45_train.npy", train)
-    np.save(path + r"\resisc45_test.npy", test)
+    X_train, X_test, y_train, y_test = train_test_split_resisc45(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets")
+    np.save(path + r"\resisc45_train.npy", X_train)
+    np.save(path + r"\resisc45_test.npy", X_test)
+    np.save(path + r"\resisc45_train_labels.npy", y_train)
+    np.save(path + r"\resisc45_test_labels.npy", y_test)
 
 
-def load_resisc45(train: bool = True) -> np.array:
+def load_resisc45_subset(train: bool = True) -> np.array:
     if train: suffix = "train"
     else: suffix = "test"
-    return np.load(paths.REPO_PATH + f"/datasets/resisc45_{suffix}.npy")
+    return np.load(paths.REPO_PATH + f"/datasets/resisc45_{suffix}.npy"), np.load(paths.REPO_PATH + f"/datasets/resisc45_{suffix}_labels.npy")
