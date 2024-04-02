@@ -48,8 +48,8 @@ class Training():
         srgan.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[gan_saver])
     
     def train_vgg(self) -> None:
-        vgg = keras.applications.VGG19(input_shape=(None, None, 3), weights=None, classes=45)
-        vgg.compile()
+        vgg = keras.applications.VGG19(input_shape=(256, 256, 3), weights=None, classes=45)
+        vgg.compile(optimizer=keras.optimizers.Adam(learning_rate=0.001), loss=keras.losses.SparseCategoricalCrossentropy())
         vgg.fit(self.dataset, self.labels, epochs=self.epochs)
     
     def train(self) -> None:
