@@ -8,7 +8,6 @@ from loaders import load_resisc45_subset
 import paths
 
 # TODO:
-# Take the text of class labels
 # Implement dataset with train, test, validation sets
 # Implement losses file with predecided losses
 # Re-train models

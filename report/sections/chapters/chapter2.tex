@@ -42,7 +42,7 @@ Notably, the NWPU-RESISC45 dataset contains the most images with the most image 
 The Northwestern Polytechnical University REmote Sensing Image Scene Classification dataset consists of 31500 remote sensing images gathered from Google Earth~\cite{resisc45}. 
 
 \subsection{Data preparation}
-The data we use to train machine learning models must be correctly prepared to ensure efficient training and good results~\cite{ref}. The degree of preparation required greatly depends on the type of data the model will learn from. In the case of this project, our model learns from image data.
+The data we use to train machine learning models must be correctly prepared to ensure efficient training and good results~\cite{ref}. The degree of preparation required greatly depends on the type of data the model will learn from. In the case of this project, our model learns from image data. Images also blurred before downsampling operation to stop artefacts from being introduced into downscaled images due to bicubic interpolation.
 
 \section{Models}
 
