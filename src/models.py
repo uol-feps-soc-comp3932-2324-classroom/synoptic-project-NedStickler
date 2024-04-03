@@ -26,13 +26,9 @@ class CropAndResize(keras.Model):
 class SRResNet(keras.Model):
     def __init__(self, residual_blocks: int, downsample_factor: int, patch: bool = True) -> None:
         super().__init__()
-        self.patch = patch
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
-
         self.crop_and_resize = CropAndResize(downsample_factor)
-        self.resize = Resizing(256 // downsample_factor, 256 // downsample_factor, interpolation="bicubic")
-
         self.model = self.get_model()
         self.loss_tracker = keras.metrics.Mean(name="loss")
     
@@ -94,18 +90,14 @@ class SRResNet(keras.Model):
         self.loss = loss
 
     def train_step(self, data):
-        if self.patch:
-            lr_list = []
-            hr_list = []
-            for _ in range(16):
-                lr_batch, hr_batch = self.crop_and_resize(data)
-                lr_list.append(lr_batch)
-                hr_list.append(hr_batch)
-            lr_images = ops.concatenate(lr_list)
-            hr_images = ops.concatenate(hr_list)
-        else:
-            hr_images = data
-            lr_images = self.resize(data)
+        lr_list = []
+        hr_list = []
+        for _ in range(16):
+            lr_batch, hr_batch = self.crop_and_resize(data)
+            lr_list.append(lr_batch)
+            hr_list.append(hr_batch)
+        lr_images = ops.concatenate(lr_list)
+        hr_images = ops.concatenate(hr_list)
         
         with tf.GradientTape() as tape:
             sr_images = self.model(lr_images)

@@ -7,6 +7,15 @@ from utils import GANSaver
 from loaders import load_resisc45_subset
 import paths
 
+# TODO:
+# Fix the bicubic issue
+# Take the text of class labels
+# Implement dataset with train, test, validation sets
+# Implement losses file with predecided losses
+# Re-train models
+# Need to mention why only 8 patches are taken
+# https://keras.io/api/applications/ list of pre-trained models
+
 
 class Training():
     def __init__(self, model: str, epochs: int, patch: bool) -> None:
@@ -69,5 +78,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="vgg", epochs=20, patch=True)
+    training = Training(model="srresnet-mse", epochs=4, patch=True)
     training.train()
