@@ -48,9 +48,9 @@ class Training():
         srgan.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[gan_saver])
     
     def train_vgg(self) -> None:
-        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/vgg/vgg-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
-        vgg = keras.applications.VGG19(input_shape=(256, 256, 3), weights=None, classes=45)
-        vgg.compile(optimizer=keras.optimizers.Adam(learning_rate=0.001), loss=keras.losses.CategoricalCrossentropy())
+        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/vgg/vgg-e{self.epochs}-resics45.keras", monitor="loss", save_weights_only=True, save_best_only=True, mode="auto", save_freq="epoch")
+        vgg = keras.applications.VGG19(input_shape=(256, 256, 3), weights=None)
+        vgg.compile(optimizer="adam", loss="categorical_crossentropy")
         vgg.fit(keras.applications.vgg19.preprocess_input(self.dataset), keras.utils.to_categorical(self.labels), epochs=self.epochs, callbacks=[save_checkpoint])
     
     def train(self) -> None:
@@ -69,5 +69,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="vgg", epochs=1409, patch=True)
+    training = Training(model="vgg", epochs=20, patch=True)
     training.train()
