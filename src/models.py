@@ -44,6 +44,11 @@ class SRResNet(keras.Model):
             "loss": self.loss
         }
     
+    def compile_from_config(self, config):
+        optimiser = keras.utils.deserialize_keras_object(config["optimiser"])
+        loss = keras.utils.deserialize_keras_object(config["loss"])
+        self.compile(optimiser=optimiser, loss=loss)
+    
     @property
     def metrics(self) -> list:
         return [self.loss_tracker]
