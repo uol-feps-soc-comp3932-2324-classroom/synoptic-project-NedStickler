@@ -18,10 +18,9 @@ import paths
 
 
 class Training():
-    def __init__(self, model: str, epochs: int, patch: bool) -> None:
+    def __init__(self, model: str, epochs: int) -> None:
         self.model = model
         self.epochs = epochs
-        self.patch = patch
         self.vgg_base = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
         self.dataset, self.labels = load_resisc45_subset(train=True)
 
@@ -31,13 +30,8 @@ class Training():
         return discriminator_path, generator_path
     
     def train_srresnet_mse(self) -> None:
-        if self.patch:
-            patch_text = "patch"
-        else:
-            patch_text = "no-patch"
-
-        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45-{patch_text}.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
-        srresnet = SRResNet(residual_blocks=16, downsample_factor=4, patch=self.patch)
+        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
+        srresnet = SRResNet(residual_blocks=16, downsample_factor=4)
         srresnet.compile(optimiser=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
         srresnet.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[save_checkpoint])
     
@@ -78,5 +72,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=4, patch=True)
+    training = Training(model="srresnet-mse", epochs=2)
     training.train()

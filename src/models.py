@@ -35,13 +35,8 @@ class SRResNet(keras.Model):
     def get_config(self):
         return {
             "residual_blocks": self.residual_blocks,
-            'downsample_factor': self.downsample_factor,
-            "patch": self.patch
+            "downsample_factor": self.downsample_factor
         }
-        
-    @classmethod
-    def from_config(cls, config):
-        return cls(**config)
     
     @property
     def metrics(self) -> list:
@@ -92,7 +87,7 @@ class SRResNet(keras.Model):
     def train_step(self, data):
         lr_list = []
         hr_list = []
-        for _ in range(16):
+        for _ in range(8):
             lr_batch, hr_batch = self.crop_and_resize(data)
             lr_list.append(lr_batch)
             hr_list.append(hr_batch)
@@ -178,7 +173,7 @@ class SRGAN(keras.Model):
     def train_step(self, data: np.array) -> dict:
         lr_list = []
         hr_list = []
-        for _ in range(9):
+        for _ in range(8):
             lr_batch, hr_batch = self.crop_and_resize(data)
             lr_list.append(lr_batch)
             hr_list.append(hr_batch)
