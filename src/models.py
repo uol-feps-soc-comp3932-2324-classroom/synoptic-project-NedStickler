@@ -24,7 +24,7 @@ class CropAndResize(keras.Model):
 
 @keras.saving.register_keras_serializable()
 class SRResNet(keras.Model):
-    def __init__(self, residual_blocks: int, downsample_factor: int, patch: bool = True) -> None:
+    def __init__(self, residual_blocks: int, downsample_factor: int) -> None:
         super().__init__()
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
@@ -36,6 +36,12 @@ class SRResNet(keras.Model):
         return {
             "residual_blocks": self.residual_blocks,
             "downsample_factor": self.downsample_factor
+        }
+    
+    def get_compile_config(self):
+        return {
+            "optimiser": self.optimiser,
+            "loss": self.loss
         }
     
     @property
