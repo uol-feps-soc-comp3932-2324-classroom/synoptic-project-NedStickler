@@ -1,11 +1,12 @@
 
 import tensorflow as tf
 import keras
-from layers import PixelShuffle
+from layers import PixelShuffle, GaussianBlur
 from keras import layers
 from keras import ops
 import numpy as np
 from keras.layers import RandomCrop, Resizing
+import cv2
 
 
 @keras.saving.register_keras_serializable()
@@ -14,6 +15,7 @@ class CropAndResize(keras.Model):
         super().__init__()
         self.downsample_factor = downsample_factor
         self.random_crop = RandomCrop(96, 96)
+        self.gaussian_blur = GaussianBlur()
         self.resize = Resizing(96 // downsample_factor, 96 // downsample_factor, interpolation="bicubic")
     
     def get_config(self):
@@ -21,7 +23,7 @@ class CropAndResize(keras.Model):
     
     def call(self, inputs):
         hr_patch = self.random_crop(inputs)
-        lr_patch = self.resize(hr_patch)
+        lr_patch = self.resize(self.gaussian_blur(hr_patch))
         return lr_patch, hr_patch
 
 
