@@ -1,10 +1,10 @@
 
 import tensorflow as tf
 import keras
+from layers import PixelShuffle
 from keras import layers
 from keras import ops
 import numpy as np
-from layers import PixelShuffle
 from keras.layers import RandomCrop, Resizing
 
 
@@ -119,6 +119,9 @@ class SRResNet(keras.Model):
     
     def call(self, inputs):
         return self.model(inputs)
+    
+    def build(self, input_shape):
+        super().build(input_shape)
 
 
 @keras.saving.register_keras_serializable()
