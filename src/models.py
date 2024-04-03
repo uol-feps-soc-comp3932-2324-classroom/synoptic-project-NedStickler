@@ -16,6 +16,9 @@ class CropAndResize(keras.Model):
         self.random_crop = RandomCrop(96, 96)
         self.resize = Resizing(96 // downsample_factor, 96 // downsample_factor, interpolation="bicubic")
     
+    def get_config(self):
+        return {"downsample_factor": self.downsample_factor}
+    
     def call(self, inputs):
         hr_patch = self.random_crop(inputs)
         lr_patch = self.resize(hr_patch)
