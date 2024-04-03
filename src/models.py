@@ -45,8 +45,8 @@ class SRResNet(keras.Model):
         }
     
     def compile_from_config(self, config):
-        optimiser = keras.utils.deserialize_keras_object(config["optimiser"])
-        loss = keras.utils.deserialize_keras_object(config["loss"])
+        optimiser = config["optimiser"]
+        loss = config["loss"]
         self.compile(optimiser=optimiser, loss=loss)
     
     @property
