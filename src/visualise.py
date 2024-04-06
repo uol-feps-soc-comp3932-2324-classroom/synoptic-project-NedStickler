@@ -8,7 +8,7 @@ from layers import GaussianBlur
 
 
 if __name__ == "__main__":
-    generator_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\generators\srresnet-mse\srresnet-mse-e2-resics45.keras"
+    generator_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\generators\srgan-vgg54\srgan-vgg54-e67-lr1e-05-resics45\generator.keras"
     hr_images = np.load(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets\resisc45_test.npy")
     lr_images = GaussianBlur()(hr_images)
     lr_images = Resizing(256 // 4, 256 // 4, interpolation="bicubic")(lr_images).numpy().astype(np.uint8)

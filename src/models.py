@@ -6,7 +6,6 @@ from keras import layers
 from keras import ops
 import numpy as np
 from keras.layers import RandomCrop, Resizing
-import cv2
 
 
 @keras.saving.register_keras_serializable()
@@ -29,7 +28,7 @@ class CropAndResize(keras.Model):
 
 @keras.saving.register_keras_serializable()
 class SRResNet(keras.Model):
-    def __init__(self, residual_blocks: int, downsample_factor: int) -> None:
+    def __init__(self, residual_blocks: int, downsample_factor: int, patch: bool = True ) -> None:
         super().__init__()
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
