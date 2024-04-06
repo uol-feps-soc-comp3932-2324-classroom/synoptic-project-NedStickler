@@ -43,8 +43,9 @@ def load_resisc45_subset(train: bool = True) -> np.array:
 
 
 if __name__ == "__main__":
-    images, labels = load_resisc45("/")
-    generate_resisc45_files("/", "/", 1800, 0)
+    package_path = "/tmp/sc20ns/venv/lib/python3.10/site-packages/tensorflow_datasets"
+    images, labels = load_resisc45(package_path)
+    generate_resisc45_files("/datasets", package_path, 1800, 0)
 
 
 def get_label_mapping() -> dict:
