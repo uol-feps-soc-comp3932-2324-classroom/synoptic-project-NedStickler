@@ -1,28 +1,50 @@
 
 import tensorflow as tf
 import keras
-from layers import PixelShuffle, GaussianBlur
+from layers import PixelShuffle
 from keras import layers
 from keras import ops
 import numpy as np
-from keras.layers import RandomCrop, Resizing
+from keras.layers import RandomCrop, Resizing, DepthwiseConv2D
 
 
-@keras.saving.register_keras_serializable()
 class CropAndResize(keras.Model):
     def __init__(self, downsample_factor):
         super().__init__()
         self.downsample_factor = downsample_factor
         self.random_crop = RandomCrop(96, 96)
-        self.gaussian_blur = GaussianBlur()
+        self.gaussian_blur = DepthwiseConv2D(3, padding="same", use_bias=False)
+        self.gaussian_blur.build((256, 256, 3))
         self.resize = Resizing(96 // downsample_factor, 96 // downsample_factor, interpolation="bicubic")
+
+    def _matlab_style_gauss2D(self, shape=(3,3), sigma=0.5):
+        """
+        2D gaussian mask - should give the same result as MATLAB's
+        fspecial('gaussian',[shape],[sigma])
+        """
+        m,n = [(ss-1.)/2. for ss in shape]
+        y,x = np.ogrid[-m:m+1,-n:n+1]
+        h = np.exp( -(x*x + y*y) / (2.*sigma*sigma) )
+        h[ h < np.finfo(h.dtype).eps*h.max() ] = 0
+        sumh = h.sum()
+        if sumh != 0:
+            h /= sumh
+        return h
     
     def get_config(self):
         return {"downsample_factor": self.downsample_factor}
     
     def call(self, inputs):
+        gaussian_kernel = self._matlab_style_gauss2D()
+        kernel_weights = np.expand_dims(gaussian_kernel, axis=-1)
+        kernel_weights = np.repeat(kernel_weights, 3, axis=-1)
+        kernel_weights = np.expand_dims(kernel_weights, axis=-1)
+        self.gaussian_blur.set_weights([kernel_weights])
+        self.gaussian_blur.trainable = False
+
         hr_patch = self.random_crop(inputs)
-        lr_patch = self.resize(self.gaussian_blur(hr_patch))
+        blurred_hr_patch = self.gaussian_blur(hr_patch)
+        lr_patch = self.resize(blurred_hr_patch)
         return lr_patch, hr_patch
 
 

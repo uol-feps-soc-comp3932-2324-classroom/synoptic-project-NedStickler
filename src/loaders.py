@@ -30,10 +30,10 @@ def train_test_split_resisc45(package_path: str | Path, train_size, test_size) -
 
 def generate_resisc45_files(save_path: str | Path, package_path: str | Path, train_size: int, test_size: int) -> None:
     X_train, X_test, y_train, y_test = train_test_split_resisc45(package_path, train_size, test_size)
-    np.save(save_path + "/resisc45_train.npy", X_train)
-    np.save(save_path + "/resisc45_test.npy", X_test)
-    np.save(save_path + "/resisc45_train_labels.npy", y_train)
-    np.save(save_path + "/resisc45_test_labels.npy", y_test)
+    np.save(save_path + r"\resisc45_train.npy", X_train)
+    np.save(save_path + r"\resisc45_test.npy", X_test)
+    np.save(save_path + r"\resisc45_train_labels.npy", y_train)
+    np.save(save_path + r"\resisc45_test_labels.npy", y_test)
 
 
 def load_resisc45_subset(train: bool = True) -> np.array:
@@ -43,9 +43,9 @@ def load_resisc45_subset(train: bool = True) -> np.array:
 
 
 if __name__ == "__main__":
-    package_path = "/tmp/sc20ns/venv/lib/python3.10/site-packages/tensorflow_datasets"
+    package_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets"
     images, labels = load_resisc45(package_path)
-    generate_resisc45_files("/datasets", package_path, 1800, 0)
+    generate_resisc45_files(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets", package_path, 1800, 45)
 
 
 def get_label_mapping() -> dict:
