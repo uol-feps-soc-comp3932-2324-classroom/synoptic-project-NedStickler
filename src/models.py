@@ -28,7 +28,7 @@ class CropAndResize(keras.Model):
 
 @keras.saving.register_keras_serializable()
 class SRResNet(keras.Model):
-    def __init__(self, residual_blocks: int, downsample_factor: int, patch: bool = True ) -> None:
+    def __init__(self, residual_blocks: int, downsample_factor: int) -> None:
         super().__init__()
         self.residual_blocks = residual_blocks
         self.downsample_factor = downsample_factor
@@ -191,7 +191,7 @@ class SRGAN(keras.Model):
     def train_step(self, data: np.array) -> dict:
         lr_list = []
         hr_list = []
-        for _ in range(8):
+        for _ in range(16):
             lr_batch, hr_batch = self.crop_and_resize(data)
             lr_list.append(lr_batch)
             hr_list.append(hr_batch)

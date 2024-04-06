@@ -46,7 +46,7 @@ class Training():
         gan_saver = GANSaver(paths.SAVE_PATH, self.model, self.epochs, lr)
         srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
-        srgan.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[gan_saver])
+        srgan.fit(self.dataset, batch_size=30, epochs=self.epochs, callbacks=[gan_saver])
     
     def train_vgg(self) -> None:
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/vgg/vgg-e{self.epochs}-resics45.weights.h5", monitor="loss", save_weights_only=True, save_best_only=True, mode="auto", save_freq="epoch")
@@ -64,11 +64,11 @@ class Training():
         elif self.model == "srgan-vgg54":
             discriminator_path, generator_path = self._get_model_paths("vgg54")
             vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[20].output)  
-            self.train_srgan(first_pass=False, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
+            self.train_srgan(first_pass=True, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "vgg":
             self.train_vgg() 
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=2)
+    training = Training(model="srresnet-mse", epochs=5)
     training.train()
