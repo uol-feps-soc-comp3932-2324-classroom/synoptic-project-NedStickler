@@ -47,7 +47,7 @@ class Training():
         gan_saver = GANSaver(paths.SAVE_PATH, self.model, self.epochs, lr)
         srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
-        srgan.fit(self.train, batch_size=30, epochs=self.epochs, callbacks=[gan_saver])
+        srgan.fit(self.train, batch_size=30, epochs=self.epochs, validation_data=self.val_data, callbacks=[gan_saver])
     
     def train_vgg(self) -> None:
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/vgg/vgg-e{self.epochs}-resics45.weights.h5", monitor="loss", save_weights_only=True, save_best_only=True, mode="auto", save_freq="epoch")
@@ -71,5 +71,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=5)
+    training = Training(model="srgan-vgg54", epochs=5)
     training.train()

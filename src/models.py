@@ -266,3 +266,10 @@ class SRGAN(keras.Model):
         }
 
         return losses
+
+    def test_step(self, data):
+        lr_images, hr_images = self.crop_and_resize(data)
+        sr_images = self.model(lr_images)
+        loss = self.loss(hr_images, sr_images)
+        self.loss_tracker.update_state(loss)
+        return {"loss": loss}
