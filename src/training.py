@@ -20,7 +20,8 @@ class Training():
         self.model = model
         self.epochs = epochs
         self.vgg_base = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
-        self.dataset, self.labels = load_resisc45_subset(train=True)
+        self.train, self.train_labels = load_resisc45_subset("train")
+        self.val, self.val_labels = load_resisc45_subset("val")
 
     def _get_model_paths(self, vgg: str) -> tuple[str, str]:
         discriminator_path = paths.REPO_PATH + f"/generators/srgan-{vgg}/srgan-{vgg}-e67-lr0.0001-resics45/discriminator.keras"
@@ -31,7 +32,7 @@ class Training():
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
         srresnet = SRResNet(residual_blocks=16, downsample_factor=4)
         srresnet.compile(optimiser=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
-        srresnet.fit(self.dataset, batch_size=15, epochs=self.epochs, callbacks=[save_checkpoint])
+        srresnet.fit(self.train, batch_size=15, epochs=self.epochs, validation_data=self.val, callbacks=[save_checkpoint])
     
     def train_srgan(self, first_pass: bool, vgg: int, discriminator_path: str = None, generator_path: str = None) -> None:
         if first_pass:
@@ -46,13 +47,13 @@ class Training():
         gan_saver = GANSaver(paths.SAVE_PATH, self.model, self.epochs, lr)
         srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
-        srgan.fit(self.dataset, batch_size=30, epochs=self.epochs, callbacks=[gan_saver])
+        srgan.fit(self.train, batch_size=30, epochs=self.epochs, callbacks=[gan_saver])
     
     def train_vgg(self) -> None:
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/vgg/vgg-e{self.epochs}-resics45.weights.h5", monitor="loss", save_weights_only=True, save_best_only=True, mode="auto", save_freq="epoch")
         vgg = keras.applications.VGG19(input_shape=(256, 256, 3), weights=None, classes=45)
         vgg.compile(optimizer="adam", loss="categorical_crossentropy")
-        vgg.fit(keras.applications.vgg19.preprocess_input(self.dataset), keras.utils.to_categorical(self.labels), epochs=self.epochs, callbacks=[save_checkpoint])
+        vgg.fit(keras.applications.vgg19.preprocess_input(self.train), keras.utils.to_categorical(self.labels), epochs=self.epochs, callbacks=[save_checkpoint])
     
     def train(self) -> None:
         if self.model == "srresnet-mse":

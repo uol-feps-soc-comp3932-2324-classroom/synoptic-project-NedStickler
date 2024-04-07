@@ -14,4 +14,4 @@ if __name__ == "__main__":
     lr_images = Resizing(256 // 4, 256 // 4, interpolation="bicubic")(lr_images).numpy().astype(np.uint8)
 
     generator = keras.saving.load_model(generator_path)
-    visualise_generator(generator, lr_images[:5], hr_images[:5])
+    visualise_generator(generator, lr_images[:3], hr_images[:3])

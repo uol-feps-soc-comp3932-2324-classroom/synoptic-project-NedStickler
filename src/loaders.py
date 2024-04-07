@@ -4,6 +4,7 @@ import tensorflow_datasets as tfds
 import paths
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from typing import Literal
 
 
 def load_resisc45(package_path: str | Path) -> tuple[np.array, np.array]:
@@ -22,30 +23,25 @@ def load_resisc45(package_path: str | Path) -> tuple[np.array, np.array]:
     return images, labels
 
 
-def train_test_split_resisc45(package_path: str | Path, train_size, test_size) -> tuple[np.array, np.array]:
+def train_test_split_resisc45(package_path: str | Path, train_size, val_size, test_size) -> tuple[np.array, np.array]:
     images, labels = load_resisc45(package_path)
-    X_train, X_test, y_train, y_test = train_test_split(images, labels, train_size=train_size/31500, test_size=test_size/31500, random_state=42, stratify=labels)
-    return X_train, X_test, y_train, y_test
+    X_train, X_val_and_test, y_train, y_val_and_test = train_test_split(images, labels, train_size=train_size/31500, test_size=(val_size+test_size)/31500, random_state=42, stratify=labels)
+    X_val, X_test, y_val, y_test = train_test_split(X_val_and_test, y_val_and_test, train_size=0.5, random_state=42, stratify=y_val_and_test)
+    return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-def generate_resisc45_files(save_path: str | Path, package_path: str | Path, train_size: int, test_size: int) -> None:
-    X_train, X_test, y_train, y_test = train_test_split_resisc45(package_path, train_size, test_size)
+def generate_resisc45_files(save_path: str | Path, package_path: str | Path, train_size: int, val_size: int, test_size: int) -> None:
+    X_train, X_val, X_test, y_train, y_val, y_test = train_test_split_resisc45(package_path, train_size, val_size, test_size)
     np.save(save_path + r"\resisc45_train.npy", X_train)
+    np.save(save_path + r"\resisc45_val.npy", X_val)
     np.save(save_path + r"\resisc45_test.npy", X_test)
     np.save(save_path + r"\resisc45_train_labels.npy", y_train)
+    np.save(save_path + r"\resisc45_val_labels.npy", y_val)
     np.save(save_path + r"\resisc45_test_labels.npy", y_test)
 
 
-def load_resisc45_subset(train: bool = True) -> np.array:
-    if train: suffix = "train"
-    else: suffix = "test"
-    return np.load(paths.REPO_PATH + f"/datasets/resisc45_{suffix}.npy"), np.load(paths.REPO_PATH + f"/datasets/resisc45_{suffix}_labels.npy")
-
-
-if __name__ == "__main__":
-    package_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets"
-    images, labels = load_resisc45(package_path)
-    generate_resisc45_files(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets", package_path, 1800, 45)
+def load_resisc45_subset(dataset_type: Literal["train", "val", "test"]) -> np.array:
+    return np.load(paths.REPO_PATH + f"/datasets/resisc45_{dataset_type}.npy"), np.load(paths.REPO_PATH + f"/datasets/resisc45_{dataset_type}_labels.npy")
 
 
 def get_label_mapping() -> dict:

@@ -1,8 +1,6 @@
+
 import keras
 import tensorflow as tf
-import cv2
-import numpy as np
-from keras import ops
 
 
 @keras.saving.register_keras_serializable()
