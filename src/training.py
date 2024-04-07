@@ -20,8 +20,8 @@ class Training():
         self.model = model
         self.epochs = epochs
         self.vgg_base = keras.applications.VGG19(input_shape=(None, None, 3), weights="imagenet", include_top=False)
-        self.train, self.train_labels = load_resisc45_subset("train")
-        self.val, self.val_labels = load_resisc45_subset("val")
+        self.train_data, self.train_labels = load_resisc45_subset("train")
+        self.val_data, self.val_labels = load_resisc45_subset("val")
 
     def _get_model_paths(self, vgg: str) -> tuple[str, str]:
         discriminator_path = paths.REPO_PATH + f"/generators/srgan-{vgg}/srgan-{vgg}-e67-lr0.0001-resics45/discriminator.keras"
@@ -32,7 +32,7 @@ class Training():
         save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
         srresnet = SRResNet(residual_blocks=16, downsample_factor=4)
         srresnet.compile(optimiser=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
-        srresnet.fit(self.train, batch_size=15, epochs=self.epochs, validation_data=self.val, callbacks=[save_checkpoint])
+        srresnet.fit(self.train_data, batch_size=15, epochs=self.epochs, validation_data=self.val_data, callbacks=[save_checkpoint])
     
     def train_srgan(self, first_pass: bool, vgg: int, discriminator_path: str = None, generator_path: str = None) -> None:
         if first_pass:
