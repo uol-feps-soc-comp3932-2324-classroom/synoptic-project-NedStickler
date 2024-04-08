@@ -220,7 +220,7 @@ class SRGAN(keras.Model):
     def train_step(self, data: np.array) -> dict:
         lr_list = []
         hr_list = []
-        for _ in range(16):
+        for _ in range(8):
             lr_batch, hr_batch = self.crop_and_resize(data)
             lr_list.append(lr_batch)
             hr_list.append(hr_batch)
@@ -269,7 +269,7 @@ class SRGAN(keras.Model):
 
     def test_step(self, data):
         lr_images, hr_images = self.crop_and_resize(data)
-        sr_images = self.model(lr_images)
-        loss = self.loss(hr_images, sr_images)
+        sr_images = self.generator(lr_images)
+        g_loss = self.mse(hr_images, sr_images)
         self.loss_tracker.update_state(loss)
         return {"loss": loss}
