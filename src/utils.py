@@ -16,8 +16,8 @@ class GANSaver(keras.callbacks.Callback):
             os.mkdir(self.root_path)
     
     def on_epoch_end(self, epoch: int, logs: dict = None) -> None:
-        if logs.get("generator_loss") < self.best_loss:
-            self.best_loss = logs.get("generator_loss")
+        if logs.get("val_generator_loss") < self.best_loss:
+            self.best_loss = logs.get("val_generator_loss")
             self.model.generator.save(self.root_path + "generator.keras")
             self.model.discriminator.save(self.root_path + "discriminator.keras")
 

@@ -44,7 +44,6 @@ class Training():
             generator = keras.saving.load_model(generator_path)
             lr = 10**-5
         
-        # NEED TO SAVE USING VAL LOSS!
         gan_saver = GANSaver(paths.SAVE_PATH, self.model, self.epochs, lr)
         srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
@@ -72,5 +71,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=1588)
+    training = Training(model="srgan-vgg54", epochs=1588)
     training.train()
