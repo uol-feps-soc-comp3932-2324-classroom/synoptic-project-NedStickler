@@ -29,7 +29,7 @@ class Training():
         return discriminator_path, generator_path
     
     def train_srresnet_mse(self) -> None:
-        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", monitor="loss", save_best_only=True, mode="auto", save_freq="epoch")
+        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/srresnet-mse/srresnet-mse-e{self.epochs}-resics45.keras", save_best_only=True, mode="auto", save_freq="epoch")
         srresnet = SRResNet(residual_blocks=16, downsample_factor=4)
         srresnet.compile(optimiser=keras.optimizers.Adam(learning_rate=10**-4), loss=keras.losses.MeanSquaredError())
         srresnet.fit(self.train_data, batch_size=15, epochs=self.epochs, validation_data=self.val_data, callbacks=[save_checkpoint])
@@ -43,7 +43,8 @@ class Training():
             discriminator = keras.saving.load_model(discriminator_path)
             generator = keras.saving.load_model(generator_path)
             lr = 10**-5
-
+        
+        # NEED TO SAVE USING VAL LOSS!
         gan_saver = GANSaver(paths.SAVE_PATH, self.model, self.epochs, lr)
         srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
