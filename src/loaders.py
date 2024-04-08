@@ -44,6 +44,12 @@ def load_resisc45_subset(dataset_type: Literal["train", "val", "test"]) -> np.ar
     return np.load(paths.REPO_PATH + f"/datasets/resisc45_{dataset_type}.npy"), np.load(paths.REPO_PATH + f"/datasets/resisc45_{dataset_type}_labels.npy")
 
 
+if __name__ == "__main__":
+    package_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets"
+    images, labels = load_resisc45(package_path)
+    generate_resisc45_files(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets", package_path, 945, 135, 135)
+
+
 def get_label_mapping() -> dict:
     return {
         0: 'airplane',

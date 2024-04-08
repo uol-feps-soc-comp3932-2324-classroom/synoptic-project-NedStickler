@@ -269,7 +269,23 @@ class SRGAN(keras.Model):
 
     def test_step(self, data):
         lr_images, hr_images = self.crop_and_resize(data)
-        sr_images = self.generator(lr_images)
-        g_loss = self.mse(hr_images, sr_images)
-        self.loss_tracker.update_state(loss)
-        return {"loss": loss}
+        batch_size = lr_images.shape[0]
+
+        misleading_labels = np.zeros((batch_size, 1))
+        generated_images = self.generator(lr_images)
+        predictions = self.discriminator(generated_images)
+        g_loss = 0.001 * self.bce_loss(misleading_labels, predictions)
+
+        sr_vgg = tf.keras.applications.vgg19.preprocess_input(generated_images)
+        sr_vgg = self.vgg(sr_vgg) / 12.75
+        hr_vgg = tf.keras.applications.vgg19.preprocess_input(hr_images)
+        hr_vgg = self.vgg(hr_vgg) / 12.75
+
+        perceptual_loss = self.mse_loss(hr_vgg, sr_vgg)
+        g_total_loss = g_loss + perceptual_loss
+
+        return {
+            "perceptual_loss": perceptual_loss,
+            "g_loss": g_loss,
+            "g_total_loss": g_total_loss
+        }
