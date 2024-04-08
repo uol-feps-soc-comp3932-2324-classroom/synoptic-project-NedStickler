@@ -124,7 +124,7 @@ class SRResNet(keras.Model):
     def train_step(self, data):
         lr_list = []
         hr_list = []
-        for _ in range(8):
+        for _ in range(10):
             lr_batch, hr_batch = self.crop_and_resize(data)
             lr_list.append(lr_batch)
             hr_list.append(hr_batch)
@@ -220,7 +220,7 @@ class SRGAN(keras.Model):
     def train_step(self, data: np.array) -> dict:
         lr_list = []
         hr_list = []
-        for _ in range(8):
+        for _ in range(10):
             lr_batch, hr_batch = self.crop_and_resize(data)
             lr_list.append(lr_batch)
             hr_list.append(hr_batch)
@@ -283,9 +283,6 @@ class SRGAN(keras.Model):
 
         perceptual_loss = self.mse_loss(hr_vgg, sr_vgg)
         g_total_loss = g_loss + perceptual_loss
+        self.g_loss_tracker.update_state(g_total_loss)
 
-        return {
-            "perceptual_loss": perceptual_loss,
-            "g_loss": g_loss,
-            "g_total_loss": g_total_loss
-        }
+        return {"g_total_loss": g_total_loss}
