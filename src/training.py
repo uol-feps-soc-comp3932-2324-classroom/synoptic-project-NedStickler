@@ -37,7 +37,7 @@ class Training():
     def train_srgan(self, first_pass: bool, vgg: int, discriminator_path: str = None, generator_path: str = None) -> None:
         if first_pass:
             discriminator = None
-            generator = keras.saving.load_model(paths.REPO_PATH + "/generators/srresnet-mse/srresnet-mse-e5-resics45.keras")
+            generator = keras.saving.load_model(paths.REPO_PATH + "/generators/srresnet-mse/srresnet-mse-e1588-resics45.keras")
             lr = 10**-4
         else:
             discriminator = keras.saving.load_model(discriminator_path)
@@ -61,7 +61,7 @@ class Training():
         elif self.model == "srgan-vgg22":
             discriminator_path, generator_path = self._get_model_paths("vgg22")
             vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[5].output)  
-            self.train_srgan(first_pass=False, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
+            self.train_srgan(first_pass=True, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "srgan-vgg54":
             discriminator_path, generator_path = self._get_model_paths("vgg54")
             vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[20].output)  
@@ -71,5 +71,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srresnet-mse", epochs=1588)
+    training = Training(model="srgan-vgg22", epochs=159)
     training.train()
