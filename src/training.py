@@ -88,5 +88,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="resume-srgan-vgg54", epochs=159)
+    training = Training(model="srresnet-mse", epochs=1588)
     training.train()
