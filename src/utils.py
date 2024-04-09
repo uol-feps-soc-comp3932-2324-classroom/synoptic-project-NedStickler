@@ -22,7 +22,7 @@ class GANSaver(keras.callbacks.Callback):
             self.model.generator.save(self.root_path + "generator.keras")
             self.model.discriminator.save(self.root_path + "discriminator.keras")
             with open(self.root_path + "save_epoch.json", "w") as f:
-                f.write(json.dumps({"save_epoch": epoch}))
+                f.write(json.dumps({"save_epoch": epoch + 1}))
 
 
 def visualise_generator(generator: keras.Model, lr_imgs: np.array, hr_imgs: np.array) -> None:

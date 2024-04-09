@@ -43,19 +43,18 @@ class Training():
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
         srgan.fit(self.train_data, batch_size=15, epochs=self.epochs, validation_data=self.val_data, callbacks=[gan_saver])
     
-    def resume_sr_gan(self, discriminator_path, generator_path, vgg, lr):
-        root_path = discriminator_path[-19]
-        with open(root_path + "save_epoch.json") as f:
+    def resume_sr_gan(self, root_path, vgg, lr):
+        with open(root_path + "/save_epoch.json") as f:
             data = json.load(f)
-        save_epoch = data.get("save_epoch")
-        epochs = 159 - save_epoch
+        epochs = 159 - data.get("save_epoch")
 
-        discriminator = keras.saving.load_model(discriminator_path)
-        generator = keras.saving.load_model(generator_path)
+        discriminator = keras.saving.load_model(root_path + "/discriminator.keras")
+        generator = keras.saving.load_model(root_path + "/generator.keras")
 
         gan_saver = GANSaver(paths.SAVE_PATH, "srgan-vgg54", epochs, lr)
         srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
-        srgan.fit(self.train_data, batch_size=15, epochs=self.epochs, validation_data=self.val_data, callbacks=[gan_saver])
+        srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=10**-4), g_optimiser=keras.optimizers.Adam(learning_rate=10**-4))
+        srgan.fit(self.train_data, batch_size=15, epochs=epochs, validation_data=self.val_data, callbacks=[gan_saver])
     
     def train(self) -> None:
         if self.model == "srresnet-mse":
@@ -70,11 +69,10 @@ class Training():
             self.train_srgan(first_pass=True, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "resume-srgan-vgg54":
             vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[20].output)
-            discriminator_path = "/tmp/sc20ns/generators/srgan-vgg54/srgan-vgg54-e159-lr0.0001-resics45/discriminator.keras"
-            generator_path = "/tmp/sc20ns/generators/srgan-vgg54/srgan-vgg54-e159-lr0.0001-resics45/generator.keras"
-            self.resume_sr_gan(discriminator_path=discriminator_path, generator_path=generator_path, vgg=vgg, lr=10**-4)
+            root_path = "/tmp/sc20ns/generators/srgan-vgg54/srgan-vgg54-e159-lr0.0001-resics45"
+            self.resume_sr_gan(root_path=root_path, vgg=vgg, lr=10**-4)
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-vgg54", epochs=159)
+    training = Training(model="resume-srgan-vgg54", epochs=159)
     training.train()
