@@ -1,5 +1,6 @@
 
 import keras
+import tensorflow as tf
 from keras.callbacks import ModelCheckpoint
 import numpy as np
 from models import SRGAN, SRResNet
@@ -48,12 +49,25 @@ class Training():
             data = json.load(f)
         epochs = 159 - data.get("save_epoch")
 
+        d_optimiser = keras.optimizers.Adam(10**-4)
         discriminator = keras.saving.load_model(root_path + "/discriminator.keras")
+        d_optimiser_weights = np.load(root_path + "/d_optimiser_weights.npy")
+        d_grad_vars = discriminator.trainable_weights
+        d_zero_grads = [tf.zeros_like(w) for w in d_grad_vars]
+        d_optimiser.apply_gradients(zip(d_zero_grads, d_grad_vars))
+        d_optimiser.set_weights(d_optimiser_weights)
+
+        g_optimiser = keras.optimizers.Adam(10**-4)
         generator = keras.saving.load_model(root_path + "/generator.keras")
+        g_optimiser_weights = np.load(root_path + "/g_optimiser_weights.npy")
+        g_grad_vars = generator.trainable_weights
+        g_zero_grads = [tf.zeros_like(w) for w in g_grad_vars]
+        g_optimiser.apply_gradients(zip(g_zero_grads, g_grad_vars))
+        g_optimiser.set_weights(g_optimiser_weights)
 
         gan_saver = GANSaver(paths.SAVE_PATH, "srgan-vgg54", epochs, lr)
         srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
-        srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=10**-4), g_optimiser=keras.optimizers.Adam(learning_rate=10**-4))
+        srgan.compile(d_optimiser=d_optimiser, g_optimiser=g_optimiser)
         srgan.fit(self.train_data, batch_size=15, epochs=epochs, validation_data=self.val_data, callbacks=[gan_saver])
     
     def train(self) -> None:
