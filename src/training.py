@@ -71,5 +71,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-vgg22", epochs=159)
+    training = Training(model="srgan-vgg54", epochs=159)
     training.train()
