@@ -5,6 +5,7 @@ import numpy as np
 import os
 from keras import ops
 from keras.layers import RandomCrop, Resizing
+import json
 
 
 class GANSaver(keras.callbacks.Callback):
@@ -20,6 +21,8 @@ class GANSaver(keras.callbacks.Callback):
             self.best_loss = logs.get("val_generator_loss")
             self.model.generator.save(self.root_path + "generator.keras")
             self.model.discriminator.save(self.root_path + "discriminator.keras")
+            with open(self.root_path + "save_epoch.json", "w") as f:
+                f.write(json.dumps({"save_epoch": epoch}))
 
 
 def visualise_generator(generator: keras.Model, lr_imgs: np.array, hr_imgs: np.array) -> None:

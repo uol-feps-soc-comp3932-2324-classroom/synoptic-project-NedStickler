@@ -6,13 +6,7 @@ from models import SRGAN, SRResNet
 from utils import GANSaver
 from loaders import load_resisc45_subset
 import paths
-
-# TODO:
-# Implement dataset with train, test, validation sets
-# Implement losses file with predecided losses
-# Re-train models
-# Need to mention why only 8 patches are taken
-# https://keras.io/api/applications/ list of pre-trained models
+import json
 
 
 class Training():
@@ -49,11 +43,19 @@ class Training():
         srgan.compile(d_optimiser=keras.optimizers.Adam(learning_rate=lr), g_optimiser=keras.optimizers.Adam(learning_rate=lr))
         srgan.fit(self.train_data, batch_size=15, epochs=self.epochs, validation_data=self.val_data, callbacks=[gan_saver])
     
-    def train_vgg(self) -> None:
-        save_checkpoint = ModelCheckpoint(paths.SAVE_PATH + f"/vgg/vgg-e{self.epochs}-resics45.weights.h5", monitor="loss", save_weights_only=True, save_best_only=True, mode="auto", save_freq="epoch")
-        vgg = keras.applications.VGG19(input_shape=(256, 256, 3), weights=None, classes=45)
-        vgg.compile(optimizer="adam", loss="categorical_crossentropy")
-        vgg.fit(keras.applications.vgg19.preprocess_input(self.train), keras.utils.to_categorical(self.labels), epochs=self.epochs, callbacks=[save_checkpoint])
+    def resume_sr_gan(self, discriminator_path, generator_path, vgg, lr):
+        root_path = discriminator_path[-19]
+        with open(root_path + "save_epoch.json") as f:
+            data = json.load(f)
+        save_epoch = data.get("save_epoch")
+        epochs = 159 - save_epoch
+
+        discriminator = keras.saving.load_model(discriminator_path)
+        generator = keras.saving.load_model(generator_path)
+
+        gan_saver = GANSaver(paths.SAVE_PATH, "srgan-vgg54", epochs, lr)
+        srgan = SRGAN(generator=generator, vgg=vgg, discriminator=discriminator)
+        srgan.fit(self.train_data, batch_size=15, epochs=self.epochs, validation_data=self.val_data, callbacks=[gan_saver])
     
     def train(self) -> None:
         if self.model == "srresnet-mse":
@@ -66,8 +68,11 @@ class Training():
             discriminator_path, generator_path = self._get_model_paths("vgg54")
             vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[20].output)  
             self.train_srgan(first_pass=True, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
-        elif self.model == "vgg":
-            self.train_vgg() 
+        elif self.model == "resume-srgan-vgg54":
+            vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[20].output)
+            discriminator_path = "/tmp/sc20ns/generators/srgan-vgg54/srgan-vgg54-e159-lr0.0001-resics45/discriminator.keras"
+            generator_path = "/tmp/sc20ns/generators/srgan-vgg54/srgan-vgg54-e159-lr0.0001-resics45/generator.keras"
+            self.resume_sr_gan(discriminator_path=discriminator_path, generator_path=generator_path, vgg=vgg, lr=10**-4)
 
 
 if __name__ == "__main__":
