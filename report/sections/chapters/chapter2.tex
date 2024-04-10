@@ -1,19 +1,18 @@
-\chapter{Methods}
-\label{chapter2}
-
+\chapter{Methods}\label{chapter2}
 \section{Tools}
+Python, Keras, Matplotlib, numpy, tensorflow
 
 \section{Data}
-Learning-based models require data to learn from. In the case of super-resolution, the data consists of pairs of images: a high-resolution and low-resolution version of each training instance, where the model will attempt to learn some `mapping' from LR to HR.\@ The learnt mapping can then be applied to unseen low-resolution imagery where a super-resolution representation is generated. Thus, the relevance and quality of dataset contents is monumental in producing a successful SR reconstruction model.\ \textcolor{blue}{Definitely needs more!}
+Learning-based models require data to learn from. In the case of super-resolution, the data consists of pairs of images: a high-resolution and low-resolution version of each training instance, where the model will attempt to learn some `mapping' from LR to HR.\@ The learned mapping can then be applied to unseen low-resolution imagery where a super-resolution representation is generated. Thus, the relevance and quality of dataset contents is monumental in producing a successful SR reconstruction model.\ \textcolor{blue}{Definitely needs more!}
 
 \subsection{Datasets}
 A series of image datasets have been widely accepted by the community as effective at training learning-based super-resolution reconstruction methods. Wang et al.~\cite{remoteSensingDeepLearningReview, remoteSensingGANsReview} overview such datasets in two papers exploring learning based-solutions. Both remote sensing and non-remote sensing datasets are visited. As the goal of this report is to identify the effectiveness of the SRGAN model when applied to remote sensing data, our training dataset must be composed entirely of remote sensing images. Otherwise, the performance metrics we collect after model training will not accurately capture the applicability of the SRGAN model to remote sensing imagery.\ \textcolor{blue}{Needs expanding!} Consequently, we can focus our attention towards the remote sensing image datasets provided by Wang et al. and ignore the general image datasets.
 \begin{table}
     \centering
-    \begin{tabular}{|cccc|}
-        \hline
+    \begin{tabular}{cccc}
+        \toprule
         \textbf{Name} & \textbf{Size} & \textbf{Resolution} & \textbf{File type} \\
-        \hline
+        \midrule
         AID & 10000 & 600 $\times$ 600 & JPG \\
         RSSCN7 & 2800 & 400 $\times$ 400 & JPG \\
         WHU-RS19 & 1005 & 600 $\times$ 600 & TIF \\
@@ -25,13 +24,12 @@ A series of image datasets have been widely accepted by the community as effecti
         ITCUD & 135 & 5616 $\times$ 3744 & JPG \\
         DIOR & 23463 & 800 $\times$ 800 & JPG \\
         DOTA & 2806 & 800 $\times$ 4000 & PNG \\
-        \hline
+        \bottomrule
     \end{tabular}
     \caption{Table of remote sensing datasets commonly used for SR reconstruction as suggested by Wang et al.~\cite{remoteSensingDeepLearningReview,remoteSensingGANsReview}.}
     \label{table:datasets_table}
 \end{table}
-
-Table~\ref{table:datasets_table} shows the remote sensing imagery datasets as listed by Wang et al.\ along with the size of the dataset, the resolution of each image, and the image file type. Selecting an approriate dataset for model training is crucial for producing good SR reconstructions~\cite{ref}. Ideally the training dataset would be as large and diverse as possible, but due to hardware constraints (see more in section [training section]) training time and memory resources are limited. To avoid large training times the training data should be limited to between 1000 to 3000 images, with an image resolution of less than 1000 $\times$ 1000.\ \textcolor{blue}{Need to prove why this is the case.} Additionally, there must be a enough images to allow for test and validation sets for analysing model performance.
+Table~\ref{table:datasets_table} shows the remote sensing imagery datasets as listed by Wang et al.\ along with the size of the dataset, the resolution of each image, and the image file type. Selecting an appropriate dataset for model training is crucial for producing good SR reconstructions~\cite{ref}. Ideally the training dataset would be as large and diverse as possible, but due to hardware constraints (see more in section [training section]) training time and memory resources are limited. To avoid large training times the training data should be limited to between 1000 and 3000 images, with an image resolution of less than 1000 $\times$ 1000.\ \textcolor{blue}{Need to prove why this is the case.} Additionally, there must be enough images to allow for test and validation sets for analysing model performance.
 
 Following these requirements removes the WHU-RS19, UCAS-AOD, and ITCUD datasets for having too few images, along with DOTA for having too large of a resolution. This yields the AID, RSSCN7, UC Merced, NWPU-RESISC45, RSC11, SIRI-WHU and DIOR datasets. Any of these datasets would prove effective for training the SRGAN model. Therefore, selection of a training dataset is based off personal preference. 
 
@@ -43,23 +41,21 @@ The Northwestern Polytechnical University REmote Sensing Image Scene Classificat
 \subsection{Data preparation}\label{subsec:data_preparation}
 The data we use to train machine learning models must be correctly prepared to ensure efficient training and good results~\cite{ref}. The degree of preparation required greatly depends on the type of data the model will learn from. In the case of this project, our model learns from image data. Images also blurred before downsampling operation to stop artefacts from being introduced into downscaled images due to bicubic interpolation.
 
-\section{Models}
+\section{Solution}
+In the following section we provide a solution to the SR reconstruction problem in remote sensing. We adapt the loss function of a pre-existing model with the aim of achieving better results on remote sensing imagery.
 
-\subsection{SRResNet}
+\subsection{Super-resolution Generative Adversarial Network}
+The SRGAN model, proposed by Ledig et al.\ in 2017, introduced a new approach to the super-resolution problem~\cite{srgan}. By employing a generative adversarial network architecture researchers were able to achieve state-of-the-art results, consequently kickstarting the large-scale development of GAN-based super-resolution solutions. Since then, numerous adaptations of the SRGAN model have been proposed with many surpassing the SR reconstruction capabilities of SRGAN~\cite{models}. Regardless, SRGAN remains the most important and influential GAN-based SR reconstruction model.
 
-\subsection{SRGAN}
+The SRGAN model has two components, the generator and the discriminator. The generator model is responsible for upscaling LR imagery to produce the SR output, and the discriminator is responsible for providing a goal for the generator during adversarial training. The generator of the SRGAN, named SRResNet, was also proposed by Ledig et al. SRResNet employs a residual block structure to increase the resolution of the input imagery, where a series of residual blocks with skip connections learn the features of the dataset. The residual blocks are followed by two upsample operations executed with the pixel shuffle technique. During training, the model learns the best features to extract from the training dataset in order to then upsample. New imagery can then be passed through SRResNet where the learned filters are applied, the upsampling operation is executed, and SR imagery is produced. SRResNet generates sufficient SR imagery independent of the discriminator component of SRGAN, however the results often fail to capture high-frequency information such as texture and detailed objects~\cite{srgan}. The discriminator is introduced to further improve the SRResNet model, where adversarial training and the perceptual loss metric aid in generating imagery where the high-frequency components are not lost, and the final output is as close as possible to the original HR image. The discriminator component follows a stereotypical CNN classifier architecture, where the image features are captured and reduced, and finally flattened into a fully connected sequence that reduces to a single neuron. The output of the neuron is passed through a sigmoid function and the output represents the classification of real or fake for the generated images.
 
-\subsection{Implementation}
+Losses
 
-\section{Losses}
+The solution we provide to the SR reconstruction problem adapts the SRGAN model with the aim of producing better results when applied to remote sensing imagery. 
 
-\subsection{Mean squared error}
+\subsection{Model adaptation}
 
-\subsection{Binary cross-entropy}
-
-\subsection{Perceptual loss}
-
-\subsection{More losses...}
+\subsection{Final model}
 
 \section{Training}
 
@@ -74,19 +70,18 @@ Training the SRResNet and SRGAN models from scratch will require a deviation fro
 
 The guidance regarding the randomly cropped sub-images used to train the model is unclear. The exact guidance states `For each mini-batch we crop 16 random $96 \times 96$ HR sub images of distinct training images'. This could be interpreted in two ways: either a batch consists of 16 images and a single $96 \times 96$ patch is taken from each image in the batch, or, a batch has an undefined size, but for every image in the batch 16 random patches of size $96 \times 96$ are taken to increase the training set size, known as data augmentation~\cite{ref}. For the purposes of this project we assume the second definition to be true as it allows us to introduce more training examples to the model through data augmentation to hopefully improve final performance\ \textcolor{blue}{Needs more I think. Could also perform a test where we use batches and no batches and see the difference.}
 
-Taking the sub-images definition as described above requires us to choose an appropriate batch size. Choosing a batch size requires balancing gradient smoothness and memory constraints~\cite{ref}. A larger batch size produces a smoother gradient but also requires significantly more memory and computation resources. Alongside this, we also need to consider a batch size that nicely factors into our dataset size. Picking a dataset size, batch size and number of patches required an investigation into the memory limitations introduced by the training hardware. The number of image classes in the NWPU-RESISC45 dataset is considered first. There are 45 distinct image classes, as listed in section~\ref{subsec:resisc45}. To avoid unintentionally overfitting our SR reconstruction model to a specific class we must include an equal number of images from each of the 45 classes, consequently requiring our dataset size to be a multiple of 45. Therefore, it is also required that the batch size is a multiple or factor of 45 to ensure that the entire dataset is visited over a single epoch and no training examples are skipped due to division remainders. As mentioned earlier, a larger batch size produces a smoother gradient and therefore more stable training, however the hardware available restricts how large the batch size can be. Employing a method of trial and error identifies a batch size suitable for training the SR reconstruction model whilst adhering to memory constraints. A sample dataset of size 450 is used to test different batch sizes, with the intention of later increasing the dataset size to increase training examples. Firstly, training of the SRGAN model begins with a batch size and a single image patch per training example. The system attempts to allocate the required memory resources and computing power from the GPU but is unable to, resulting in an out-of-memory (OOM) exception. The batch size is then reduced, and the process is repeated until no OOM exception occurs. In practice the first batch size selected was $b = 30$, which resulted in an OOM exception. This value was reduced until a final batch size of $b = 15$ was selected. The next step was to test the memory constraints on the number of patches taken from each training example. A similar approach was taken to selecting batch size, where the number of patches was reduced until running model training no longer yielded an OOM exception. The initial value was $p = 16$, as suggested by Ledig et al., with the test yielding $p = 10$ patches per training instance. Further tests showed that for $p = 10$ and $p = 9$ that training would begin but that halt at seemingly random points in the process. To combat this, the number of patches was further reduced to $p = 8$, which yielded no OOM exceptions. Finally, the dataset size was selected by employing the same trial and error approach, where a dataset size of $n = 945$ was yielded. The final sizes are a batch size of $b = 15$, number of patches $p = 10$ and dataset size $n = 945$. Specific details on how the dataset subset was generated can be found in section~\ref{subsec:data_preparation}. We can also calculate the number of epochs and the number of steps per epoch (update iterations). An epoch step is defined as model training for one batch. Each image only appears once across all batches, meaning our total number of steps per epoch is:
+Taking the sub-images definition as described above requires us to choose an appropriate batch size. Choosing a batch size requires balancing gradient smoothness and memory constraints~\cite{ref}. A larger batch size produces a smoother gradient but also requires significantly more memory and computation resources. Alongside this, we also need to consider a batch size that nicely factors into our dataset size. Picking a dataset size, batch size and number of patches required an investigation into the memory limitations introduced by the training hardware. The number of image classes in the NWPU-RESISC45 dataset is considered first. There are 45 distinct image classes, as listed in section~\ref{subsec:resisc45}. To avoid unintentionally overfitting our SR reconstruction model to a specific class we must include an equal number of images from each of the 45 classes, consequently requiring our dataset size to be a multiple of 45. Therefore, it is also required that the batch size is a multiple or factor of 45 to ensure that the entire dataset is visited over a single epoch and no training examples are skipped due to division remainders. As mentioned earlier, a larger batch size produces a smoother gradient and therefore more stable training, however the hardware available restricts how large the batch size can be. Employing a method of trial and error identifies a batch size suitable for training the SR reconstruction model whilst adhering to memory constraints. A sample dataset of size 450 is used to test different batch sizes, with the intention of later increasing the dataset size to increase training examples. Firstly, training of the SRGAN model begins with a batch size and a single image patch per training example. The system attempts to allocate the required memory resources and computing power from the GPU but is unable to, resulting in an out-of-memory (OOM) exception. The batch size is then reduced, and the process is repeated until no OOM exception occurs. In practice the first batch size selected was $b = 30$, which resulted in an OOM exception. This value was reduced until a final batch size of $b = 15$ was selected. The next step was to test the memory constraints on the number of patches taken from each training example. A similar approach was taken to selecting batch size, where the number of patches was reduced until running model training no longer yielded an OOM exception. The initial value was $p = 16$, as suggested by Ledig et al., with the test yielding $p = 10$ patches per training instance. Further testing showed that for $p = 10$ and $p = 9$ that training would begin but that halt at seemingly random points in the process. To combat this, the number of patches was further reduced to $p = 8$, which yielded no OOM exceptions. Finally, the dataset size was selected by employing the same trial and error approach, where a dataset size of $n = 945$ was yielded. The final sizes are a batch size of $b = 15$, number of patches $p = 10$ and dataset size $n = 945$. Specific details on how the dataset subset was generated can be found in section~\ref{subsec:data_preparation}. We can also calculate the number of epochs and the number of steps per epoch (update iterations). An epoch step is defined as model training for one batch. Each image only appears once across all batches, meaning our total number of steps per epoch is:
 \[\frac{\textnormal{Dataset size}}{\textnormal{Batch size}} = \frac{945}{15} = 63\]
 Following the calculation of the steps per epoch, we are able to calculate the number of epochs required for $10^5$ and $10^4$ update iterations:
 \[\frac{10^5}{\textnormal{Steps per epoch}} = \frac{10^5}{63} \approx 1588\]
 \[\frac{10^4}{\textnormal{Steps per epoch}} = \frac{10^5}{63} \approx 159\]
-The selection of batch size, dataset size and number of patches allows for more training parameters to be considered. As suggested by Ledig et al.\ the Adam optimiser is used with $\beta_1 = 0.9$, the SRResNet model is trained with a learning rate of $10^{-4}$, the initial training for the SRGAN model is trained with a learning rate of $10^{-4}$ and the fine-tune SRGAN model is trained with a learning rate of $10^{-5}$. The pre-trained SRResNet model is used as the initial generator of the SRGAN model to reduce the likelihood of undesireable local optima~\cite{srgan}. The Ledig et al.\ procedure suggests $10^6$ update iterations for the pre-trained SRResNet model. With the available training hardware and batch size, dataset size and number of patches training would take $\sim$48 hours. Due to the University of Leeds machines restarting every day, training the model for that long becomes tricky. As a result of this it makes sense to reduce the number of update iterations to $10^{5}$, reducing the training time to just over four hours. In interest of maintaing the guidance set out by Ledig et al.\ the number of update iterations for the first pass and fine-tune training of the SRGAN model should also be reduced by a factor of 10 to be proportional, yielding $10^4$ update iterations. Figure~\ref{table:model_training} provides a summary of the training parameters for all training scenarios.
-
+The selection of batch size, dataset size and number of patches for remaining training details to be considered. As suggested by Ledig et al.\ the Adam optimiser is used with $\beta_1 = 0.9$, the SRResNet model is trained with a learning rate of $10^{-4}$, the initial training for the SRGAN model is trained with a learning rate of $10^{-4}$ and, the fine-tuning training is executed with a learning rate of $10^{-5}$. The pretrained SRResNet model is used as the initial generator of the SRGAN model to reduce the likelihood of undesirable local optima~\cite{srgan}. The Ledig et al.\ procedure suggests $10^6$ update iterations for the pretrained SRResNet model. With the available training hardware and batch size, dataset size and number of patches training would take $\sim$48 hours. Due to the University of Leeds machines restarting every day, training the model for that long becomes tricky. As a result of this it makes sense to reduce the number of update iterations to $10^{5}$, reducing the training time to just over four hours. In interest of maintaining the guidance set out by Ledig et al.\ the number of update iterations for the first pass and fine-tune training of the SRGAN model should also be reduced by a factor of 10 to be proportional, yielding $10^4$ update iterations. Figure~\ref{table:model_training} provides a summary of the training parameters for all training scenarios.
 \begin{table}
     \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
+    \begin{tabular}{cccc}
+        \toprule
         {} & \textbf{SRResNet} & \textbf{SRGAN 1\textsuperscript{st} pass} & \textbf{SRGAN 2\textsuperscript{nd} pass} \\
-        \hline
+        \midrule
         \textbf{Batch size} & 15 & 15 & 15\\ 
         \textbf{Patches} & 8 & 8 & 8 \\
         \textbf{Dataset size} & 945 & 945 & 945\\
@@ -95,7 +90,7 @@ The selection of batch size, dataset size and number of patches allows for more 
         \textbf{Update iterations} & $10^5$ & $10^4$ & $10^4$ \\
         \textbf{Epochs} & 1588 & 159 & 159 \\
         \textbf{Steps per epoch} & 63 & 63 & 63 \\
-        \hline
+        \bottomrule
     \end{tabular}
     \caption{Summary of the details and parameters used for model training.}
     \label{table:model_training}

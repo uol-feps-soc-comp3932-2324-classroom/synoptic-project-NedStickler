@@ -7,7 +7,7 @@ from utils import visualise_generator
 
 
 if __name__ == "__main__":
-    generator_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\generators\srgan-vgg22\srgan-vgg22-e159-lr1e-05-resics45\generator.keras"
+    generator_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\generators\srgan-vgg54\srgan-vgg54-e159-lr1e-05-resics45\generator.keras"
     hr_images = np.load(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets\resisc45_test.npy")
     lr_images = Resizing(256 // 4, 256 // 4, interpolation="bicubic")(hr_images).numpy().astype(np.uint8)
 
