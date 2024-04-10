@@ -76,7 +76,7 @@ class Training():
         elif self.model == "srgan-vgg22":
             discriminator_path, generator_path = self._get_model_paths("vgg22")
             vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[5].output)  
-            self.train_srgan(first_pass=True, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
+            self.train_srgan(first_pass=False, vgg=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "srgan-vgg54":
             discriminator_path, generator_path = self._get_model_paths("vgg54")
             vgg = keras.Model(self.vgg_base.input, self.vgg_base.layers[20].output)  
