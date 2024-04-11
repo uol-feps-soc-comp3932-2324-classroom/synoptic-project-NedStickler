@@ -10,6 +10,7 @@ from keras.layers import RandomCrop, Resizing, DepthwiseConv2D
 
 class CustomLoss(keras.Model):
     def __init__(self, model, preprocess, scale):
+        super().__init__()
         self.model = model
         self.preprocess = preprocess
         self.scale = scale
