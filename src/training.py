@@ -60,8 +60,8 @@ class Training():
             discriminator_path, generator_path = self._get_model_paths("xception")
             xception = self.losses.xception()
             self.train_srgan(perceptual_loss=xception, discriminator_path=discriminator_path, generator_path=generator_path)
-            
+
 
 if __name__ == "__main__":
-    training = Training(model="srgan-xception", epochs=159, first_pass=True)
+    training = Training(model="srgan-vgg22", epochs=159, first_pass=False)
     training.train()
