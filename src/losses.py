@@ -15,9 +15,9 @@ class Losses:
         else:
             layer = 5
         vgg19 = keras.applications.VGG19(include_top=False, input_shape=self.input_shape)
-        vgg19 = keras.Model(vgg19.input, vgg19[layer].output)
+        vgg19 = keras.Model(vgg19.input, vgg19.layers[layer].output)
         vgg19_preprocess = keras.applications.vgg19.preprocess_input
-        return CustomLoss(vgg19, vgg19_preprocess, scale=1/12.75)
+        return CustomLoss(vgg19, vgg19_preprocess, scale=1)
     
     def xception(self):
         xception = keras.applications.Xception(include_top=False, input_shape=self.input_shape)
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     validation_data, _ = load_resisc45_subset("val")
     validation_data = validation_data[:15]
     losses = Losses()
-    loss = losses.efficientnetv2l()
+    loss = losses.vgg19(54)
     output = loss(validation_data)
     average = np.mean([val for val in output.numpy().flatten() if val != 0])
     print(average)
