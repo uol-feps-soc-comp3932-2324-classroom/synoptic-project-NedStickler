@@ -63,5 +63,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-vgg54", epochs=159, first_pass=False)
+    training = Training(model="srgan-xception", epochs=159, first_pass=False)
     training.train()
