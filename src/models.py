@@ -27,43 +27,6 @@ class CustomLoss(keras.Model):
         return outputs * self.scale
 
 
-class BlurAndResize(keras.Model):
-    def __init__(self, downsample_factor):
-        super().__init__()
-        self.downsample_factor = downsample_factor
-        self.gaussian_blur = DepthwiseConv2D(3, padding="same", use_bias=False)
-        self.gaussian_blur.build((256, 256, 3))
-        self.resize = Resizing(256 // downsample_factor, 256 // downsample_factor, interpolation="bicubic")
-
-    def _matlab_style_gauss2D(self, shape=(3,3), sigma=0.5):
-        """
-        2D gaussian mask - should give the same result as MATLAB's
-        fspecial('gaussian',[shape],[sigma])
-        """
-        m,n = [(ss-1.)/2. for ss in shape]
-        y,x = np.ogrid[-m:m+1,-n:n+1]
-        h = np.exp( -(x*x + y*y) / (2.*sigma*sigma) )
-        h[ h < np.finfo(h.dtype).eps*h.max() ] = 0
-        sumh = h.sum()
-        if sumh != 0:
-            h /= sumh
-        return h
-    
-    def get_config(self):
-        return {"downsample_factor": self.downsample_factor}
-    
-    def call(self, inputs):
-        gaussian_kernel = self._matlab_style_gauss2D()
-        kernel_weights = np.expand_dims(gaussian_kernel, axis=-1)
-        kernel_weights = np.repeat(kernel_weights, 3, axis=-1)
-        kernel_weights = np.expand_dims(kernel_weights, axis=-1)
-        self.gaussian_blur.set_weights([kernel_weights])
-        self.gaussian_blur.trainable = False
-        blurred_hr = self.gaussian_blur(inputs)
-        lr_patch = self.resize(blurred_hr)
-        return lr_patch
-
-
 class CropAndResize(keras.Model):
     def __init__(self, downsample_factor):
         super().__init__()
@@ -212,12 +175,12 @@ class SRResNet(keras.Model):
 
 @keras.saving.register_keras_serializable()
 class SRGAN(keras.Model):
-    def __init__(self, generator: keras.Model, vgg: keras.Model, discriminator: keras.Model = None):
+    def __init__(self, generator: keras.Model, perceptual_loss: keras.Model, discriminator: keras.Model = None):
         super().__init__()
         if discriminator is None: self.discriminator = self.get_discriminator()
         else: self.discriminator = discriminator
         self.generator = generator
-        self.vgg = vgg
+        self.perceptual_loss = perceptual_loss
         self.crop_and_resize = CropAndResize(4)
         self.bce_loss = keras.losses.BinaryCrossentropy()
         self.mse_loss = keras.losses.MeanSquaredError()
@@ -257,7 +220,7 @@ class SRGAN(keras.Model):
         return {
             "generator": self.generator,
             "discriminator": self.discriminator,
-            "vgg": self.vgg,
+            "perceptual_loss": self.perceptual_loss,
         }
     
     @classmethod
@@ -302,11 +265,9 @@ class SRGAN(keras.Model):
             generated_images = self.generator(lr_images)
             predictions = self.discriminator(generated_images)
             g_loss = 0.001 * self.bce_loss(misleading_labels, predictions)
-            sr_vgg = tf.keras.applications.vgg19.preprocess_input(generated_images)
-            sr_vgg = self.vgg(sr_vgg) / 12.75
-            hr_vgg = tf.keras.applications.vgg19.preprocess_input(hr_images)
-            hr_vgg = self.vgg(hr_vgg) / 12.75
-            perceptual_loss = self.mse_loss(hr_vgg, sr_vgg)
+            sr_perceptual_loss = self.perceptual_loss(generated_images)
+            hr_perceptual_loss = self.perceptual_loss(hr_images)
+            perceptual_loss = self.mse_loss(hr_perceptual_loss, sr_perceptual_loss)
             g_total_loss = g_loss + perceptual_loss
         
         gradients = tape.gradient(g_total_loss, self.generator.trainable_weights)
@@ -332,12 +293,10 @@ class SRGAN(keras.Model):
         predictions = self.discriminator(generated_images)
         g_loss = 0.001 * self.bce_loss(misleading_labels, predictions)
 
-        sr_vgg = tf.keras.applications.vgg19.preprocess_input(generated_images)
-        sr_vgg = self.vgg(sr_vgg) / 12.75
-        hr_vgg = tf.keras.applications.vgg19.preprocess_input(hr_images)
-        hr_vgg = self.vgg(hr_vgg) / 12.75
+        sr_perceptual_loss = self.perceptual_loss(generated_images)
+        hr_perceptual_loss = self.perceptual_loss(hr_images)
 
-        perceptual_loss = self.mse_loss(hr_vgg, sr_vgg)
+        perceptual_loss = self.mse_loss(sr_perceptual_loss, hr_perceptual_loss)
         g_total_loss = g_loss + perceptual_loss
         self.g_loss_tracker.update_state(g_total_loss)
 
