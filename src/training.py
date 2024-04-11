@@ -50,11 +50,11 @@ class Training():
             self.train_srresnet_mse()
         elif self.model == "srgan-vgg22":
             discriminator_path, generator_path = self._get_model_paths("vgg22")
-            vgg = self.lossses.vgg19(22)
+            vgg = self.losses.vgg19(22)
             self.train_srgan(perceptual_loss=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "srgan-vgg54":
             discriminator_path, generator_path = self._get_model_paths("vgg54")
-            vgg = self.lossses.vgg19(54)
+            vgg = self.losses.vgg19(54)
             self.train_srgan(perceptual_loss=vgg, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "srgan-xception":
             discriminator_path, generator_path = self._get_model_paths("xception")
@@ -63,5 +63,5 @@ class Training():
             
 
 if __name__ == "__main__":
-    training = Training(model="srgan-vgg22", epochs=159, first_pass=True)
+    training = Training(model="srgan-xception", epochs=159, first_pass=True)
     training.train()

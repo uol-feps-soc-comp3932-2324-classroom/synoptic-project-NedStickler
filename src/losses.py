@@ -7,7 +7,7 @@ from loaders import load_resisc45_subset
 
 class Losses:
     def __init__(self):
-        self.input_shape = (256, 256, 3)
+        self.input_shape = (None, None, 3)
     
     def vgg19(self, feature_level):
         if feature_level == 54:
@@ -17,7 +17,7 @@ class Losses:
         vgg19 = keras.applications.VGG19(include_top=False, input_shape=self.input_shape)
         vgg19 = keras.Model(vgg19.input, vgg19.layers[layer].output)
         vgg19_preprocess = keras.applications.vgg19.preprocess_input
-        return CustomLoss(vgg19, vgg19_preprocess, scale=1)
+        return CustomLoss(vgg19, vgg19_preprocess, scale=1/12.75)
     
     def xception(self):
         xception = keras.applications.Xception(include_top=False, input_shape=self.input_shape)
