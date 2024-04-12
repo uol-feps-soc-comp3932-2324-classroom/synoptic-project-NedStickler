@@ -42,30 +42,61 @@ The Northwestern Polytechnical University REmote Sensing Image Scene Classificat
 The data we use to train machine learning models must be correctly prepared to ensure efficient training and good results~\cite{ref}. The degree of preparation required greatly depends on the type of data the model will learn from. In the case of this project, our model learns from image data. Images also blurred before downsampling operation to stop artefacts from being introduced into downscaled images due to bicubic interpolation.
 
 \section{Solution}
-In the following section we provide a solution to the SR reconstruction problem in remote sensing. We adapt the loss function of a pre-existing model with the aim of achieving better results on remote sensing imagery.
+In the following section we provide a solution to the SR reconstruction problem in remote sensing. We adapt the loss function of a pre-existing model by systematically testing model performance with different loss variations. Details of the implementation are presented.
 
-\subsection{Super-resolution Generative Adversarial Network}
-The SRGAN model, proposed by Ledig et al.\ in 2017, introduced a new approach to the super-resolution problem~\cite{srgan}. By employing a generative adversarial network architecture researchers were able to achieve state-of-the-art results, consequently kickstarting the large-scale development of GAN-based super-resolution solutions. Since then, numerous adaptations of the SRGAN model have been proposed with many surpassing the SR reconstruction capabilities of SRGAN~\cite{models}. Regardless, SRGAN remains the most important and influential GAN-based SR reconstruction model.
+\subsection{Architecture}
+The architecture of the solution is provided by the SRGAN model proposed by Ledig et al.\ in 2017. SRGAN was the first generative adversarial network-based architecture proposed as a solution to the SR reconstruction problem. Being the first of its kind, using the SRGAN architecture provides a well-established foundation for development, and as a result we were able to implement the model at pace whilst being partially aided by pre-existing external sources~\cite{ref}. Implementing SRGAN from scratch allowed us to customise model architecture, training and validation processes, and loss components without encountering difficulties often associated with using existing implementations~\cite{ref}. Additionally, SRGAN is relatively simple when compared to more recent SR reconstruction solutions. This aligned with our project goals as constraints imposed by training hardware limited our ability to employ especially complex models with many parameters.
 
-The SRGAN model has two components, the generator and the discriminator. The generator model is responsible for upscaling LR imagery to produce the SR output, and the discriminator is responsible for providing a goal for the generator during adversarial training. The generator of the SRGAN, named SRResNet, was also proposed by Ledig et al. SRResNet employs a residual block structure to increase the resolution of the input imagery, where a series of residual blocks with skip connections learn the features of the dataset. The residual blocks are followed by two upsample operations executed with the pixel shuffle technique. During training, the model learns the best features to extract from the training dataset in order to then upsample. New imagery can then be passed through SRResNet where the learned filters are applied, the upsampling operation is executed, and SR imagery is produced. SRResNet generates sufficient SR imagery independent of the discriminator component of SRGAN, however the results often fail to capture high-frequency information such as texture and detailed objects~\cite{srgan}. The discriminator is introduced to further improve the SRResNet model, where adversarial training and the perceptual loss metric aid in generating imagery where the high-frequency components are not lost, and the final output is as close as possible to the original HR image. The discriminator component follows a stereotypical CNN classifier architecture, where the image features are captured and reduced, and finally flattened into a fully connected sequence that reduces to a single neuron. The output of the neuron is passed through a sigmoid function and the output represents the classification of real or fake for the generated images.
+The SRGAN architecture follows the typical generative adversarial network architecture~\cite{ref} and consists of both a generator and discriminator. The role of the generator is to produce SR reconstructions, and the discriminator aids in guiding the generator towards producing a desirable result through adversarial training.
 
-Losses
+Generator architecture.
 
-The solution we provide to the SR reconstruction problem adapts the SRGAN model with the aim of producing better results when applied to remote sensing imagery. 
+The discriminator follows a standard binary classifier architecture. Images are passed through several convolutional blocks that capture the image features and then downsample. Following these blocks is a fully connected layer that reduces the number of neurons down to one, where the activation of the final neuron decides the classification of the image. In the case of a GAN, this classification is either real or fake. HR ground-truth images should be classified as real, and SR reconstructions should be classified as fake. The binary cross-entropy loss is calculated between the actual and predicted image labels to give a value representing the `distance' the discriminator needs to cross to achieve perfect classification. The discriminator steps towards a lower loss value to produce a better classification result.
 
-\subsection{Model adaptation}
+\subsection{Training}
 
-\subsection{Final model}
+\subsection{Improving loss}
+The SRGAN model uses a perceptual loss component to learn the mappings between LR and HR imagery. Ledig et al.\ utilise a pretrained VGG19 model to produce feature maps for the both the generated SR image and the HR ground truth. The pixel-wise mean squared error is calculated to provide a scalar value representing the perceptual difference between the two images, which acts as a component of the training loss. The VGG19 model is trained to classify images, so the learned feature maps produce the highest classification accuracy possible. To produce a good classification accuracy the feature maps must identify the most important and distinctive features of each class. By calculating the difference between these feature maps we can see how much the most important features in the SR reconstruction differ from the ground-truth image, and point the model towards a result with greater realism.
+
+We can extend this idea to image classification models that outperform VGG19. A superior classification accuracy suggests the model has better extracted the most important image features~\cite{ref}. We can utilise such models as replacements for the VGG19 component of the perceptual loss. We offer the following conjecture: `using the feature maps from more accurate image classification models in the perceptual loss component of SRGAN-based models will increase SR reconstruction performance'.
+
+To explore this, with the aim of producing a solution to the SR reconstruction in remote sensing, we  test model performance using feature maps from a variety of pretrained image classification models. The Keras library provides numerous image classifiers pretrained on the ImageNet database. Within the documentation for these pretrained classifiers are accuracy metrics calculated on the ImageNet validation dataset, allowing us to select models based on their performance. The available classifiers can be grouped into classes based on their model architecture. The model with the highest accuracy from each class was selected for testing as the perceptual loss component for SRGAN training. A full list of available models can be found in Appendix~\ref{appendix}.
+
+Calculating the loss with a pretrained model requires a minor alteration to the model architecture to be feasible. The models consist of convolutional sections followed by fully-connected layers of neurons, where the activations of the final layer of neurons represent the `certainty' that the image belongs to that class. We are not interested in the classification of our images, but rather the distinct image features, thus we remove the fully connected layers of neurons from each model leaving the desired feature maps. When calculating loss during training time, both the HR image and the SR reconstruction are passed through the model and the image feature maps are created. The pixel wise mean squared error is calculated between the feature maps, and the resulting value is the loss for that training step. Minimising this value produces better SR results.
+
+\begin{table}
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Classifier} & \textbf{Top-1 accuracy} & \textbf{Top-5 accuracy} & \textbf{Size (MB)} & \textbf{Parameters (M)} \\
+        \midrule
+        Xception & 79.0\% & 94.5\% & 88 & 22.9 \\
+        ResNet152V2 & 77.2\% & 94.2\% & 232 & 60.4 \\
+        InceptionV3 & 77.9\% & 93.7\% & 92 & 23.9 \\
+        InceptionResNetV2 & 80.3 \% & 95.3\% & 215 & 55.9 \\
+        MobileNetV2 & 71.3\% & 90.1\% & \colorbox{YellowGreen}{12} & \colorbox{YellowGreen}{3.5} \\
+        DenseNet201 & 77.3\% & 93.6\% & 80 & 20.2 \\
+        NASNetLarge & 82.5\% & 96.0\% & 343 & 88.9 \\
+    EfficientNetV2L & \colorbox{YellowGreen}{85.7\%} & \colorbox{YellowGreen}{97.5\%} & 479 & 119.0 \\
+        \bottomrule
+    \end{tabular}
+    \caption{List of pretrained image classifiers tested as the perceptual loss component for SRGAN training. The best value in each category is highlighted in green.}
+    \label{table:pretrained_classifiers}
+\end{table}
+
+For each of the pretrained classifiers an SRGAN model was trained using the classifier feature maps to calculate the perceptual loss. The training procedure used for the SRGAN-based models is described in section~\ref{subsec:procedure}.
+
+\subsection{Implementation}
 
 \section{Training}
 
 \subsection{Hardware}
 GPUs, university machines, restarts.
 
-\subsection{Existing training guidance}
+\subsection{Existing guidance}
 Ledig et al.~\cite{srgan} provide in-depth detail on how they trained the SRResNet and SRGAN models to achieve high-quality SR results. Both models were trained on a 350000 image subset of the ImageNet database~\cite{ref}. 16 sub-image patches of size $96 \times 96$ are taken of distinct training images. The Adam~\cite{ref} optimiser is used with $\beta_1 = 0.9$. The SRResNet model is trained on the dataset for a total of $10^6$ update iterations using a learning rate of $10^{-4}$. The SRGAN model is trained for $10^5$ update iterations with an initial learning rate of $10^{-4}$, followed by another $10^5$ update iterations using a learning rate of $10^{-5}$. To avoid unwanted local optima the pretrained SRResNet is used as the generator for the SRGAN model.
 
-\subsection{Training procedure}\label{subsec:procedure}
+\subsection{Procedure}\label{subsec:procedure}
 Training the SRResNet and SRGAN models from scratch will require a deviation from existing training guidance to account for time and hardware limitations. This section outlines the exact training procedure that was followed along with justification for the differences to the original procedure as defined by Ledig et al.~\cite{srgan}.
 
 The guidance regarding the randomly cropped sub-images used to train the model is unclear. The exact guidance states `For each mini-batch we crop 16 random $96 \times 96$ HR sub images of distinct training images'. This could be interpreted in two ways: either a batch consists of 16 images and a single $96 \times 96$ patch is taken from each image in the batch, or, a batch has an undefined size, but for every image in the batch 16 random patches of size $96 \times 96$ are taken to increase the training set size, known as data augmentation~\cite{ref}. For the purposes of this project we assume the second definition to be true as it allows us to introduce more training examples to the model through data augmentation to hopefully improve final performance\ \textcolor{blue}{Needs more I think. Could also perform a test where we use batches and no batches and see the difference.}
@@ -75,7 +106,7 @@ Taking the sub-images definition as described above requires us to choose an app
 Following the calculation of the steps per epoch, we are able to calculate the number of epochs required for $10^5$ and $10^4$ update iterations:
 \[\frac{10^5}{\textnormal{Steps per epoch}} = \frac{10^5}{63} \approx 1588\]
 \[\frac{10^4}{\textnormal{Steps per epoch}} = \frac{10^5}{63} \approx 159\]
-The selection of batch size, dataset size and number of patches for remaining training details to be considered. As suggested by Ledig et al.\ the Adam optimiser is used with $\beta_1 = 0.9$, the SRResNet model is trained with a learning rate of $10^{-4}$, the initial training for the SRGAN model is trained with a learning rate of $10^{-4}$ and, the fine-tuning training is executed with a learning rate of $10^{-5}$. The pretrained SRResNet model is used as the initial generator of the SRGAN model to reduce the likelihood of undesirable local optima~\cite{srgan}. The Ledig et al.\ procedure suggests $10^6$ update iterations for the pretrained SRResNet model. With the available training hardware and batch size, dataset size and number of patches training would take $\sim$48 hours. Due to the University of Leeds machines restarting every day, training the model for that long becomes tricky. As a result of this it makes sense to reduce the number of update iterations to $10^{5}$, reducing the training time to just over four hours. In interest of maintaining the guidance set out by Ledig et al.\ the number of update iterations for the first pass and fine-tune training of the SRGAN model should also be reduced by a factor of 10 to be proportional, yielding $10^4$ update iterations. Figure~\ref{table:model_training} provides a summary of the training parameters for all training scenarios.
+The selection of batch size, dataset size and number of patches allows for remaining training details to be considered. As suggested by Ledig et al.\ the Adam optimiser is used with $\beta_1 = 0.9$, the SRResNet model is trained with a learning rate of $10^{-4}$, the initial training for the SRGAN model is trained with a learning rate of $10^{-4}$ and, the fine-tuning training is executed with a learning rate of $10^{-5}$. The pretrained SRResNet model is used as the initial generator of the SRGAN model to reduce the likelihood of undesirable local optima~\cite{srgan}. The Ledig et al.\ procedure suggests $10^6$ update iterations for the pretrained SRResNet model. With the available training hardware and batch size, dataset size and number of patches training would take $\sim$48 hours. Due to the University of Leeds machines restarting every day, training the model for that long becomes tricky. As a result of this it makes sense to reduce the number of update iterations to $10^{5}$, reducing the training time to just over four hours. In interest of maintaining the guidance set out by Ledig et al.\ the number of update iterations for the first pass and fine-tune training of the SRGAN model should also be reduced by a factor of 10 to be proportional, yielding $10^4$ update iterations. Figure~\ref{table:model_training} provides a summary of the training parameters for all training scenarios.
 \begin{table}
     \centering
     \begin{tabular}{cccc}

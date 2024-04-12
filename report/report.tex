@@ -4,13 +4,14 @@
 \input{config.tex}
 
 \begin{document}
-
 % The prelude is everything up to the start of chapter 1, and is contained
 % in a file called "prelude.tex".
 \include{./sections/other/prelude}
 
 % Include as many chapters as you have.
 % The "chapter1.tex" etc. files should be in a directory called "chapters"
+\justifying
+\setlength\parindent{0pt}
 \include{./sections/chapters/chapter1}
 \include{./sections/chapters/chapter2}
 \include{./sections/chapters/chapter3}

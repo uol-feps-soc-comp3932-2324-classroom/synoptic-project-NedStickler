@@ -1,4 +1,3 @@
-\justifying
 \chapter{Introduction and Background Research}
 
 % You can cite chapters by using '\ref{chapter1}', where the label must
@@ -41,7 +40,9 @@ The problem: Super resolution in remote sensing. There exists a variety of solut
 \subsection{Generative adversarial networks}
 
 \subsection{SRGAN}
-Including the model and losses
+The SRGAN model, proposed by Ledig et al.\ in 2017, introduced a new approach to the super-resolution problem~\cite{srgan}. By employing a generative adversarial network architecture researchers were able to achieve state-of-the-art results, consequently kickstarting the large-scale development of GAN-based super-resolution solutions. Since then, numerous adaptations of the SRGAN model have been proposed with many surpassing the SR reconstruction capabilities of SRGAN~\cite{models}. Regardless, SRGAN remains the most important and influential GAN-based SR reconstruction model.
+
+The SRGAN model has two components, the generator and the discriminator. The generator model is responsible for upscaling LR imagery to produce the SR output, and the discriminator is responsible for providing a goal for the generator during adversarial training. The generator of the SRGAN, named SRResNet, was also proposed by Ledig et al. SRResNet employs a residual block structure to increase the resolution of the input imagery, where a series of residual blocks with skip connections learn the features of the dataset. The residual blocks are followed by two upsample operations executed with the pixel shuffle technique. During training, the model learns the best features to extract from the training dataset in order to then upsample. New imagery can then be passed through SRResNet where the learned filters are applied, the upsampling operation is executed, and SR imagery is produced. SRResNet generates sufficient SR imagery independent of the discriminator component of SRGAN, however the results often fail to capture high-frequency information such as texture and detailed objects~\cite{srgan}. The discriminator is introduced to further improve the SRResNet model, where adversarial training and the perceptual loss metric aid in generating imagery where the high-frequency components are not lost, and the final output is as close as possible to the original HR image. The discriminator component follows a stereotypical CNN classifier architecture, where the image features are captured and reduced, and finally flattened into a fully connected sequence that reduces to a single neuron. The output of the neuron is passed through a sigmoid function and the output represents the classification of real or fake for the generated images.
 
 \subsection{Additional SR GAN models}
 
