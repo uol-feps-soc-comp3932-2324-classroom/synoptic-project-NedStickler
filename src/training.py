@@ -60,8 +60,12 @@ class Training():
             discriminator_path, generator_path = self._get_model_paths("xception")
             xception = self.losses.xception()
             self.train_srgan(perceptual_loss=xception, discriminator_path=discriminator_path, generator_path=generator_path)
+        elif self.model == "srgan-resnet152v2":
+            discriminator_path, generator_path = self._get_model_paths("resnet152v2")
+            resnet152v2= self.losses.resnet152v2()
+            self.train_srgan(perceptual_loss=resnet152v2, discriminator_path=discriminator_path, generator_path=generator_path)
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-xception", epochs=159, first_pass=False)
+    training = Training(model="srgan-resnet152v2", epochs=159, first_pass=True)
     training.train()
