@@ -67,5 +67,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-resnet152v2", epochs=159, first_pass=True)
+    training = Training(model="srgan-resnet152v2", epochs=159, first_pass=False)
     training.train()
