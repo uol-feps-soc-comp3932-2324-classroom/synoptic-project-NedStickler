@@ -79,5 +79,5 @@ class Training():
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-mobilenetv2", epochs=159, first_pass=True)
+    training = Training(model="srgan-mobilenetv2", epochs=159, first_pass=False)
     training.train()
