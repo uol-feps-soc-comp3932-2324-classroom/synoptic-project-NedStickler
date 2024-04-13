@@ -69,11 +69,11 @@ class Training():
             inceptionv3 = self.losses.inceptionv3()
             self.train_srgan(perceptual_loss=inceptionv3, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "srgan-inceptionresnetv2":
-            discriminator_path, generator_path = self._get_model_paths("srgan-inceptionresnetv2")
+            discriminator_path, generator_path = self._get_model_paths("inceptionresnetv2")
             inceptionresnetv2 = self.losses.inceptionresnetv2()
             self.train_srgan(perceptual_loss=inceptionresnetv2, discriminator_path=discriminator_path, generator_path=generator_path)
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-inceptionresnetv2", epochs=159, first_pass=True)
+    training = Training(model="srgan-inceptionresnetv2", epochs=159, first_pass=False)
     training.train()
