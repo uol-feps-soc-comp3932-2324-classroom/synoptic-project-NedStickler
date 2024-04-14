@@ -76,8 +76,12 @@ class Training():
             discriminator_path, generator_path = self._get_model_paths("mobilenetv2")
             mobilenetv2 = self.losses.mobilenetv2()
             self.train_srgan(perceptual_loss=mobilenetv2, discriminator_path=discriminator_path, generator_path=generator_path)
+        elif self.model == "srgan-densenet201":
+            discriminator_path, generator_path = self._get_model_paths("densenet201")
+            densenet201 = self.losses.densenet201()
+            self.train_srgan(perceptual_loss=densenet201, discriminator_path=discriminator_path, generator_path=generator_path)
 
 
 if __name__ == "__main__":
-    training = Training(model="srgan-mobilenetv2", epochs=159, first_pass=False)
+    training = Training(model="srgan-densenet201", epochs=159, first_pass=True)
     training.train()
