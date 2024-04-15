@@ -69,11 +69,26 @@ class Training():
             inceptionv3 = self.losses.inceptionv3()
             self.train_srgan(perceptual_loss=inceptionv3, discriminator_path=discriminator_path, generator_path=generator_path)
         elif self.model == "srgan-inceptionresnetv2":
-            discriminator_path, generator_path = self._get_model_paths("srgan-inceptionresnetv2")
+            discriminator_path, generator_path = self._get_model_paths("inceptionresnetv2")
             inceptionresnetv2 = self.losses.inceptionresnetv2()
             self.train_srgan(perceptual_loss=inceptionresnetv2, discriminator_path=discriminator_path, generator_path=generator_path)
-
+        elif self.model == "srgan-mobilenetv2":
+            discriminator_path, generator_path = self._get_model_paths("mobilenetv2")
+            mobilenetv2 = self.losses.mobilenetv2()
+            self.train_srgan(perceptual_loss=mobilenetv2, discriminator_path=discriminator_path, generator_path=generator_path)
+        elif self.model == "srgan-densenet201":
+            discriminator_path, generator_path = self._get_model_paths("densenet201")
+            densenet201 = self.losses.densenet201()
+            self.train_srgan(perceptual_loss=densenet201, discriminator_path=discriminator_path, generator_path=generator_path)
+        elif self.model == "srgan-nasnetlarge":
+            discriminator_path, generator_path = self._get_model_paths("nasnetlarge")
+            nasnetlarge = self.losses.nasnetlarge()
+            self.train_srgan(perceptual_loss=nasnetlarge, discriminator_path=discriminator_path, generator_path=generator_path)
+        elif self.model == "srgan-efficientnetv2l":
+            discriminator_path, generator_path = self._get_model_paths("efficientnetv2l")
+            efficientnetv2l = self.losses.efficientnetv2l()
+            self.train_srgan(perceptual_loss=efficientnetv2l, discriminator_path=discriminator_path, generator_path=generator_path)
 
 if __name__ == "__main__":
-    training = Training(model="srgan-inceptionresnetv2", epochs=159, first_pass=True)
+    training = Training(model="srgan-efficientnetv2l", epochs=159, first_pass=True)
     training.train()

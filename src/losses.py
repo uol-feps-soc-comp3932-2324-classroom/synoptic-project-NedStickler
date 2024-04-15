@@ -50,7 +50,7 @@ class Losses:
         return CustomLoss(densenet201, densenet201_preprocess, scale=1/0.42)
     
     def nasnetlarge(self):
-        nasnetlarge = keras.applications.NASNetLarge(include_top=False, input_shape=self.input_shape)
+        nasnetlarge = keras.applications.NASNetLarge(include_top=False, input_shape=(96, 96, 3))
         nasnetlarge_preprocess = keras.applications.nasnet.preprocess_input
         return CustomLoss(nasnetlarge, nasnetlarge_preprocess, scale=1/1.56)
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     validation_data, _ = load_resisc45_subset("val")
     validation_data = validation_data[:15]
     losses = Losses()
-    loss = losses.vgg19(54)
+    loss = losses.efficientnetv2l()
     output = loss(validation_data)
     average = np.mean([val for val in output.numpy().flatten() if val != 0])
     print(average)
