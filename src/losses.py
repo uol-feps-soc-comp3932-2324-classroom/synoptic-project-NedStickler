@@ -64,7 +64,7 @@ if __name__ == "__main__":
     validation_data, _ = load_resisc45_subset("val")
     validation_data = validation_data[:15]
     losses = Losses()
-    loss = losses.vgg19(54)
+    loss = losses.efficientnetv2l()
     output = loss(validation_data)
     average = np.mean([val for val in output.numpy().flatten() if val != 0])
     print(average)

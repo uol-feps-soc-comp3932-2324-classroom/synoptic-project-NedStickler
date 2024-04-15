@@ -84,8 +84,11 @@ class Training():
             discriminator_path, generator_path = self._get_model_paths("nasnetlarge")
             nasnetlarge = self.losses.nasnetlarge()
             self.train_srgan(perceptual_loss=nasnetlarge, discriminator_path=discriminator_path, generator_path=generator_path)
-
+        elif self.model == "srgan-efficientnetv2l":
+            discriminator_path, generator_path = self._get_model_paths("efficientnetv2l")
+            efficientnetv2l = self.losses.efficientnetv2l()
+            self.train_srgan(perceptual_loss=efficientnetv2l, discriminator_path=discriminator_path, generator_path=generator_path)
 
 if __name__ == "__main__":
-    training = Training(model="srgan-nasnetlarge", epochs=159, first_pass=False)
+    training = Training(model="srgan-efficientnetv2l", epochs=159, first_pass=True)
     training.train()
