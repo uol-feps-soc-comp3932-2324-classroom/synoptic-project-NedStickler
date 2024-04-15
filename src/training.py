@@ -90,5 +90,5 @@ class Training():
             self.train_srgan(perceptual_loss=efficientnetv2l, discriminator_path=discriminator_path, generator_path=generator_path)
 
 if __name__ == "__main__":
-    training = Training(model="srgan-efficientnetv2l", epochs=159, first_pass=True)
+    training = Training(model="srgan-efficientnetv2l", epochs=159, first_pass=False)
     training.train()
