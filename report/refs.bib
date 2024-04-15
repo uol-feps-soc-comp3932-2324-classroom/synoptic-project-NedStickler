@@ -156,6 +156,183 @@ year = {2016},
   year = {2014}
 }
 
+@misc{tensorflowDatasets,
+  title = {TensorFlow Datasets, A collection of ready-to-use datasets},
+  howpublished = {https://www.tensorflow.org/datasets},
+}
+
+@article{antialiasing,
+  author = {Catmull, Edwin},
+  title = {A hidden-surface algorithm with anti-aliasing},
+  year = {1978},
+  issue_date = {August 1978},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {12},
+  number = {3},
+  issn = {0097-8930},
+  url = {https://doi.org/10.1145/965139.807360},
+  doi = {10.1145/965139.807360},
+  abstract = {In recent years we have gained understanding about aliasing in computer generated pictures and about methods for reducing the symptoms of aliasing. The chief symptoms are staircasing along edges and objects that pop on and off in time. The method for reducing these symptoms is to filter the image before sampling at the display resolution. One filter that is easy to understand and that works quite effectively is equivalent to integrating the visible intensities over the area that the pixel covers. There have been several implementations of this method - mostly unpublished - however most algorithms break down when the data for the pixel is complicated. Unfortunately, as the quality of displays and the complexity of pictures increase, the small errors that can occur in a single pixel become quite noticeable. A correct solution for this filter requires a hidden-surface algorithm at each pixel! If the data at the pixel is presented as a depth-ordered list of polygons then the average visible intensity can be found using a polygon clipper in a way similar to that employed by two known hidden-surface algorithms. All of the polygons in a pixel are clipped against some front unclipped edge into two lists of polygons. The algorithm is recursively entered with each new list and halts when the front polygon is clipped on all sides, thereby obscuring the polygons behind. The area weighted colors are then returned as the value to be added to the other pieces in the pixel.},
+  journal = {SIGGRAPH Comput. Graph.},
+  month = {aug},
+  pages = {6–11},
+  numpages = {6},
+  keywords = {Sampling, Hidden-surface removal, Filtering, Computer graphics, Clipping, Aliasing}
+}
+
+@article{blurring,
+  author = {Trentacoste, Matthew and Mantiuk, Rafal and Heidrich, Wolfgang},
+  title = {Blur-Aware Image Downsampling},
+  journal = {Computer Graphics Forum},
+  volume = {30},
+  number = {2},
+  pages = {573-582},
+  keywords = {1.3.3 Computer Graphics: Picture/Image Generation, Line and curve generation},
+  doi = {https://doi.org/10.1111/j.1467-8659.2011.01894.x},
+  url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-8659.2011.01894.x},
+  eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1467-8659.2011.01894.x},
+  abstract = {Abstract Resizing to a lower resolution can alter the appearance of an image. In particular, downsampling an image causes blurred regions to appear sharper. It is useful at times to create a downsampled version of the image that gives the same impression as the original, such as for digital camera viewfinders. To understand the effect of blur on image appearance at different image sizes, we conduct a perceptual study examining how much blur must be present in a downsampled image to be perceived the same as the original. We find a complex, but mostly image-independent relationship between matching blur levels in images at different resolutions. The relationship can be explained by a model of the blur magnitude analyzed as a function of spatial frequency. We incorporate this model in a new appearance-preserving downsampling algorithm, which alters blur magnitude locally to create a smaller image that gives the best reproduction of the original image appearance.},
+  year = {2011}
+}
+
+@misc{residualNets,
+  title={Deep Residual Learning for Image Recognition}, 
+  author={Kaiming He and Xiangyu Zhang and Shaoqing Ren and Jian Sun},
+  year={2015},
+  eprint={1512.03385},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV}
+}
+
+@misc{batchNorm,
+  title={Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift}, 
+  author={Sergey Ioffe and Christian Szegedy},
+  year={2015},
+  eprint={1502.03167},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG}
+}
+
+@ARTICLE{featureExtraction,
+  author={Chen, Yushi and Jiang, Hanlu and Li, Chunyang and Jia, Xiuping and Ghamisi, Pedram},
+  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
+  title={Deep Feature Extraction and Classification of Hyperspectral Images Based on Convolutional Neural Networks}, 
+  year={2016},
+  volume={54},
+  number={10},
+  pages={6232-6251},
+  keywords={Feature extraction;Iron;Hyperspectral imaging;Training;Machine learning;Data mining;Convolutional neural network (CNN);deep learning;feature extraction (FE);hyperspectral image (HSI) classification},
+  doi={10.1109/TGRS.2016.2584107}}
+
+@misc{adamOptimiser,
+  title={Adam: A Method for Stochastic Optimization}, 
+  author={Diederik P. Kingma and Jimmy Ba},
+  year={2017},
+  eprint={1412.6980},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG}
+}
+
+@ARTICLE{imageNet,
+  author={Chen, Yushi and Jiang, Hanlu and Li, Chunyang and Jia, Xiuping and Ghamisi, Pedram},
+  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
+  title={Deep Feature Extraction and Classification of Hyperspectral Images Based on Convolutional Neural Networks}, 
+  year={2016},
+  volume={54},
+  number={10},
+  pages={6232-6251},
+  keywords={Feature extraction;Iron;Hyperspectral imaging;Training;Machine learning;Data mining;Convolutional neural network (CNN);deep learning;feature extraction (FE);hyperspectral image (HSI) classification},
+  doi={10.1109/TGRS.2016.2584107}}
+
+@ARTICLE{dataAugmentation,
+  author={Cui, Xiaodong and Goel, Vaibhava and Kingsbury, Brian},
+  journal={IEEE/ACM Transactions on Audio, Speech, and Language Processing}, 
+  title={Data Augmentation for Deep Neural Network Acoustic Modeling}, 
+  year={2015},
+  volume={23},
+  number={9},
+  pages={1469-1477},
+  keywords={Speech;Training;Acoustics;Neural networks;Feature extraction;Training data;Data models;Data augmentation;stochastic feature mapping;deep neural networks;automatic speech recognition;keyword search},
+  doi={10.1109/TASLP.2015.2438544}}
+
+@article{batchSizeTest,
+  author = {Radiuk, Pavlo},
+  year = {2017},
+  month = {12},
+  pages = {20-24},
+  title = {Impact of Training Set Batch Size on the Performance of Convolutional Neural Networks for Diverse Datasets},
+  volume = {20},
+  journal = {Information Technology and Management Science},
+  doi = {10.1515/itms-2017-0003}
+}
+
+@online{keras,
+  title={Keras},
+  author={Chollet, Francois and others},
+  year={2015},
+  publisher={GitHub},
+  url={https://github.com/fchollet/keras},
+}
+
+@misc{tensorflow,
+  title={ {TensorFlow}: Large-Scale Machine Learning on Heterogeneous Systems},
+  url={https://www.tensorflow.org/},
+  note={Software available from tensorflow.org},
+  author={
+    Mart\'{i}n~Abadi and
+    Ashish~Agarwal and
+    Paul~Barham and
+    Eugene~Brevdo and
+    Zhifeng~Chen and
+    Craig~Citro and
+    Greg~S.~Corrado and
+    Andy~Davis and
+    Jeffrey~Dean and
+    Matthieu~Devin and
+    Sanjay~Ghemawat and
+    Ian~Goodfellow and
+    Andrew~Harp and
+    Geoffrey~Irving and
+    Michael~Isard and
+    Yangqing Jia and
+    Rafal~Jozefowicz and
+    Lukasz~Kaiser and
+    Manjunath~Kudlur and
+    Josh~Levenberg and
+    Dandelion~Man\'{e} and
+    Rajat~Monga and
+    Sherry~Moore and
+    Derek~Murray and
+    Chris~Olah and
+    Mike~Schuster and
+    Jonathon~Shlens and
+    Benoit~Steiner and
+    Ilya~Sutskever and
+    Kunal~Talwar and
+    Paul~Tucker and
+    Vincent~Vanhoucke and
+    Vijay~Vasudevan and
+    Fernanda~Vi\'{e}gas and
+    Oriol~Vinyals and
+    Pete~Warden and
+    Martin~Wattenberg and
+    Martin~Wicke and
+    Yuan~Yu and
+    Xiaoqiang~Zheng},
+  year={2015},
+}
+
+@incollection{pytorch,
+title = {PyTorch: An Imperative Style, High-Performance Deep Learning Library},
+author = {Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam and Bradbury, James and Chanan, Gregory and Killeen, Trevor and Lin, Zeming and Gimelshein, Natalia and Antiga, Luca and Desmaison, Alban and Kopf, Andreas and Yang, Edward and DeVito, Zachary and Raison, Martin and Tejani, Alykhan and Chilamkurthy, Sasank and Steiner, Benoit and Fang, Lu and Bai, Junjie and Chintala, Soumith},
+booktitle = {Advances in Neural Information Processing Systems 32},
+pages = {8024--8035},
+year = {2019},
+publisher = {Curran Associates, Inc.},
+url = {http://papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf}
+}
+
 @incollection{srganImplementation,
   author = {Devjyoti Chakraborty},
   title = {Super-Resolution Generative Adversarial Networks {(SRGAN)}},
