@@ -3,7 +3,7 @@ import keras
 import numpy as np
 from skimage.metrics import structural_similarity, peak_signal_noise_ratio
 from models import SRResNet, SRGAN
-from testing import BlurAndResize
+from visualise import BlurAndResize
 from loaders import load_resisc45_subset
 import glob
 
@@ -11,15 +11,15 @@ import glob
 if __name__ == "__main__":
     ssim_dict = {}
     psnr_dict = {}
-    hr_images = load_resisc45_subset("test")
+    hr_images, labels = load_resisc45_subset("test")
+    hr_images = hr_images[:45]
     lr_images = BlurAndResize(4)(hr_images)
 
     for path in glob.glob("generators/*"):
-        model = path.split("\\")[-1]
-        
+        model = path.split("/")[-1] 
         if model == "srresnet-mse":
             generator = keras.saving.load_model("generators/srresnet-mse/srresnet-mse-e1588-resics45.keras")
-            sr_images = generator(lr_images)
+            sr_images = generator(lr_images).numpy().astype(np.uint8)
             ssim = structural_similarity(hr_images, sr_images, channel_axis=3)
             psnr = peak_signal_noise_ratio(hr_images, sr_images)
             ssim_dict[model] = ssim
