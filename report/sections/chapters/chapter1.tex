@@ -27,14 +27,22 @@ The problem: Super resolution in remote sensing. There exists a variety of solut
 The following section details our investigation into the super-resolution reconstruction problem in remote sensing.
 
 \subsection{Super-resolution reconstruction}
-The super-resolution image reconstruction problem describes the task of generating an HR representation of an LR image. HR imagery has many advantages over LR alternatives, list them here\dots Simply increasing the resolution of imaging hardware is not sufficient due to constraints introduced by increasing the number of pixels. Additionally, the cost of increasing sensor resolution is very high, requiring large budgets, strong incentives and extended periods of time for research and development. The natural next step is to look to algorithmic and software techniques for increasing the resolution of imagery, leading us to the task of SR reconstruction.
+HR imagery provides a greater level of detail than LR imagery, opening up a variety of applications such as training neural networks, urban mapping, predicting weather, tracking land cover, and more~\cite{hrTrainNN, urbanMapping, mapping, cloudCover, vegetationMapping}. One approach to increasing image resolution is to improve imaging hardware. Improving imaging hardware allows for consistent images of the specified resolution, but is costly and time-consuming. As a result, improving hardware requires strong incentives for those who fund such projects, reducing the likelihood for them to go ahead. Additionally, hardware is unable to traverse beyond its resolution limit, causing inflexibility in an environment where requirements are ever-changing~\cite{remoteSensingGANsReview}. 
 
-The SR reconstruction problem can be explained as solving the inverse of the image degradation process~\cite{imageDeg}. The image degradation process consits of three steps, blurring, downsampling, and noise addition.
+The natural next step is to look to computational techniques for increasing the resolution of imagery. The result is the field of super-resolution reconstruction. The super-resolution image reconstruction problem describes the task of generating an HR representation of an LR image~\cite{ref}. Providing a solution to the problem requires solving the inverse of the image degradation process~\cite{imageDeg}.
 \[I_{LR} = \mathcal{D}(\mathcal{B}(I_{HR})) + \mathcal{N}\]
-
-Unfortunately, each stage of the degradation process is a one-way function, meaning we cannot easily calculate the input. Therefore, SR reconstruction presents itself as an ill-posed problem, where multiple inputs could produce the same output, i.e.\ numerous SR reconstructions could be perceived as `correct' for a singe LR image.
+The image degradation process consists of three steps, blurring, downsampling, and noise addition, where each step is a one-way function. This manufactures SR reconstruction as an ill-posed problem, i.e.\ numerous SR reconstructions could be perceived as `correct' for a singe LR image. Three classes of approach to the problem exist, which we cover with the remainder of this section.
 
 \subsubsection{Interpolation-based methods}
+Interpolation-based function by upscaling images and then using some algorithm to calculate the values of the missing pixels~\cite{interpolation}.
+
+Nearest neighbour interpolation uses the nearest neighbour algorithm to calculate the value of the missing pixels introduced by upsampling~\cite{nnInterpolation}. To find the value of an unknown pixel, we calculate the distance to the surrounding known pixels, i.e.\ the pixels known from the input image, and then take the closest known pixel value to our unknown pixel. Using nearest neighbour interpolation means no new pixel values are introduced; we always take a pixel from the input image. This results in an upsampled image with sharp edges.
+
+Bilinear interpolation takes this idea a step further and assumes a linear relationship between pixels~\cite{bilnearInterpolation}. We use this assumption to calculate the missing pixels, where the missing values between two pixels are filled by following the line mapped between the two known pixel values. For example, take two known pixels, $x_0$ and $x_4$ with values 100 and 200 respectively, in an image upsampled by a factor of four, i.e.\ three unknown values between $x_0$ and $x_4$, called $x_1, x_2, x_3$. Bilinear interpolation would result in $x_1, x_2, x_3$ having values 125, 150 and 175 respectively, that is, the values between the known pixels follow a linear relationship. We can extend this to two dimensions, where we can calculate the value of any pixel in an image.
+
+Bicubic interpolation assumes a cubic relationship between two pixels~\cite{bicubicInterpolation}. It makes the explicit assumption that the unknown values between two pixels sit on a curve instead of a line. To calculate this curve, to then calculate the missing pixel values, we must look to the pixel values either side of our known pixels. We use these to first calculate the `gradient' of our known pixels which we can then use to calculate the curve between the two pixels, called a spline. This allows us to place the unknown pixel values on this line. This results in a much smoother transition between known pixels, but fails to capture edge features.
+
+There are numerous adaptations of interpolation based methods, each with different applications and effectiveness, including but not limited to edge directed interpolation, soft decision interpolation and fusion methods~\cite{interpolation}. Interpolation methods are computationally effective and do not require much memory, however the fundamental flaw is they only provide a solution for the downsampling step of the image degradation process, and not anti-blur and denoising properties~\cite{interpolation}. As a result interpolation methods often fall-flat when applied to natural imagery that has undergone the entire image degradation process. 
 
 \subsubsection{Reconstruction-based methods}
 
@@ -103,6 +111,7 @@ The capturing of remote sesing imagery is often described using a three step pro
 \[I_{LR} = D(B(I_{HR})) + \mathcal{N}\]
 $B$ describes the process of blurring, introduced by the optical system capturing the spread of light, $D$ describes the downsampling process enforced by the resolution of the sensing hardware, and $\mathcal{N}$ describes the addition of noise, usually Gaussian, imposed by atmospheric conditions or sensor failures. As a result, many in the field have turned to computational post processing methods, such as super-resolution reconstruction, to remediate the degradation processed introduced by sensing hardware~\cite{superResRemoteSensingOverview}. 
 
+\subsection{Remote sensing-specific super-resolution methods}
 <Section requirements. Have I\dots
 \begin{itemize}
     \item Explained the problem clearly?
