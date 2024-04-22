@@ -5,8 +5,9 @@ import paths
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from typing import Literal
-from PIL import Image
+import matplotlib.pyplot as plt
 import glob
+import cv2
 
 
 def load_resisc45(package_path: str | Path) -> tuple[np.array, np.array]:
@@ -49,9 +50,8 @@ def load_resisc45_subset(dataset_type: Literal["train", "val", "test"]) -> np.ar
 def load_set5():
     lr = []
     hr = []
-    path = r"C:\Users\nedst\Desktop\SelfExSR\data\Set5\image_SRF_4"
-    for file in glob.glob(path + r"\*.png"):
-        img = np.array(Image.open(file).getdata())
+    for file in glob.glob("/tmp/sc20ns/SelfExSR/data/Set5/image_SRF_4/*.png"):
+        img = cv2.imread(file)
         if file.split(".png")[0][-2:] == "HR":
             hr.append(img)
         else:
@@ -62,9 +62,8 @@ def load_set5():
 def load_set14():
     lr = []
     hr = []
-    path = r"C:\Users\nedst\Desktop\SelfExSR\data\Set14\image_SRF_4"
-    for file in glob.glob(path + r"\*.png"):
-        img = np.array(Image.open(file).getdata())
+    for file in glob.glob("/tmp/sc20ns/SelfExSR/data/Set14/image_SRF_4/*.png"):
+        img = cv2.imread(file)
         if file.split(".png")[0][-2:] == "HR":
             hr.append(img)
         else:
@@ -77,6 +76,7 @@ if __name__ == "__main__":
     images, labels = load_resisc45(package_path)
     generate_resisc45_files(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets", package_path, 945, 135, 135)
     
+
 def get_label_mapping() -> dict:
     return {
         0: 'airplane',
