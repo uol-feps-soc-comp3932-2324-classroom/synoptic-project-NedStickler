@@ -9,7 +9,7 @@
 % so many layers of section structure.
 \section{Introduction}
 
-Super-resolution (SR) reconstruction describes the task of estimating a high-resolution (HR) representation of a low-resolution (LR) image~\cite{superResOverview}. It is a fundamental problem in the field of computer vision due to the ill-posed nature of the task: there are many `correct' HR representations of a single LR image~\cite{superResChallenges,superResRemoteSensingOverview}. SR image reconstruction is utilised in many domains, including remote sensing, medical imaging, surveillance, astronomy, and more~\cite{superResRemoteSensingChallenges, superResRemoteSensingOverview, superResMedicalImaging, superResSurveillance, superResAstronomy, superResUses}.
+Super-resolution reconstruction describes the task of estimating a high-resolution representation of a low-resolution image~\cite{superResOverview}. It is a fundamental problem in the field of computer vision due to the ill-posed nature of the task: there are many `correct' HR representations of a single LR image~\cite{superResChallenges,superResRemoteSensingOverview}. SR image reconstruction is utilised in many domains, including remote sensing, medical imaging, surveillance, astronomy, and more~\cite{superResRemoteSensingChallenges, superResRemoteSensingOverview, superResMedicalImaging, superResSurveillance, superResAstronomy, superResUses}.
 
 Remote sensing is the process of gathering data on an object without making physical contact~\cite{remoteSensing}. A predominant feature of remote sensing is aerial or satellite imagery, where images of the Earth are taken from aircraft of satellites respectively~\cite{ref}. Such images have proved useful in a variety of areas, including but not limited to urban planning~\cite{remoteSensingUses}, environmental analysis, land use management, and weather prediction~\cite{remoteSensingGANsReview}. \textcolor{blue}{References needed beyond this point.}
 
@@ -23,15 +23,32 @@ The problem: Super resolution in remote sensing. There exists a variety of solut
 
 % Must provide evidence of a literature review. Use sections
 % and subsections as they make sense for your project.
+\clearpage
 \section{Background research}\label{sec:background_research}
 The following section details our investigation into the super-resolution reconstruction problem in remote sensing.
+\subsection{The problem}
+High-resolution (HR) images provide more detail than low-resolution (LR) images. The superior detail offered by HR imagery sanctions the existence of otherwise challenging exercises, including but not limited to weather prediction, urban mapping, and land cover observation~\cite{urbanMapping, mapping, cloudCover, vegetationMapping}. The most direct way of obtaining HR imagery is to increase the spatial resolution of the imaging hardware, however the amount of light available decreases and noise is introduced into the image~\cite{superResOverview}. An alternative method is to increase chip size to increase capacitance, but this results in undesireable inefficiencies and quickly becomes ineffective~\cite{superResOverview}. Increasing image resolution through hardware improvements is paired with high costs, and rapid changing application requirements do not complement the inflexible nature of such hardware~\cite{ref}. As a result, obtaining HR imagery becomes difficult when only improving imaging hardware.
 
-\subsection{Super-resolution reconstruction}
-HR imagery provides a greater level of detail than LR imagery, opening up a variety of applications such as training neural networks, urban mapping, predicting weather, tracking land cover, and more~\cite{hrTrainNN, urbanMapping, mapping, cloudCover, vegetationMapping}. One approach to increasing image resolution is to improve imaging hardware. Improving imaging hardware allows for consistent images of the specified resolution, but is costly and time-consuming. As a result, improving hardware requires strong incentives for those who fund such projects, reducing the likelihood for them to go ahead. Additionally, hardware is unable to traverse beyond its resolution limit, causing inflexibility in an environment where requirements are ever-changing~\cite{remoteSensingGANsReview}. 
+The natural next step is to look to computational techniques to increase image resolution, leading us to the domain of super-resolution. The super-resolution problem describes the task of generating an HR representation from an LR image~\cite{ref}. We can formalise the problem as the inverse of the image degradation process, i.e.\ the process that turns some HR image into an LR image~\cite{imageDeg}. The image degradation process is as follows:
+\begin{equation}\label{eq:image_deg}
+    I_{LR} = D(B(I_{HR})) + \mathcal{N}
+\end{equation}
+This consists of three steps one-way functions: blurring ($B$), downsampling ($D$), and finally noise addition ($\mathcal{N}$). As each stage of the process is a one-way function the SR problem is ill-posed, i.e.\ multiple SR reconstructions could be perceived as `correct' for a single LR image~\cite{ref}.
 
-The natural next step is to look to computational techniques for increasing the resolution of imagery. The result is the field of super-resolution reconstruction. The super-resolution image reconstruction problem describes the task of generating an HR representation of an LR image~\cite{ref}. Providing a solution to the problem requires solving the inverse of the image degradation process~\cite{imageDeg}.
-\[I_{LR} = \mathcal{D}(\mathcal{B}(I_{HR})) + \mathcal{N}\]
-The image degradation process consists of three steps, blurring, downsampling, and noise addition, where each step is a one-way function. This manufactures SR reconstruction as an ill-posed problem, i.e.\ numerous SR reconstructions could be perceived as `correct' for a singe LR image. Three classes of approach to the problem exist, which we cover with the remainder of this section~\cite{superResRemoteSensingOverview}.
+Remote sensing describes the process of measuring the properties of objects without making physical contact, typically executed with aircraft or satellites~\cite{remoteSensing,remoteSensingImageProcessing}. As a species we rely on remote sensing for a variety of important practices, spanning numerous domains. This includes environmental assessment, global climate change detection, agriculture monitoring, renewable and non-renewable resource observation, meteorology and general weather analysis, land mapping, and military applications~\cite{remoteSensingImageProcessing, remoteSensingUses, remoteSensingGANsReview}.
+
+Many spatial analyses require HR remote sensing imagery to be possible~\cite{ref}. We measure resolution of remote sensing imagery with spatial resolution, which is the physical area occupied by a single image pixel~\cite{ref}. In commerically available remote sensing datasets this ranges from 10cm to 1000m per pixel, with different applications for different resolutions~\cite{remoteSensingImageProcessing}. In many instances the resolution of imagery available for remote sensing application is too low, so it becomes very useful to construct HR imagery from LR inputs. Interestingly, we are able to describe equation~\ref{eq:image_deg} in real terms using remote sensing as our context. The blurring function, $B$, is introduced by the optical system capturing the spread of light, the downsampling function, $D$, describes the downsampling process enforced by the resolution of the sensing hardware, and $\mathcal{N}$ describes the addition of noise, usually Gaussian, imposed by atmospheric conditions or sensor failures~\cite{superResRemoteSensingOverview,superResRemoteSensingChallenges, remoteSensingDeepLearningReview, remoteSensingGANsReview}.
+
+It is easy to see that SR has great potential in the field of remote sensing. This natural pairing, along with the importance of many of the practices conducted using remote sensing imagery, results in an interesting problem to solve with positive consequnces if successful. Therefore, investigating and developing solutions to the SR problem in remote sensing is the main goal of this project.
+
+\subsection{Super-resolution taxonomy}
+
+\subsection{Existing solutions}
+\subsubsection{Interpolation-based}
+\subsubsection{Reconstruction-based}
+\subsubsection{Learning-based}
+\subsubsection{Additional solutions}
+\subsection{Project goals}
 
 \subsubsection{Interpolation-based methods}
 Interpolation-based function by upscaling images and then using some algorithm to calculate the values of the missing pixels~\cite{interpolation}.
@@ -116,19 +133,6 @@ Peak signal-to-noise ration (PSNR) is used to compare some processed signal to i
 
 \subsubsection{Mean opinion score}
 Mean opinion score (MOS) is used as a performance metric across numerous domains. MOS relies on human judgement of outputs, where judgements are given as a 1 to 5 Likert scale score. The average of all scores provided by all participants is taken to provide the final MOS for an output. MOS is very simple to understand and compute, however has the fundamental limitation of being entirely opinion-based and is not deterministic. MOS requires numerous human participants to review images, and as a result suffers from the standard issues encountered when operating with human participants such as\dots
-
-\subsection{Remote sensing}
-Remote sensing describes the process of measuring the properties of objects without making physical contact, typically executed with aircraft or satellites~\cite{remoteSensing,remoteSensingImageProcessing}. As a species we rely on remote sensing for a variety of important practices, spanning numerous domains. This includes, but is not limited to, environmental assessment, global climate change detection, agriculture monitoring, renewable and non-renewable resource observation, meteorology and general weather analysis, land mapping, and military applications~\cite{remoteSensingImageProcessing, remoteSensingUses, remoteSensingGANsReview}.
-
-We may split remote sensing data into two categories: image-centered and data-centered. Image centered remote sensing data primarily focuses on the spatial characteristics of the object being measured, hence the representation as an image~\cite{remoteSensingImageProcessing}. The data-centered category describes the analysis of data captured using different spectral bands, for example to measure forest density, atmospheric coniditions, and ocean properties~\cite{remoteSensingImageProcessing}.
-
-Performing spatial analysis using the image-centered category of remote sensing data requires a certain level of clarity to be possible. We measure such clarity using spatial resolution, which describes the physical area represented by a single image pixel~\cite{ref}. Spatial resolutions vary massively based on sensing hardware and application requirements, yielding resolutions between 10cm and 1000m per pixel~\cite{remoteSensing,remoteSensingImageProcessing}. Measuring the melting rate of glaciers requires a large spatial resolution, whereas performing military surveillance on a dwelling would require a spatial resolution from the lower end of the spectrum.
-
-Many applications of remote sensing require HR imagery to be possible. HR imagery is composed of a large number of pixels, meaning more pixels are available to represent objects and a greater level of detail is achieved. Unfortunately, building remote sensing hardware capable of capturing HR imagery becomes difficult due to physical constraints and exceptionally high costs~\cite{ref}. 
-
-The capturing of remote sesing imagery is often described using a three step process, where the information recieved by sensors is blurred, then downsampled, with a final addition of noise~\cite{superResRemoteSensingOverview, superResRemoteSensingChallenges, remoteSensingDeepLearningReview, remoteSensingGANsReview}. The process can be expressed with the following equation:
-\[I_{LR} = D(B(I_{HR})) + \mathcal{N}\]
-$B$ describes the process of blurring, introduced by the optical system capturing the spread of light, $D$ describes the downsampling process enforced by the resolution of the sensing hardware, and $\mathcal{N}$ describes the addition of noise, usually Gaussian, imposed by atmospheric conditions or sensor failures. As a result, many in the field have turned to computational post processing methods, such as super-resolution reconstruction, to remediate the degradation processed introduced by sensing hardware~\cite{superResRemoteSensingOverview}. 
 
 \subsection{Remote sensing-specific super-resolution methods}
 <Section requirements. Have I\dots
