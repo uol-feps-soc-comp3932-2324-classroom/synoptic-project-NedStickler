@@ -5,6 +5,8 @@ import paths
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from typing import Literal
+from PIL import Image
+import glob
 
 
 def load_resisc45(package_path: str | Path) -> tuple[np.array, np.array]:
@@ -44,12 +46,37 @@ def load_resisc45_subset(dataset_type: Literal["train", "val", "test"]) -> np.ar
     return np.load(paths.REPO_PATH + f"/datasets/resisc45_{dataset_type}.npy"), np.load(paths.REPO_PATH + f"/datasets/resisc45_{dataset_type}_labels.npy")
 
 
+def load_set5():
+    lr = []
+    hr = []
+    path = r"C:\Users\nedst\Desktop\SelfExSR\data\Set5\image_SRF_4"
+    for file in glob.glob(path + r"\*.png"):
+        img = np.array(Image.open(file).getdata())
+        if file.split(".png")[0][-2:] == "HR":
+            hr.append(img)
+        else:
+            lr.append(img)
+    return lr, hr
+    
+
+def load_set14():
+    lr = []
+    hr = []
+    path = r"C:\Users\nedst\Desktop\SelfExSR\data\Set14\image_SRF_4"
+    for file in glob.glob(path + r"\*.png"):
+        img = np.array(Image.open(file).getdata())
+        if file.split(".png")[0][-2:] == "HR":
+            hr.append(img)
+        else:
+            lr.append(img)
+    return lr, hr
+ 
+
 if __name__ == "__main__":
     package_path = r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\.venv\Lib\site-packages\tensorflow_datasets"
     images, labels = load_resisc45(package_path)
     generate_resisc45_files(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets", package_path, 945, 135, 135)
-
-
+    
 def get_label_mapping() -> dict:
     return {
         0: 'airplane',
