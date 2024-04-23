@@ -12,7 +12,7 @@ class GANSaver(keras.callbacks.Callback):
     def __init__(self, save_path: str, model: str, epochs: int, lr: float) -> None:
         super().__init__()
         self.best_loss = 999_999_999
-        self.root_path = f"{save_path}/{model}/{model}-e{epochs}-lr{lr}-resics45/"
+        self.root_path = f"{save_path}/{model}/{model}-e{epochs}-lr{lr}-resisc45/"
         if not os.path.exists(self.root_path):
             os.mkdir(self.root_path)
     
@@ -34,11 +34,11 @@ def visualise_generator(generator: keras.Model, lr_imgs: np.array, hr_imgs: np.a
     fig, axs = plt.subplots(num_sr_imgs, 3)
     fig.set_size_inches(9, num_sr_imgs * 3)
     axs[0, 0].set_title("LR")
-    axs[0, 1].set_title("HR")
-    axs[0, 2].set_title("SR")
+    axs[0, 1].set_title("SR")
+    axs[0, 2].set_title("HR")
 
     for i, img in enumerate(sr_imgs):
         axs[i, 0].imshow(lr_imgs[i])
-        axs[i, 1].imshow(hr_imgs[i])
-        axs[i, 2].imshow(img.numpy().astype(np.uint8))
+        axs[i, 1].imshow(img.numpy().astype(np.uint8))
+        axs[i, 2].imshow(hr_imgs[i])
     plt.show()
