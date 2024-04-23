@@ -1,6 +1,21 @@
 \chapter{Results}
 \label{chapter3}
 
+\section{Implementation}
+The model architecture and training functionality was implemented in \code{Python} primarily using the \code{Keras} library.\ \code{Keras} provides interfaces for implementing neural network applications and enables the implementation of the solution architecture as described in section~\ref{subsec:architecture}. Creating a machine learning model is as simple as instantiating and ordering \code{Keras} classes that represent neural network layers. Following the model definition we can compile it with the appropriate loss and optimiser and expose it to training data.\ \code{Keras} then handles the low-level training operations such as steepest gradient descent, backpropagation etc. The final model weights can be saved for performance testing and future use.
+
+The above approach works well for simple neural networks that do not require much customisation, however this will not be sufficient for building SRGAN due to the complex training functionality as described in section~\ref{subsec:training_functionality}. Thankfully \code{Keras} provides the option to expose lower-level features of the library, effectively allowing us to take control of the training procedures and implement our own functionality. This is achieved through subclassing the \code{keras.Model} class and overriding the training step. Much of the customisation in \code{Keras} works this way, where library classes are subclassed and required methods are overridden. We will first implement SRResNet as its own class, where we define the model architecture and the training functionality. This allows us to independently define and train SRResNet, ready to be used as the initial generator model for SRGAN training. We take the same approach for the SRGAN model, where we define the network architecture using the \code{keras} interface. We then override the training step and implement the SRGAN training functionality. Whilst implementing the SRGAN model we use documentation from Keras and an external source to aid us when debugging logic issues~\cite{keras, srganImplementation}.
+
+In addition to overriding the training step we override the test step. At the end of each epoch a validation test is executed where the model is validated on unseen imagery. For the test step the loss is calculated on the input imagery the same as the respective SRResNet and SRGAN train steps, with the difference being that the loss is not used to influence the model weights. Instead, the validation loss is used to identify the configuration of model weights that produce the best SR reconstructions.
+
+Accompanying the model implementations are various \code{Python} files, designed to offer support to the model definition and training process. These include definitions of custom layers where \code{Keras} does not offer functionality, custom losses as described in section~\ref{subsec:improving_loss}, data loading interfaces, training execution, and general utilities. A full list of \code{Python} files and their contributions to the implementation are listed in apendix~\ref{ref}.
+
+\section{Training results}
+
+\section{Findings}
+
+\section{Achieving project goals}
+
 <Results, evaluation (including user evaluation) {\em etc.} should be described in one or more chapters. See the `Results and Discussion' criterion in the mark scheme for the sorts of material that may be included here.>
 
 <Results and discussion requirements. Is it clear that\dots
@@ -12,16 +27,10 @@
 \end{itemize}
 >
 
-\section{Model performance}
-
-SRResNet-MSE trained well
 SRGAN trained poorly on first iteration with learning rate of 10e-4
 \begin{itemize}
     \item PSNR
     \item SSIM
     \item MOS
 \end{itemize}
-\lipsum[8]
 
-\section{Model benchmarks}
-\lipsum[12]
