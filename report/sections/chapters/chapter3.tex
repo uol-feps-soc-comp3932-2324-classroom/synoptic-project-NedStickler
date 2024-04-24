@@ -2,6 +2,14 @@
 \label{chapter3}
 
 \section{Implementation}
+
+\subsection{Data loaders}
+
+\subsection{Custom \code{Keras} components}
+
+\subsection{SRResNet}
+
+\subsection{SRGAN}
 The model architecture and training functionality was implemented in \code{Python} primarily using the \code{Keras} library.\ \code{Keras} provides interfaces for implementing neural network applications and enables the implementation of the solution architecture as described in section~\ref{subsec:architecture}. Creating a machine learning model is as simple as instantiating and ordering \code{Keras} classes that represent neural network layers. Following the model definition we can compile it with the appropriate loss and optimiser and expose it to training data.\ \code{Keras} then handles the low-level training operations such as steepest gradient descent, backpropagation etc. The final model weights can be saved for performance testing and future use.
 
 The above approach works well for simple neural networks that do not require much customisation, however this will not be sufficient for building SRGAN due to the complex training functionality as described in section~\ref{subsec:training_functionality}. Thankfully \code{Keras} provides the option to expose lower-level features of the library, effectively allowing us to take control of the training procedures and implement our own functionality. This is achieved through subclassing the \code{keras.Model} class and overriding the training step. Much of the customisation in \code{Keras} works this way, where library classes are subclassed and required methods are overridden. We will first implement SRResNet as its own class, where we define the model architecture and the training functionality. This allows us to independently define and train SRResNet, ready to be used as the initial generator model for SRGAN training. We take the same approach for the SRGAN model, where we define the network architecture using the \code{keras} interface. We then override the training step and implement the SRGAN training functionality. Whilst implementing the SRGAN model we use documentation from Keras and an external source to aid us when debugging logic issues~\cite{keras, srganImplementation}.
@@ -10,9 +18,98 @@ In addition to overriding the training step we override the test step. At the en
 
 Accompanying the model implementations are various \code{Python} files, designed to offer support to the model definition and training process. These include definitions of custom layers where \code{Keras} does not offer functionality, custom losses as described in section~\ref{subsec:improving_loss}, data loading interfaces, training execution, and general utilities. A full list of \code{Python} files and their contributions to the implementation are listed in apendix~\ref{ref}.
 
-\section{Training results}
+\subsection{Custom losses}
 
-\section{Findings}
+\subsection{Training}
+
+\subsection{Testing}
+
+\subsection{Utilities}
+
+\section{Training}
+The following section describes the steps taken to determine the parameters used for training and overviews the training durations.
+
+\subsection{Parameter selection}\label{subsec:parameter_selection}
+As explained in section~\ref{subsec:procedure}, we use a systematic approach to determine the training parameters, based on the memory constraints caused by our training hardware. We execute the following procedure.
+
+The number of image classes in the NWPU-RESISC45 dataset is considered first. There are 45 distinct image classes, as listed in section~\ref{subsec:resisc45}. To avoid unintentionally overfitting our SR reconstruction model to a specific class we must include an equal number of images from each of the 45 classes, consequently requiring our dataset size to be a multiple of 45. Therefore, it is also required that the batch size factors into 45 to ensure that the entire dataset is visited over a single epoch and no training examples are skipped due to division remainders.
+
+A larger batch size produces a smoother gradient and therefore more stable training, however the hardware available restricts how large the batch size can be. Employing a method of trial and error identifies a batch size suitable for training the SR reconstruction model whilst adhering to memory constraints. A sample dataset of size 450 is used to test different batch sizes, with the intention of later increasing the dataset size to increase training examples. Firstly, training of the SRGAN model begins with a batch size and a single image patch per training example. The system attempts to allocate the required memory resources and computing power from the GPU but is unable to, resulting in an out-of-memory (OOM) exception. The batch size is then reduced, and the process is repeated until no OOM exception occurs. In practice the first batch size selected was $b = 30$, which resulted in an OOM exception. This value was reduced until a final batch size of $b = 15$ was selected. The next step was to test the memory constraints on the number of patches taken from each training example. A similar approach was taken to selecting batch size, where the number of patches was reduced until running model training no longer yielded an OOM exception. The initial value was $p = 16$, as suggested by Ledig et al., with the test yielding $p = 10$ patches per training instance. Further testing showed that for $p = 10$ and $p = 9$ that training would begin but that halt at seemingly random points in the process. To combat this, the number of patches was further reduced to $p = 8$, which yielded no OOM exceptions. Finally, the dataset size was selected by employing the same trial and error approach, where a dataset size of $n = 945$ was yielded. The final sizes are a batch size of $b = 15$, number of patches $p = 10$ and dataset size $n = 945$. Specific details on how the dataset subset was generated can be found in section~\ref{subsec:data_preparation}. We can also calculate the number of epochs and the number of steps per epoch (update iterations). An epoch step is defined as model training for one batch. Each image only appears once across all batches, meaning our total number of steps per epoch is:
+\[\frac{\textnormal{Dataset size}}{\textnormal{Batch size}} = \frac{945}{15} = 63\]
+Following the calculation of the steps per epoch, we are able to calculate the number of epochs required for $10^5$ and $10^4$ update iterations:
+\[\Bigg\lceil\frac{10^5}{\textnormal{Steps per epoch}}\Bigg\rceil = \Bigg\lceil\frac{10^5}{63}\Bigg\rceil = 1588\]
+\[\Bigg\lceil\frac{10^4}{\textnormal{Steps per epoch}}\Bigg\rceil = \Bigg\lceil\frac{10^4}{63}\Bigg\rceil = 159\]
+The selection of batch size, dataset size and number of patches allows for remaining training details to be considered. As suggested by Ledig et al.\ the Adam optimiser is used with $\beta_1 = 0.9$, the SRResNet model is trained with a learning rate of $10^{-4}$, the initial training for the SRGAN model is trained with a learning rate of $10^{-4}$, and the fine-tuning training is executed with a learning rate of $10^{-5}$. The pretrained SRResNet model is used as the initial generator of the SRGAN model to reduce the likelihood of undesirable local optima~\cite{srgan}. The Ledig et al.\ procedure suggests $10^6$ update iterations for the pretrained SRResNet model. With the available training hardware and batch size, dataset size and number of patches training would take $\sim$48 hours. Due to the University of Leeds machines restarting every day, training the model for that long becomes tricky. As a result of this it makes sense to reduce the number of update iterations to $10^{5}$, reducing the training time to just over four hours. In interest of maintaining the guidance set out by Ledig et al.\ the number of update iterations for the first pass and fine-tune training of the SRGAN model should also be reduced by a factor of 10 to be proportional, yielding $10^4$ update iterations. Table~\ref{table:model_training} provides a summary of the training parameters for all training scenarios.
+\begin{table}
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        {} & \textbf{SRResNet} & \textbf{SRGAN 1\textsuperscript{st} pass} & \textbf{SRGAN 2\textsuperscript{nd} pass} \\
+        \midrule
+        \textbf{Batch size} & 15 & 15 & 15\\ 
+        \textbf{Patches} & 8 & 8 & 8 \\
+        \textbf{Dataset size} & 945 & 945 & 945\\
+        \textbf{Adam $\beta_1$} & 0.9 & 0.9 & 0.9\\
+        \textbf{Learning rate} & $10^{-4}$ & $10^{-4}$ & $10^{-5}$ \\
+        \textbf{Update iterations} & $10^5$ & $10^4$ & $10^4$ \\
+        \textbf{Epochs} & 1588 & 159 & 159 \\
+        \textbf{Steps per epoch} & 63 & 63 & 63 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Summary of the details and parameters used for model training.}
+    \label{table:model_training}
+\end{table}
+
+\subsection{Training durations}
+It is worth mentioning the significant time invested towards training each of the solutions. Training SRResNet with MSE loss yielded \~144ms per update iteration, giving a total training time of just over four hours. The training times of the SRGAN models varied based on the classifier used for the perceptual loss component. Deeper classifiers result in a forward propagation time, which is reflected in the time per update iteration. MobileNetV2 recorded the lowest time per update iteration at \~400ms per update iteration, yielding a total training time of just over an hour. EfficientNetV2L produced the longest per update iteration at \~750ms per update iteration, yielding a total time of just over two hours. These training times are for a single training pass, so fully training each SRGAN model takes twice as long. Taking the total training time across all models yields \~35 hours.
+
+The above calculations are not inclusive of the extensive time spent training models when implementing the solutions. Model training was run throughout the entire development process to test architecture implementations, loss functions, outputs, training parameters etc. The total duration of these training times was not accurately tracked, so we cannot provide an exact estimate, however it greatly exceeded the total training times mentioned above. The state of these trained models are available in the history of the project repository. Whilst not necessary for the final solutions, executing this repeated training for testing purposes ensured correct implementations and resulted in the quality of the final solutions. 
+
+\section{Solution performance}
+As discussed in section~\ref{sec:measuring_performance}, we use SSIM and PSNR to measure the performance of our final models. This is executed using three separate test sets: our NWPU-RESISC45 test set, Set5, and Set14. Using both remote sensing and natural imagery allows us to measure if our solution is successful in performing SR reconstruction for remote sensing imagery specifically, as well as giving a comparison between the various custom perceptual loss components.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{llll}
+        \toprule
+        {} & \textbf{nwpu-resisc45} & \textbf{set5} & \textbf{set14} \\ 
+        \midrule
+        \textbf{srresnet-mse} & 0.9235 & 0.7643 & 0.6563 \\ 
+        \textbf{srgan-vgg22} & 0.8994 & 0.5831 & 0.5131 \\ 
+        \textbf{srgan-vgg54} & 0.8878 & 0.6686 & 0.6030 \\ 
+        \textbf{srgan-xception} & 0.8935 & 0.6722 & 0.6018 \\ 
+        \textbf{srgan-resnet152v2} & 0.8916 & 0.6613 & 0.6021 \\ 
+        \textbf{srgan-inceptionv3} & 0.8973 & 0.6860 & 0.6164 \\ 
+        \textbf{srgan-inceptionresnetv2} & 0.9018 & 0.6824 & 0.6103 \\ 
+        \textbf{srgan-mobilenetv2} & 0.8928 & 0.6925 & 0.6169 \\ 
+        \textbf{srgan-densenet201} & 0.9045 & 0.6978 & 0.6299 \\ 
+        \textbf{srgan-nasnetlarge} & 0.8930 & 0.6637 & 0.5966 \\ 
+        \textbf{srgan-efficientnetv2l} & 0.8958 & 0.5750 & 0.5263 \\ 
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{llll}
+        \toprule
+        {} & \textbf{nwpu-resisc45} & \textbf{set5} & \textbf{set14} \\ 
+        \midrule
+        \textbf{srresnet-mse} & 24.02 & 22.93 & 21.65 \\ 
+        \textbf{srgan-vgg22} & 23.05 & 21.53 & 20.84 \\ 
+        \textbf{srgan-vgg54} & 22.85 & 22.18 & 21.76 \\ 
+        \textbf{srgan-xception} & 23.13 & 21.28 & 21.01 \\ 
+        \textbf{srgan-resnet152v2} & 22.90 & 22.09 & 21.83 \\ 
+        \textbf{srgan-inceptionv3} & 23.27 & 21.52 & 21.29 \\ 
+        \textbf{srgan-inceptionresnetv2} & 23.39 & 22.25 & 21.61 \\ 
+        \textbf{srgan-mobilenetv2} & 22.42 & 20.61 & 20.39 \\ 
+        \textbf{srgan-densenet201} & 23.47 & 21.63 & 21.79 \\ 
+        \textbf{srgan-nasnetlarge} & 23.03 & 20.86 & 20.96 \\ 
+        \textbf{srgan-efficientnetv2l} & 22.54 & 19.65 & 20.01 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Solution visualisation}
 
 \section{Achieving project goals}
 
@@ -26,11 +123,4 @@ Accompanying the model implementations are various \code{Python} files, designed
     \item The criteria have been used professionally to judge whether the problem has been solved?
 \end{itemize}
 >
-
-SRGAN trained poorly on first iteration with learning rate of 10e-4
-\begin{itemize}
-    \item PSNR
-    \item SSIM
-    \item MOS
-\end{itemize}
 
