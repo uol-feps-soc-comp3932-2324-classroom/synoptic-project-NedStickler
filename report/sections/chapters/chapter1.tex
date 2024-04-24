@@ -42,8 +42,6 @@ Many spatial analyses require HR remote sensing imagery to be possible~\cite{ref
 
 It is easy to see that SR has great potential in the field of remote sensing. This natural pairing, along with the importance of many of the practices conducted using remote sensing imagery, results in an interesting problem to solve with positive consequences if successful. Therefore, investigating and developing solutions to the SR problem in remote sensing is the main goal of this project.
 
-\subsection{Project goals}
-
 \subsection{Taxonomy of super-resolution solutions}
 Before embarking on the investigation into various SR methods we must consider the taxonomy of the solution space. There are numerous classifications we could consider based on various criteria. For example, we may choose to organise solutions based on the domain they operate in, resulting in a classification of either frequency domain or spatial domain~\cite{superResRemoteSensingOverview}. Alternatively, we could choose to split based on the knowledge of parameters we possess beforehand, leading to a classification of blind or non-blind~\cite{superResRemoteSensingOverview}. The complex nature of solutions, along with the increase of hybridised proposals, leads Fernandez-Beltran \etal\ to propose a simplified taxonomy of SR solutions. This taxonomy groups solutions based on their functional properties, and yields three categories: reconstruction-based, learning-based, and hybrid-based ~\cite{superResRemoteSensingOverview}. For this project we will consider each of these classes as described by Fernandez-Beltran \etal\ We also consider interpolation-based methods, primarily used for upsampling purposes, and some additional methods used specifically to produce HR remote sensing imagery.
 
@@ -89,6 +87,19 @@ Learning-based methods aim to learn a generalised relationship between LR and HR
 \subsection{Hybrid solutions}
 
 \subsection{Additional solutions}
+
+\subsection{Project goals}
+Solve the super-resolution reconstruction problem in remote-sensing
+
+Select a neural network-based model for the solution
+
+Train the neural network-based model with a remote sensing dataset
+
+Improve the neural network-based model by introducing a model adaptation
+
+Evaluate the performance of the model using appropraite metrics
+
+Beat the performance of bibcubic interpolation
 
 <Section requirements. Have I\dots
 \begin{itemize}

@@ -2,29 +2,34 @@
 \label{chapter3}
 
 \section{Implementation}
+The following sections outlines the implementation steps taken to ensure the success of this project. This follows the method as described in the previous chapter, and detail additional functionalities introduced to aid the main implementation steps.
 
 \subsection{Data loaders}
+The first implementation consideration was the project data loaders. Before we can start building solutions we require our dataset, so implementing the data loaders is a priority. The \code{loaders.py} file implements the functionality as overviewed below. As discussed earlier, the NWPU-RESISC45 dataset is readily available with a prebuilt data loader from \code{TensorFlow Datasets}, so all we require is a function that wraps the \code{TensorFlow Datasets} loading function, providing us with a single function to call whenever we wish to load the dataset. The remainder of the \code{loaders.py} file offers functionality for loading the Set5 and Set14 evalation datasets, data loaders specifically for Linux-based file systems, and the function used to generate our stratified subset of the NWPU-RESISC45 dataset. The main goal of the \code{loaders.py} file is to provide a simple interface for the loading of our datasets where needed.
 
 \subsection{Custom \code{Keras} components}
+As explained in section~\ref{sec:tools_and_practices}, our implementation uses \code{Keras} to implement the neural network models. Good development practice with \code{Keras} involves creating custom components that can then be used in the exact same fashion as the native \code{Keras} components. In this project we implemented several custom \code{Keras} components to aid the solution development as a whole. The first of these was the custome \code{PixelShuffle} layer, which provides the functionality for upsampling the image during a forward pass of SRGAN.\@\code{Keras} did not provide the required functionality, so it was implemented by subclassing the \code{keras.Layer} class and overriding the call fucntion so that it implemented the desired functionality. Alongside a custom layer, we also implemented two custom models to provide preprocessing and utility functionality. The first of these was the custom model \code{CropAndResize}, which is used to preprocess the HR ground truth images into the LR inputs used for model training. This model takes an image or set of images, selects a random $96 \times 96$ patch for each image, and then downsamples using bicubic interpolation with a downsampling factor of four. This implements the image patch generation mechanism. The second instance was the custom model \code{CustomLoss}, which was used to provide the forward pass through a pretrained classifier to retrieve the feature maps required for the perceptual loss component of SRGAN training. This custom loss model acted as a useful utility as it allowed us to pass the model to the class and then retrieve a model that produces the feature maps of an input image. Implementing these models by subclassing \code{Keras} classes is inline with good development practice and provides reusable classes and functions.
 
 \subsection{SRResNet}
+The implementation of SRResNet, the generator component of SRGAN, follows the same development practice as described in the previous section, but deserves its own overview due to the importance of the model in our solution. By subclassing the \code{keras.Model} interface we are able to customise many of the procedures involved with training SRResNet. The model architecture is implemented using native \code{keras.layers}. The functionality and structure of the layers themselves can be found in section~\ref{subsec:architecture}. Taking a variety of patches every update iteration requires us to customise the \code{train\_step} method, which decides how the model is trained on the input dataset. The \code{train\_step} function begins with the generation of the data for that iteration, where eight patches are taken from each of the 15 images in that batch. The patches are downsampled and then fed through SRResNet in its current state. The MSE is calcualted between the generated image and the HR image to provide us with the total loss for that training iteration. Gradient descent in \code{Keras} is implemented using the \code{GradientTape} context to automatically calculate gradients. The calcualted gradients were then used to update the gradients and step the model state towards producing a better SR reconstruction result. The \code{test\_step} function implements the calculation of the validation loss at each epoch end. This follows the exact same process as the \code{train\_step} function, however a validation dataset is used and the final MSE is used to measure the performance of the model after each training epoch, meaning the model weights are not changed.\ \textcolor{blue}{Need to say why good and bad.}
 
 \subsection{SRGAN}
-The model architecture and training functionality was implemented in \code{Python} primarily using the \code{Keras} library.\ \code{Keras} provides interfaces for implementing neural network applications and enables the implementation of the solution architecture as described in section~\ref{subsec:architecture}. Creating a machine learning model is as simple as instantiating and ordering \code{Keras} classes that represent neural network layers. Following the model definition we can compile it with the appropriate loss and optimiser and expose it to training data.\ \code{Keras} then handles the low-level training operations such as steepest gradient descent, backpropagation etc. The final model weights can be saved for performance testing and future use.
-
-The above approach works well for simple neural networks that do not require much customisation, however this will not be sufficient for building SRGAN due to the complex training functionality as described in section~\ref{subsec:training_functionality}. Thankfully \code{Keras} provides the option to expose lower-level features of the library, effectively allowing us to take control of the training procedures and implement our own functionality. This is achieved through subclassing the \code{keras.Model} class and overriding the training step. Much of the customisation in \code{Keras} works this way, where library classes are subclassed and required methods are overridden. We will first implement SRResNet as its own class, where we define the model architecture and the training functionality. This allows us to independently define and train SRResNet, ready to be used as the initial generator model for SRGAN training. We take the same approach for the SRGAN model, where we define the network architecture using the \code{keras} interface. We then override the training step and implement the SRGAN training functionality. Whilst implementing the SRGAN model we use documentation from Keras and an external source to aid us when debugging logic issues~\cite{keras, srganImplementation}.
-
-In addition to overriding the training step we override the test step. At the end of each epoch a validation test is executed where the model is validated on unseen imagery. For the test step the loss is calculated on the input imagery the same as the respective SRResNet and SRGAN train steps, with the difference being that the loss is not used to influence the model weights. Instead, the validation loss is used to identify the configuration of model weights that produce the best SR reconstructions.
-
-Accompanying the model implementations are various \code{Python} files, designed to offer support to the model definition and training process. These include definitions of custom layers where \code{Keras} does not offer functionality, custom losses as described in section~\ref{subsec:improving_loss}, data loading interfaces, training execution, and general utilities. A full list of \code{Python} files and their contributions to the implementation are listed in apendix~\ref{ref}.
+SRGAN followed a very similar implementation procedure to SRResNet. The model implements the discriminator component using the \code{keras.layers} interface, and takes the pretrained generator from the SRResNet model itself. The train step does takes image patches in the same way as the SRResNet \code{train\_step}, however the loss process is different. The generator and discriminator losses are calculated as described in the previous chapter, using the inbuilt \code{keras.losses.BinaryCrossentropy} loss and each of the custom losses. These losses are then used to update the generator and discriminator weights using gradient descent via \code{GradientTape}. The validation step is implemented the same as SRResNet, expcept the appropriate generator and discriminator losses are reported instead of the MSE loss.\ \textcolor{blue}{Need to say why good and bad.}
 
 \subsection{Custom losses}
+The custom losses we create using the feature maps from pretrained classifiers can be found in the \code{losses.py} file. This file implements a class that contains a get method for every single custom loss we will use. Each of these get methods simply retrieves the pretrained classifier, strips the fully connected layers off the top, and instanciates the \code{CustomLoss} class described earlier to provide a model that calculates the feature maps for the image input. The \code{losses.py} is exists primarily to ensure reusable code and avoids redefining new loss functions within the training file. The result is a simple method for retrieving custom loss functions through a single method call.
 
 \subsection{Training}
+The \code{training.py} file organises the model training process due to the large number of models we need to train for this project. The file contains several functions, each designed to take arguments that decide how that particular model is trained. There is one function for SRResNet, and another for SRGAN.\@ The SRGAN model takes the \code{CustomLoss} class as an argument, which is then used as the perceptual loss component. The main reasoning for the \code{training.py} file is to create a simple interface for begining training. The model is implemented as a class, where calling the \code{train} method of that class with automatically begin training the model. The \code{train} method takes the model name and the number of epochs as arguments, and the class handles the rest of the setup and begins training. This enabled a more efficient workflow where we did not have to extensively edit code with every new model, but instead just passed two different arguments to a single method.
 
 \subsection{Testing}
+Testing model performance was implemented as a script in the \code{testing.py} file. We chose to use a simple script as the process only needs to execute once, as we can save the SSIM and PSNR model results. This file begins by loading the NWPU-RESISC45 test set, Set5, and Set14. Each of the saved models are then loaded. SR reconstructions of each of the LR evaluation set images are created, and the comparison between SR and HR is executed using SSIM and PSNR. The SSIM and PSNR methods are implemented using \code{scikit-image}, a \code{Python} library specialised in image processing. The final performance results for all models and all datasets are then saved into a CSV format.
 
 \subsection{Utilities}
+The final implementation details we offer are related to two utility functions, located in the \code{utils.py} file. Whilst not required for project sucess, they offer an interface to commonly used functions and keep the project inline with good development practices. The first of these is the \code{GANSaver} class, which saves the full model state after an epoch that has produced a validation loss lower than the current best. This class exists as the SRGAN model is composed of two models, which the inbuilt \code{Keras} model saver handled incorrectly. The second utility is the \code{visualise\_generator} function, which is used to visualise the SR reconstruction of a generator, primarily used whilst developing and training models to view how their outputs look. Overall these functions were incredibly useful during implementation and helped enforce good development practices by avoiing duplicating code.
+
+\subsection{Critical analysis of implementation}
+Needed?
 
 \section{Training}
 The following section describes the steps taken to determine the parameters used for training and overviews the training durations.
@@ -60,58 +65,41 @@ The selection of batch size, dataset size and number of patches allows for remai
     \label{table:model_training}
 \end{table}
 
-\subsection{Training durations}
+\subsection{Training duration}
 It is worth mentioning the significant time invested towards training each of the solutions. Training SRResNet with MSE loss yielded \~144ms per update iteration, giving a total training time of just over four hours. The training times of the SRGAN models varied based on the classifier used for the perceptual loss component. Deeper classifiers result in a forward propagation time, which is reflected in the time per update iteration. MobileNetV2 recorded the lowest time per update iteration at \~400ms per update iteration, yielding a total training time of just over an hour. EfficientNetV2L produced the longest per update iteration at \~750ms per update iteration, yielding a total time of just over two hours. These training times are for a single training pass, so fully training each SRGAN model takes twice as long. Taking the total training time across all models yields \~35 hours.
 
 The above calculations are not inclusive of the extensive time spent training models when implementing the solutions. Model training was run throughout the entire development process to test architecture implementations, loss functions, outputs, training parameters etc. The total duration of these training times was not accurately tracked, so we cannot provide an exact estimate, however it greatly exceeded the total training times mentioned above. The state of these trained models are available in the history of the project repository. Whilst not necessary for the final solutions, executing this repeated training for testing purposes ensured correct implementations and resulted in the quality of the final solutions. 
 
-\section{Solution performance}
-As discussed in section~\ref{sec:measuring_performance}, we use SSIM and PSNR to measure the performance of our final models. This is executed using three separate test sets: our NWPU-RESISC45 test set, Set5, and Set14. Using both remote sensing and natural imagery allows us to measure if our solution is successful in performing SR reconstruction for remote sensing imagery specifically, as well as giving a comparison between the various custom perceptual loss components.
+\section{Performance results}
+As discussed in section~\ref{sec:measuring_performance}, we use SSIM and PSNR to measure the performance of our final models. Model performance is caculated on three separate evaluation sets. First is the test set we have selected from the NWPU-RESISC45 dataset, which is stratified to include three images from each of the 45 classes, resulting in a total of 135 images. The other two testing sets are Set5 and Set14, widely used as evaluation sets in the field of SR reconstruction. The Set5 and Set14 datasets do not contain any remote sensing imagery. The purpose of calculating these performance metrics across with Set5 and Set14 is twofold. The first reason is to show that our solutions, trained on specifically remote sensing imagery, are better at creating SR reconstructions. The second reason, albeit less important than the first, is for the test sets to act as additional comparators for individual model performance. The SSIM and PSNR metrics calculated on the afforementioned evaluation sets are showcased in table~\ref{fig:performance_results}.
 \begin{table}[h]
     \centering
-    \begin{tabular}{llll}
+    \begin{tabular}{ccccccc}
         \toprule
-        {} & \textbf{nwpu-resisc45} & \textbf{set5} & \textbf{set14} \\ 
+        {} & \textbf{SSIM} & {} & {} & \textbf{PSNR}  & {} & {} \\
         \midrule
-        \textbf{srresnet-mse} & 0.9235 & 0.7643 & 0.6563 \\ 
-        \textbf{srgan-vgg22} & 0.8994 & 0.5831 & 0.5131 \\ 
-        \textbf{srgan-vgg54} & 0.8878 & 0.6686 & 0.6030 \\ 
-        \textbf{srgan-xception} & 0.8935 & 0.6722 & 0.6018 \\ 
-        \textbf{srgan-resnet152v2} & 0.8916 & 0.6613 & 0.6021 \\ 
-        \textbf{srgan-inceptionv3} & 0.8973 & 0.6860 & 0.6164 \\ 
-        \textbf{srgan-inceptionresnetv2} & 0.9018 & 0.6824 & 0.6103 \\ 
-        \textbf{srgan-mobilenetv2} & 0.8928 & 0.6925 & 0.6169 \\ 
-        \textbf{srgan-densenet201} & 0.9045 & 0.6978 & 0.6299 \\ 
-        \textbf{srgan-nasnetlarge} & 0.8930 & 0.6637 & 0.5966 \\ 
-        \textbf{srgan-efficientnetv2l} & 0.8958 & 0.5750 & 0.5263 \\ 
+        {} & \textbf{Test set} & \textbf{Set5} & \textbf{Set14} & \textbf{Test set} & \textbf{Set5} & \textbf{Set14} \\ 
+        \midrule
+        %\textbf{SRResNet} & \textbf{0.9235} & 0.7643 & 0.6563 & 24.02 & 22.93 & 21.65 \\ 
+        \textbf{SRGAN-VGG22} & 0.8994 & 0.5831 & 0.5131 & 23.05 & 21.53 & 20.84 \\  
+        \textbf{SRGAN-VGG54} & 0.8878 & 0.6686 & 0.6030 & 22.85 & 22.18 & 21.76 \\ 
+        \textbf{SRGAN-Xception} & 0.8935 & 0.6722 & 0.6018 & 23.13 & 21.28 & 21.01 \\  
+        \textbf{SRGAN-ResNet152V2} & 0.8916 & 0.6613 & 0.6021 & 22.90 & 22.09 & \textbf{21.83} \\ 
+        \textbf{SRGAN-InceptionV3} & 0.8973 & 0.6860 & 0.6164 & 23.27 & 21.52 & 21.29 \\ 
+        \textbf{SRGAN-InceptionResNetV2} & 0.9018 & 0.6824 & 0.6103 & 23.39 & \textbf{22.25} & 21.61 \\ 
+        \textbf{SRGAN-MobileNetV2} & 0.8928 & 0.6925 & 0.6169 & 21.78 & 20.61 & 20.39 \\ 
+        \textbf{SRGAN-DenseNet201} & \textbf{0.9045} & \textbf{0.6978} & \textbf{0.6299} & \textbf{23.47} & 21.63 & 21.79 \\
+        \textbf{SRGAN-NASNetLarge} & 0.8930 & 0.6637 & 0.5966 & 23.03 & 20.86 & 20.96 \\
+        \textbf{SRGAN-EfficientNetV2L} & 0.8958 & 0.5750 & 0.5263 & 22.54 & 19.65 & 20.01 \\
         \bottomrule
     \end{tabular}
+    \caption{SSIM and PSNR results calculated on the test subset of NWPU-RESISC45, Set5, and Set14.}
+    \label{fig:performance_results}
 \end{table}
 
-\begin{table}[h]
-    \centering
-    \begin{tabular}{llll}
-        \toprule
-        {} & \textbf{nwpu-resisc45} & \textbf{set5} & \textbf{set14} \\ 
-        \midrule
-        \textbf{srresnet-mse} & 24.02 & 22.93 & 21.65 \\ 
-        \textbf{srgan-vgg22} & 23.05 & 21.53 & 20.84 \\ 
-        \textbf{srgan-vgg54} & 22.85 & 22.18 & 21.76 \\ 
-        \textbf{srgan-xception} & 23.13 & 21.28 & 21.01 \\ 
-        \textbf{srgan-resnet152v2} & 22.90 & 22.09 & 21.83 \\ 
-        \textbf{srgan-inceptionv3} & 23.27 & 21.52 & 21.29 \\ 
-        \textbf{srgan-inceptionresnetv2} & 23.39 & 22.25 & 21.61 \\ 
-        \textbf{srgan-mobilenetv2} & 22.42 & 20.61 & 20.39 \\ 
-        \textbf{srgan-densenet201} & 23.47 & 21.63 & 21.79 \\ 
-        \textbf{srgan-nasnetlarge} & 23.03 & 20.86 & 20.96 \\ 
-        \textbf{srgan-efficientnetv2l} & 22.54 & 19.65 & 20.01 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+\section{Visualising reconstructions}
 
-\section{Solution visualisation}
-
-\section{Achieving project goals}
+\section{Findings}
 
 <Results, evaluation (including user evaluation) {\em etc.} should be described in one or more chapters. See the `Results and Discussion' criterion in the mark scheme for the sorts of material that may be included here.>
 
