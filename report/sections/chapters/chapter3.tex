@@ -70,6 +70,13 @@ It is worth mentioning the significant time invested towards training each of th
 
 The above calculations are not inclusive of the extensive time spent training models when implementing the solutions. Model training was run throughout the entire development process to test architecture implementations, loss functions, outputs, training parameters etc. The total duration of these training times was not accurately tracked, so we cannot provide an exact estimate, however it greatly exceeded the total training times mentioned above. The state of these trained models are available in the history of the project repository. Whilst not necessary for the final solutions, executing this repeated training for testing purposes ensured correct implementations and resulted in the quality of the final solutions. 
 
+\section{Visualising reconstructions}
+\begin{figure}[h]
+    \includegraphics[width=\linewidth]{./assets/model_comparison.png}
+    \caption{A comparison using a sample image from the NWPU-RESISC45 test set. The ground truth HR image, SRResNet, and SRGAN models with custom losses are shown.}
+    \label{fig:resisc45_examples}
+\end{figure}
+
 \section{Performance results}
 As discussed in section~\ref{sec:measuring_performance}, we use SSIM and PSNR to measure the performance of our final models. Model performance is caculated on three separate evaluation sets. First is the test set we have selected from the NWPU-RESISC45 dataset, which is stratified to include three images from each of the 45 classes, resulting in a total of 135 images. The other two testing sets are Set5 and Set14, widely used as evaluation sets in the field of SR reconstruction. The Set5 and Set14 datasets do not contain any remote sensing imagery. The purpose of calculating these performance metrics across with Set5 and Set14 is twofold. The first reason is to show that our solutions, trained on specifically remote sensing imagery, are better at creating SR reconstructions. The second reason, albeit less important than the first, is for the test sets to act as additional comparators for individual model performance. The SSIM and PSNR metrics calculated on the afforementioned evaluation sets are showcased in table~\ref{fig:performance_results}.
 \begin{table}[h]
@@ -96,8 +103,18 @@ As discussed in section~\ref{sec:measuring_performance}, we use SSIM and PSNR to
     \caption{SSIM and PSNR results calculated on the test subset of NWPU-RESISC45, Set5, and Set14.}
     \label{fig:performance_results}
 \end{table}
-
-\section{Visualising reconstructions}
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{./assets/ssim_accuracy_trend.png} % first figure itself
+    \end{minipage}\hfill
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{./assets/psnr_accuracy_trend.png} % second figure itself
+    \end{minipage}
+    \caption{Two scatter plots showing how the performance metrics of SRGAN models changed based on the accuracy of the classifer used for the perceptual loss component.}
+\end{figure}
 
 \section{Findings}
 
