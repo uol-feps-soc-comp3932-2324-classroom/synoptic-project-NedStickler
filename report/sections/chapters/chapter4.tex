@@ -1,22 +1,39 @@
 \chapter{Discussion}
 \label{chapter4}
-
-<Everything that comes under the `Results and Discussion' criterion in the mark scheme that has not been addressed in an earlier chapter should be included in this final chapter. The following section headings are suggestions only.>
+This chapter provides evaluates our findings from the project, assess whether we have met our project goals, offers conclusions and suggests some ideas for future work.
 
 \section{Evaluation}
+The following section overs evaluation of each of the findings presented at the end of the previous chapter and offers a conclusion to the project.
+
 \subsection{Individual model performance}
+Reviewing SSIM and PSNR for the bicubic interpolation benchmark and our trained solutions shows that SRResNet performed the best, followed by bicubic, with SRGAN-DenseNet201 leading the SRGAN models. Whilst we implemented SRResNet as a model in its own right, the main aim was to produce SRGAN based models that outperformed both SRResNet and traditional SR reconstruction methods. The reason that we did not achieve these results is very likely due to the training parameters used. To make our training methodology compliant with the constraints imposed by the training hardware we reduced the number of total update iterations by a factor of 10. This may have had the adverse affect of allowing SRResNet to recieve sufficient training, but SRGAN may have struggled to reach a good point in this amount of time. As well as this, we also had to reduce the batch size, number of patches, and dataset size significantly to remain within memory constraints. A batch size of 15 is too small to provide a solid gradient, the number of patches may have left more to be desired in terms of capturing different features, and the small dataset size might have attributed to the model not being able to learn through limited training examples. Overall, the training parameters used in this project were insufficient for state-of-the-art results, however we were severely limited by our training hardware. Regardless of this, we still managed to produce SR reconstructions that are perceivably similar to the HR ground truth image, even if they did not beat existing benchmarks.
 
 \subsection{Remote sensing specialisation}
+The overall goal of this project was to solve the super-resolution reconstruction problem in remote sensing. We identified in section~\ref{sec:selecting_an_approach} that the generalised SRGAN model could be trained on a remote sensing specific dataset with the aim of producing better results when applied to remote sensing imagery versus general imagery. To measure this difference we also tested our solutions on the Set5 and Set14 evaluation sets, both of which contain no remote sensing imagery. Every solution we trained on the remote sensing dataset created significantly SR reconstructions when applied to unseen remote sensing imagery versus generalised imagery. Training our solutions on remote sensing imagery therefore allowed us to solve the super-resolution problem specifically in the domain of remote sensing.
 
 \subsection{Improving loss}
+In chapter 2 we outlined how we would attempt to improve the loss function of the SRGAN model to create better SR reconstructions. The vanilla SRGAN model utilises VGG19 feature maps as a key component of the perceptual loss metric. We identified that VGG19 is now considered an old model in the timeline of neural network-based image classifiers, and identified a variety of newer, more performant classifiers that we could replace VGG with. Our results showed that, on the whole, more accurate image classifiers produced a greater SR reconstruction capability. SSIM showed this to be true across the board, and PSNR showed that only MobileNetV2 and EfficientNetV2L performed worse than the VGG54 loss component. \textcolor{blue}{Evaluate!}
 
 \subsection{Addressing our conjecture}
+In section~\ref{subsec:improving_loss} we provided the following conjecture: `using the feature maps from more
+accurate image classification models in the perceptual loss component of SRGAN-based models-based on the accuracy of the classifer used for the perceptual loss component will increase SR reconstruction performance'. By systematically training and testing our each of our models we were able to suggest a relationship between classifier accuracy and effectiveness of the feature maps as a loss component. Whilst this is an interesting obersvation, more research needs to be conducted before determining whether this conjecture holds much truth. In the context of this project, offering this conjecture was incredibly useful for producing better SR reconstruction capabilities with SRGAN, but investigating the true relationship does not align with our project goals and is therefore out of scope.
 
 \subsection{Noise and artefacts}
+Shown that noise is introduced by certain models
+
+Batch norm?
+
+Model depth?
+
+More research into what makes a good perceptual loss function
 
 \subsection{Visual quality and MOS}
+Manually reviewing shows visual quality does not line up with SSIM and PSNR
 
-\subsection{Project Goals}
+MOS may have provided a better understanding of what is most visually attractive.
+
+\subsection{Project goals}
+How we have met each of the project goals
 
 \section{Conclusions}
 
