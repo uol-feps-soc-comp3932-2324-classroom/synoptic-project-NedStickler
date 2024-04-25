@@ -8,9 +8,9 @@ from loaders import load_resisc45_subset, load_set5, load_set14
 import glob
 import json
 import pandas as pd
+import cv2
 
-
-if __name__ == "__main__":
+def main():
     resisc45_hr, labels = load_resisc45_subset("test")
     generators = [generator.split("/")[-1] for generator in glob.glob("generators/*")]
 
@@ -82,3 +82,59 @@ if __name__ == "__main__":
     
     ssim_df.to_csv("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/datasets/ssim.csv")
     psnr_df.to_csv("/uolstore/home/users/sc20ns/Documents/synoptic-project-NedStickler/datasets/psnr.csv")
+
+
+def bicubic():
+    resisc_hr = np.load(r"C:\Users\nedst\Desktop\synoptic-project-NedStickler\datasets\resisc45_test.npy")
+    resisc_lr = BlurAndResize(4)(resisc_hr).numpy().astype(np.uint8)
+
+    set5_lr = []
+    set5_hr = []
+    for file in glob.glob(r"C:\Users\nedst\Desktop\SelfExSR\data\Set5\image_SRF_4\*.png"):
+        img = cv2.imread(file)
+        if file.split(".png")[0][-2:] == "HR":
+            set5_hr.append(img)
+        else:
+            set5_lr.append(img)
+    
+    set14_lr = []
+    set14_hr = []
+    for file in glob.glob(r"C:\Users\nedst\Desktop\SelfExSR\data\Set14\image_SRF_4\*.png"):
+        img = cv2.imread(file)
+        if file.split(".png")[0][-2:] == "HR":
+            set14_hr.append(img)
+        else:
+            set14_lr.append(img)
+    
+    resisc45_bicubic = keras.layers.Resizing(256, 256, "bicubic")
+    resisc45_sr = resisc45_bicubic(resisc_lr).numpy().astype(np.uint8)
+    resisc45_ssim = structural_similarity(resisc_hr, resisc45_sr, channel_axis=3)
+    resisc45_psnr = peak_signal_noise_ratio(resisc_hr, resisc45_sr)
+
+    set5_sr = []
+    for i, images in enumerate(zip(set5_lr, set5_hr)):
+        lr, hr = images
+        set5_bicubic = keras.layers.Resizing(hr.shape[0], hr.shape[1], interpolation="bicubic")
+        set5_sr.append(set5_bicubic(lr).numpy().astype(np.uint8))
+    set5_ssim = np.mean([structural_similarity(hr, sr, channel_axis=2) for hr, sr in zip(set5_hr, set5_sr)])
+    set5_psnr = np.mean([peak_signal_noise_ratio(hr, sr) for hr, sr in zip(set5_hr, set5_sr)])
+
+    set14_sr = []
+    for i, images in enumerate(zip(set14_lr, set14_hr)):
+        lr, hr = images
+        set14_bicubic = keras.layers.Resizing(hr.shape[0], hr.shape[1], interpolation="bicubic")
+        set14_sr.append(set14_bicubic(lr).numpy().astype(np.uint8))
+    set14_ssim = np.mean([structural_similarity(hr, sr, channel_axis=2) for hr, sr in zip(set14_hr, set14_sr)])
+    set14_psnr = np.mean([peak_signal_noise_ratio(hr, sr) for hr, sr in zip(set14_hr, set14_sr)])
+
+    print(resisc45_ssim)
+    print(set5_ssim)
+    print(set14_ssim)
+    print(resisc45_psnr)
+    print(set5_psnr)
+    print(set14_psnr)
+
+    
+if __name__ == "__main__":
+    # main()
+    bicubic()

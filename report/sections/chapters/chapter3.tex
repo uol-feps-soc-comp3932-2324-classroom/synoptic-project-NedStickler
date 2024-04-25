@@ -72,23 +72,24 @@ The above calculations are not inclusive of the extensive time spent training mo
 
 \section{Performance results}
 As discussed in section~\ref{sec:measuring_performance}, we use SSIM and PSNR to measure the performance of our final models. Model performance is caculated on three separate evaluation sets. First is the test set we have selected from the NWPU-RESISC45 dataset, which is stratified to include three images from each of the 45 classes, resulting in a total of 135 images. The other two testing sets are Set5 and Set14, widely used as evaluation sets in the field of SR reconstruction. The Set5 and Set14 datasets do not contain any remote sensing imagery. The purpose of calculating these performance metrics across with Set5 and Set14 is twofold. The first reason is to show that our solutions, trained on specifically remote sensing imagery, are better at creating SR reconstructions of remote sensing imagery. The second reason, albeit less important than the first, is for the test sets to act as additional comparators for individual model performance. The SSIM and PSNR metrics calculated on the afforementioned evaluation sets are showcased in table~\ref{fig:performance_results}.
-\begin{table}[b]
+\begin{table}
     \centering
     \begin{tabular}{ccccccc}
         \toprule
         {} & \textbf{SSIM} & {} & {} & \textbf{PSNR}  & {} & {} \\
         \midrule
         {} & \textbf{Test set} & \textbf{Set5} & \textbf{Set14} & \textbf{Test set} & \textbf{Set5} & \textbf{Set14} \\ 
+        \textbf{Bicubic} & 0.9158 & \textbf{0.7824} & \textbf{0.6684} & 23.32 & \textbf{24.99} & \textbf{21.93} \\
+        \textbf{SRResNet} & \textbf{0.9235} & 0.7643 & 0.6563 & \textbf{24.02} & 22.93 & 21.65 \\
         \midrule
-        %\textbf{SRResNet} & \textbf{0.9235} & 0.7643 & 0.6563 & 24.02 & 22.93 & 21.65 \\ 
-        \textbf{SRGAN-VGG22} & 0.8994 & 0.5831 & 0.5131 & 23.05 & 21.53 & 20.84 \\  
+        \textbf{SRGAN-VGG22} & 0.8994 & 0.5831 & 0.5131 & 23.05 & 21.53 & 20.84 \\
         \textbf{SRGAN-VGG54} & 0.8878 & 0.6686 & 0.6030 & 22.85 & 22.18 & 21.76 \\ 
         \textbf{SRGAN-Xception} & 0.8935 & 0.6722 & 0.6018 & 23.13 & 21.28 & 21.01 \\  
-        \textbf{SRGAN-ResNet152V2} & 0.8916 & 0.6613 & 0.6021 & 22.90 & 22.09 & \textbf{21.83} \\ 
+        \textbf{SRGAN-ResNet152V2} & 0.8916 & 0.6613 & 0.6021 & 22.90 & 22.09 & 21.83 \\ 
         \textbf{SRGAN-InceptionV3} & 0.8973 & 0.6860 & 0.6164 & 23.27 & 21.52 & 21.29 \\ 
-        \textbf{SRGAN-InceptionResNetV2} & 0.9018 & 0.6824 & 0.6103 & 23.39 & \textbf{22.25} & 21.61 \\ 
+        \textbf{SRGAN-InceptionResNetV2} & 0.9018 & 0.6824 & 0.6103 & 23.39 & 22.2 & 21.61 \\ 
         \textbf{SRGAN-MobileNetV2} & 0.8928 & 0.6925 & 0.6169 & 21.78 & 20.61 & 20.39 \\ 
-        \textbf{SRGAN-DenseNet201} & \textbf{0.9045} & \textbf{0.6978} & \textbf{0.6299} & \textbf{23.47} & 21.63 & 21.79 \\
+        \textbf{SRGAN-DenseNet201} & 0.9045 & 0.6978 & 0.6299 & 23.47 & 21.63 & 21.79 \\
         \textbf{SRGAN-NASNetLarge} & 0.8930 & 0.6637 & 0.5966 & 23.03 & 20.86 & 20.96 \\
         \textbf{SRGAN-EfficientNetV2L} & 0.8958 & 0.5750 & 0.5263 & 22.54 & 19.65 & 20.01 \\
         \bottomrule
@@ -110,7 +111,8 @@ Calculating our performance metrics for each of the trained SRGAN models enables
     \caption{Two scatter plots showing how the performance metrics of SRGAN models changed based on the accuracy of the classifer used for the perceptual loss component.}
     \label{fig:performance_metric_vs_classifier_accuracy}
 \end{figure}
-\begin{figure}[t]
+
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{./assets/model_comparison.png}
     \caption{A comparison using a sample image from the NWPU-RESISC45 test set. The ground truth HR image, SRResNet, and SRGAN models with custom losses are shown.}
@@ -118,5 +120,15 @@ Calculating our performance metrics for each of the trained SRGAN models enables
 \end{figure}
 
 \section{Findings}
+The followin section overviews the findings following our implementation of the proposed solutions. We evaluate these findings in the next chapter.
+\begin{itemize}
+    \item \textbf{Individual model performance:} SRGAN-DenseNet201 performed the best out of the SRGAN models for both SSIM and PSNR. SRResNet performed better than all SRGAN models for both SSIM and PSNR. Bicbuic interpolation performed better than all SRGAN variants for both SSIM and PSNR, but failed to beat SRResNet.
+    \item \textbf{Remote sensing specialisation:} SRResNet and all SRGAN variants performed better on remote sensing datasets compared to the Set5 and Set14 datasets, especially for SSIM.
+    \item \textbf{Improving loss:} SRGAN-DenseNet201 outperforms SRGAN-VGG54 (the model proposed by Ledig \etal), showing that we are able to produce better SR reconstruction results with SRGAN by using the feature maps from a more accurate classifier as the perceptual loss component.
+    \item \textbf{Addressing our conjecture:} Comparing classifier accuracy and reconstruction capabilities in figure~\ref{fig:performance_metric_vs_classifier_accuracy} suggests that there is a positive relationship between classification accuracy and SR reconstruction capabilities when utilised as a perceptual loss component.
+    \item \textbf{Noise and artefacts:} In several of the models, especially SRGAN-EfficientNetV2L, -MobileNetV2, and -VGG22 we can see clearly visible artefacts in the form of irregular pixel values. We can also see interesting grid like noise patterns in some of the reconstructions.
+    \item \textbf{Visual quality and MOS:} Manually reviewing reconstructions suggest that SSIM and PSNR may not accurately reflect human perception of quality. SRResNet, which achieves the highest SSIM and PSNR for the remote sensing dataset appears overly blurred, and SRGAN-VGG54 appears to produce the results with the closest similarity to the HR ground truth.
+\end{itemize}
+
 
 
