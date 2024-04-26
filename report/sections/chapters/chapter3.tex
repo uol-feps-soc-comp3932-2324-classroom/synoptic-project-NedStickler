@@ -126,8 +126,8 @@ The following section overviews the findings following our implementation of the
     \item \textbf{Remote sensing specialisation:} SRResNet and all SRGAN variants performed better on remote sensing datasets compared to the Set5 and Set14 datasets, especially for SSIM.
     \item \textbf{Improving loss:} SRGAN-DenseNet201 outperforms SRGAN-VGG54 (the model proposed by Ledig \etal), showing that we are able to produce better SR reconstruction results with SRGAN by using the feature maps from a more accurate classifier as the perceptual loss component.
     \item \textbf{Addressing our conjecture:} Comparing classifier accuracy and reconstruction capabilities in figure~\ref{fig:performance_metric_vs_classifier_accuracy} suggests that there is a positive relationship between classification accuracy and SR reconstruction capabilities when utilised as a perceptual loss component.
-    \item \textbf{Noise and artefacts:} In several of the models, especially SRGAN-EfficientNetV2L, -MobileNetV2, and -VGG22 we can see clearly visible artefacts in the form of irregular pixel values. We can also see interesting grid like noise patterns in some reconstructions.
     \item \textbf{Visual quality and MOS:} Manually reviewing reconstructions suggest that SSIM and PSNR may not accurately reflect human perception of quality. SRResNet, which achieves the highest SSIM and PSNR for the remote sensing dataset appears overly blurred, and SRGAN-VGG54 appears to produce the results with the closest similarity to the HR ground truth.
+    \item \textbf{Noise and artefacts:} In several of the models, especially SRGAN-EfficientNetV2L, -MobileNetV2, and -VGG22 we can see clearly visible artefacts in the form of irregular pixel values. We can also see interesting grid like noise patterns in some reconstructions.
 \end{itemize}
 
 
