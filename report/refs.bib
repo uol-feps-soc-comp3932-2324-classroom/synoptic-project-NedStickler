@@ -271,6 +271,104 @@ year = {2016},
   DOI = {10.3390/rs14215423}
 }
 
+@article{srcnn,
+  author       = {Chao Dong and
+                  Chen Change Loy and
+                  Kaiming He and
+                  Xiaoou Tang},
+  title        = {Image Super-Resolution Using Deep Convolutional Networks},
+  journal      = {CoRR},
+  volume       = {abs/1501.00092},
+  year         = {2015},
+  url          = {http://arxiv.org/abs/1501.00092},
+  eprinttype    = {arXiv},
+  eprint       = {1501.00092},
+  timestamp    = {Mon, 13 Aug 2018 16:46:08 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/DongLHT15.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{vdsr,
+  author       = {Jiwon Kim and
+                  Jung Kwon Lee and
+                  Kyoung Mu Lee},
+  title        = {Accurate Image Super-Resolution Using Very Deep Convolutional Networks},
+  journal      = {CoRR},
+  volume       = {abs/1511.04587},
+  year         = {2015},
+  url          = {http://arxiv.org/abs/1511.04587},
+  eprinttype    = {arXiv},
+  eprint       = {1511.04587},
+  timestamp    = {Mon, 13 Aug 2018 16:46:40 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/KimLL15b.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{esrgan,
+  author       = {Xintao Wang and
+                  Ke Yu and
+                  Shixiang Wu and
+                  Jinjin Gu and
+                  Yihao Liu and
+                  Chao Dong and
+                  Chen Change Loy and
+                  Yu Qiao and
+                  Xiaoou Tang},
+  title        = {{ESRGAN:} Enhanced Super-Resolution Generative Adversarial Networks},
+  journal      = {CoRR},
+  volume       = {abs/1809.00219},
+  year         = {2018},
+  url          = {http://arxiv.org/abs/1809.00219},
+  eprinttype    = {arXiv},
+  eprint       = {1809.00219},
+  timestamp    = {Tue, 09 Aug 2022 10:54:08 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-1809-00219.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@Article{isrgan,
+AUTHOR = {Xiong, Yingfei and Guo, Shanxin and Chen, Jinsong and Deng, Xinping and Sun, Luyi and Zheng, Xiaorou and Xu, Wenna},
+TITLE = {Improved SRGAN for Remote Sensing Image Super-Resolution Across Locations and Sensors},
+JOURNAL = {Remote Sensing},
+VOLUME = {12},
+YEAR = {2020},
+NUMBER = {8},
+ARTICLE-NUMBER = {1263},
+URL = {https://www.mdpi.com/2072-4292/12/8/1263},
+ISSN = {2072-4292},
+ABSTRACT = {Detailed and accurate information on the spatial variation of land cover and land use is a critical component of local ecology and environmental research. For these tasks, high spatial resolution images are required. Considering the trade-off between high spatial and high temporal resolution in remote sensing images, many learning-based models (e.g., Convolutional neural network, sparse coding, Bayesian network) have been established to improve the spatial resolution of coarse images in both the computer vision and remote sensing fields. However, data for training and testing in these learning-based methods are usually limited to a certain location and specific sensor, resulting in the limited ability to generalize the model across locations and sensors. Recently, generative adversarial nets (GANs), a new learning model from the deep learning field, show many advantages for capturing high-dimensional nonlinear features over large samples. In this study, we test whether the GAN method can improve the generalization ability across locations and sensors with some modification to accomplish the idea “training once, apply to everywhere and different sensors” for remote sensing images. This work is based on super-resolution generative adversarial nets (SRGANs), where we modify the loss function and the structure of the network of SRGANs and propose the improved SRGAN (ISRGAN), which makes model training more stable and enhances the generalization ability across locations and sensors. In the experiment, the training and testing data were collected from two sensors (Landsat 8 OLI and Chinese GF 1) from different locations (Guangdong and Xinjiang in China). For the cross-location test, the model was trained in Guangdong with the Chinese GF 1 (8 m) data to be tested with the GF 1 data in Xinjiang. For the cross-sensor test, the same model training in Guangdong with GF 1 was tested in Landsat 8 OLI images in Xinjiang. The proposed method was compared with the neighbor-embedding (NE) method, the sparse representation method (SCSR), and the SRGAN. The peak signal-to-noise ratio (PSNR) and structural similarity (SSIM) were chosen for the quantitive assessment. The results showed that the ISRGAN is superior to the NE (PSNR: 30.999, SSIM: 0.944) and SCSR (PSNR: 29.423, SSIM: 0.876) methods, and the SRGAN (PSNR: 31.378, SSIM: 0.952), with the PSNR = 35.816 and SSIM = 0.988 in the cross-location test. A similar result was seen in the cross-sensor test. The ISRGAN had the best result (PSNR: 38.092, SSIM: 0.988) compared to the NE (PSNR: 35.000, SSIM: 0.982) and SCSR (PSNR: 33.639, SSIM: 0.965) methods, and the SRGAN (PSNR: 32.820, SSIM: 0.949). Meanwhile, we also tested the accuracy improvement for land cover classification before and after super-resolution by the ISRGAN. The results show that the accuracy of land cover classification after super-resolution was significantly improved, in particular, the impervious surface class (the road and buildings with high-resolution texture) improved by 15%.},
+DOI = {10.3390/rs12081263}
+}
+
+@Article{tesagan,
+AUTHOR = {Xu, Yongyang and Luo, Wei and Hu, Anna and Xie, Zhong and Xie, Xuejing and Tao, Liufeng},
+TITLE = {TE-SAGAN: An Improved Generative Adversarial Network for Remote Sensing Super-Resolution Images},
+JOURNAL = {Remote Sensing},
+VOLUME = {14},
+YEAR = {2022},
+NUMBER = {10},
+ARTICLE-NUMBER = {2425},
+URL = {https://www.mdpi.com/2072-4292/14/10/2425},
+ISSN = {2072-4292},
+ABSTRACT = {Resolution is a comprehensive reflection and evaluation index for the visual quality of remote sensing images. Super-resolution processing has been widely applied for extracting information from remote sensing images. Recently, deep learning methods have found increasing application in the super-resolution processing of remote sensing images. However, issues such as blurry object edges and existing artifacts persist. To overcome these issues, this study proposes an improved generative adversarial network with self-attention and texture enhancement (TE-SAGAN) for remote sensing super-resolution images. We first designed an improved generator based on the residual dense block with a self-attention mechanism and weight normalization. The generator gains the feature extraction capability and enhances the training model stability to improve edge contour and texture. Subsequently, a joint loss, which is a combination of L1-norm, perceptual, and texture losses, is designed to optimize the training process and remove artifacts. The L1-norm loss is designed to ensure the consistency of low-frequency pixels; perceptual loss is used to entrench medium- and high-frequency details; and texture loss provides the local features for the super-resolution process. The results of experiments using a publicly available dataset (UC Merced Land Use dataset) and our dataset show that the proposed TE-SAGAN yields clear edges and textures in the super-resolution reconstruction of remote sensing images.},
+DOI = {10.3390/rs14102425}
+}
+
+@Article{ndsrgan,
+AUTHOR = {Guo, Mingqiang and Zhang, Zeyuan and Liu, Heng and Huang, Ying},
+TITLE = {NDSRGAN: A Novel Dense Generative Adversarial Network for Real Aerial Imagery Super-Resolution Reconstruction},
+JOURNAL = {Remote Sensing},
+VOLUME = {14},
+YEAR = {2022},
+NUMBER = {7},
+ARTICLE-NUMBER = {1574},
+URL = {https://www.mdpi.com/2072-4292/14/7/1574},
+ISSN = {2072-4292},
+ABSTRACT = {In recent years, more and more researchers have used deep learning methods for super-resolution reconstruction and have made good progress. However, most of the existing super-resolution reconstruction models generate low-resolution images for training by downsampling high-resolution images through bicubic interpolation, and the models trained from these data have poor reconstruction results on real-world low-resolution images. In the field of unmanned aerial vehicle (UAV) aerial photography, the use of existing super-resolution reconstruction models in reconstructing real-world low-resolution aerial images captured by UAVs is prone to producing some artifacts, texture detail distortion and other problems, due to compression and fusion processing of the aerial images, thereby resulting in serious loss of texture detail in the obtained low-resolution aerial images. To address this problem, this paper proposes a novel dense generative adversarial network for real aerial imagery super-resolution reconstruction (NDSRGAN), and we produce image datasets with paired high- and low-resolution real aerial remote sensing images. In the generative network, we use a multilevel dense network to connect the dense connections in a residual dense block. In the discriminative network, we use a matrix mean discriminator that can discriminate the generated images locally, no longer discriminating the whole input image using a single value but instead in chunks of regions. We also use smoothL1 loss instead of the L1 loss used in most existing super-resolution models, to accelerate the model convergence and reach the global optimum faster. Compared with traditional models, our model can better utilise the feature information in the original image and discriminate the image in patches. A series of experiments is conducted with real aerial imagery datasets, and the results show that our model achieves good performance on quantitative metrics and visual perception.},
+DOI = {10.3390/rs14071574}
+}
+
+
 @ARTICLE{resisc45,
   author={Cheng, Gong and Han, Junwei and Lu, Xiaoqiang},
   journal={Proceedings of the IEEE}, 

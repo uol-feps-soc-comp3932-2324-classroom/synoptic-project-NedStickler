@@ -42,18 +42,10 @@ At the begining of this project we set out six project goals that, if achieved, 
 This section offers conclusions to the project in the form of strengths, limitations, and ideas for the continuation of the work completed in this project.
 
 \subsection{Strengths}
-Met all our goals
-
-Successfully implemented everything that we set out to
-
-The solution is fairly complex
+The biggest strength of this project is we succeeded in achieving each of our goals to some extent. At the begining of the project we set out these goals to ensure that we met our primary aim: to solve the SR reconstruction problem in remote sensing. Following the results chapter, and the evaluation of each of our goals offered previously, we can say that we met all our goals and therefore met our overall project aim. In addition to this, we were able to implement everything we wished to in the methods section, aligning us to the broad plan of the project. Another strength of the project is the level of complexity at every point. Our background research section showed that the existing solutions to the SR reconstruction problem range from simple to complex, and based on that we selected a model of sufficient complexity but within the remits of the project to implement. Our methods took that a step further by building on top of the complexity of the model. Overall we provide a successful solution to the SR reconstruction problem in remote sensing, the solution meets our overall project aims, we met all our project goals, and the project has shown a sufficient level of complexity.
 
 \subsection{Limitations}
-No access to sufficient training equpment
-
-Didnt completely produce better results than bicubic
-
-Not using MOS was an oversight
+Regardless of the various successes in the project, we still encountered some limitations. The first was the lack of appropraite hardware for model training. Whilst we gained access to University of Leeds machines equipped with GPUs, said machines were available to use by anyone, and restarted every day. On top of that, the GPUs did not have sufficient RAM for extensive solution training. If the opposite were true it is very likely that we would have produced significantly better final model performances. This leads to another limitation, which is that none of our SRGAN models were able to beat bicubic interpolation in terms of SSIM and PSNR. This was one of our project goals, where we were using bicubic interpolation as a benchmark. Regardless of SRResNet beating bicubic performance wise, the model we were hoping would be more effective was SRGAN. This is likely due to insufficient training time as discussed earlier. Another limitation of this project was not using MOS as a performance metric. We initially ruled out MOS due to its subjective nature, however a brief manual review of the reconstructions showed that SSIM and PSNR alone may not be sufficient. Using MOS would have given us a greater understanding of the SR reconstruction capabilities of each of our solutions. Regardless of these limitations, the overall project was a success, as detailed by the previous section.
 
 \subsection{Ideas for future work}
 The most easily identifiable idea for future work is simply to perform training using better hardware with more memory. As a consequence of this, we would be able to increase batch size for a stronger gradient, increase the number of patches taken from each training instance for more data augmentation, increase the overall dataset size so that there were more training instances, and increase the number of update iterations so that the model has more time to learn. Based off of the results recieved by Ledig \etal in the SRGAN paper, our SRGAN models should have produced significantly better results than both bicubic interpolation and SRResNet. Training the models for longer with an increase in training parameter values is likely to achieve the same results that Ledig \etal initally received.  
