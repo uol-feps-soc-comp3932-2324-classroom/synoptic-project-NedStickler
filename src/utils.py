@@ -3,9 +3,6 @@ import keras
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from keras import ops
-from keras.layers import RandomCrop, Resizing
-import json
 
 
 class GANSaver(keras.callbacks.Callback):

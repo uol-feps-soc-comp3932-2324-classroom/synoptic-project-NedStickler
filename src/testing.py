@@ -6,7 +6,6 @@ from models import SRResNet, SRGAN
 from visualise import BlurAndResize
 from loaders import load_resisc45_subset, load_set5, load_set14
 import glob
-import json
 import pandas as pd
 import cv2
 
