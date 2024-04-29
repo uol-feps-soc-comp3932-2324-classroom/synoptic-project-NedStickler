@@ -177,6 +177,76 @@
   keywords={Image reconstruction;Noise measurement;Principal component analysis;Image resolution;Noise robustness;Optimization;Noisy image;back-projection;super-resolution;texture;PCA;sparsity;cost optimization},
   doi={10.1109/TIP.2019.2940414}}
 
+@Article{pocs,
+AUTHOR = {Fan, Chong and Wu, Chaoyun and Li, Grand and Ma, Jun},
+TITLE = {Projections onto Convex Sets Super-Resolution Reconstruction Based on Point Spread Function Estimation of Low-Resolution Remote Sensing Images},
+JOURNAL = {Sensors},
+VOLUME = {17},
+YEAR = {2017},
+NUMBER = {2},
+ARTICLE-NUMBER = {362},
+URL = {https://www.mdpi.com/1424-8220/17/2/362},
+PubMedID = {28208837},
+ISSN = {1424-8220},
+ABSTRACT = {To solve the problem on inaccuracy when estimating the point spread function (PSF) of the ideal original image in traditional projection onto convex set (POCS) super-resolution (SR) reconstruction, this paper presents an improved POCS SR algorithm based on PSF estimation of low-resolution (LR) remote sensing images. The proposed algorithm can improve the spatial resolution of the image and benefit agricultural crop visual interpolation. The PSF of the highresolution (HR) image is unknown in reality. Therefore, analysis of the relationship between the PSF of the HR image and the PSF of the LR image is important to estimate the PSF of the HR image by using multiple LR images. In this study, the linear relationship between the PSFs of the HR and LR images can be proven. In addition, the novel slant knife-edge method is employed, which can improve the accuracy of the PSF estimation of LR images. Finally, the proposed method is applied to reconstruct airborne digital sensor 40 (ADS40) three-line array images and the overlapped areas of two adjacent GF-2 images by embedding the estimated PSF of the HR image to the original POCS SR algorithm. Experimental results show that the proposed method yields higher quality of reconstructed images than that produced by the blind SR method and the bicubic interpolation method.},
+DOI = {10.3390/s17020362}
+}
+
+@INPROCEEDINGS{pocsEndoscopy,
+  author={Häfner, M. and Liedlgruber, M. and Uhl, A.},
+  booktitle={Proceedings of the 26th IEEE International Symposium on Computer-Based Medical Systems}, 
+  title={POCS-based super-resolution for HD endoscopy video frames}, 
+  year={2013},
+  volume={},
+  number={},
+  pages={185-190},
+  keywords={Endoscopes;Image reconstruction;High definition video;Spatial resolution;Optical imaging;Noise},
+  doi={10.1109/CBMS.2013.6627786}}
+
+@article{psfDeconv,
+title = {The point spread function revisited: image restoration using 2-D deconvolution},
+journal = {Radiography},
+volume = {7},
+number = {4},
+pages = {255-262},
+year = {2001},
+issn = {1078-8174},
+doi = {https://doi.org/10.1053/radi.2001.0341},
+url = {https://www.sciencedirect.com/science/article/pii/S1078817401903414},
+author = {G. Dougherty and Z. Kawaf},
+keywords = {image de-blurring, spatial resolution, Wiener filtering, Butterworth filters},
+abstract = {Purpose : The quality of an image can be significantly improved by digital deconvolution with the (two-dimensional) point spread function (PSF) of the imaging system. We investigated the significance of this improvement for a projection radiograph of vertebral bone, using commercially available software. Methods : A magnified image of the PSF of a GE Advantx RFX system was obtained directly from a pinhole radiograph of the X-ray source and digitized. Images of vertebral bone obtained using similar technique factors were deconvolved with the PSF images, with due regard for magnification effects and using Wiener filtering to avoid amplifying the effects of noise. Results : The spatial resolution of these restored images was significantly better than the original images, and they were less noisy. A significant improvement in image quality could also be obtained by high-pass filtering using a Butterworth filter and a cut-off frequency matching that of the PSF. Conclusions : The quality of a degraded image can be significantly restored by deconvolution with the PSF as long as magnified images are obtained and digitized, and Wiener filtering is used. Alternatively, high-pass filtering can deliver some improvement and is even simpler to implement.}
+}
+
+@ARTICLE{sparseRep,
+  author={Yang, Jianchao and Wright, John and Huang, Thomas S. and Ma, Yi},
+  journal={IEEE Transactions on Image Processing}, 
+  title={Image Super-Resolution Via Sparse Representation}, 
+  year={2010},
+  volume={19},
+  number={11},
+  pages={2861-2873},
+  keywords={Image resolution;Signal resolution;Dictionaries;Signal representations;Statistics;Compressed sensing;Computational efficiency;Image generation;Strontium;Noise robustness;Face hallucination;image super-resolution (SR);nonnegative matrix factorization;sparse coding;sparse representation},
+  doi={10.1109/TIP.2010.2050625}}
+
+@INPROCEEDINGS{neighbourhoodEmbedding,
+  author={Hong Chang and Dit-Yan Yeung and Yimin Xiong},
+  booktitle={Proceedings of the 2004 IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2004. CVPR 2004.}, 
+  title={Super-resolution through neighbor embedding}, 
+  year={2004},
+  volume={1},
+  number={},
+  pages={I-I},
+  keywords={Image resolution;Spatial resolution;Interpolation;Application software;Smoothing methods;Learning systems;Geometry;Image generation;Layout;Web pages},
+  doi={10.1109/CVPR.2004.1315043}}
+
+@InProceedings{overfitting,
+author = {Feng, Ruicheng and Gu, Jinjin and Qiao, Yu and Dong, Chao},
+title = {Suppressing Model Overfitting for Image Super-Resolution Networks},
+booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+month = {June},
+year = {2019}
+}
 
 @inproceedings{superResRemoteSensingChallenges,
   author={Yang, Daiqin and Li, Zimeng and Xia, Yatong and Chen, Zhenzhong},
@@ -283,6 +353,16 @@ year = {2016},
   DOI = {10.3390/rs14215423}
 }
 
+@article{nn,
+  title={Development and application of artificial neural network},
+  author={Wu, Yu-chen and Feng, Jun-wen},
+  journal={Wireless Personal Communications},
+  volume={102},
+  pages={1645--1656},
+  year={2018},
+  publisher={Springer}
+}
+
 @article{srcnn,
   author       = {Chao Dong and
                   Chen Change Loy and
@@ -379,7 +459,6 @@ ISSN = {2072-4292},
 ABSTRACT = {In recent years, more and more researchers have used deep learning methods for super-resolution reconstruction and have made good progress. However, most of the existing super-resolution reconstruction models generate low-resolution images for training by downsampling high-resolution images through bicubic interpolation, and the models trained from these data have poor reconstruction results on real-world low-resolution images. In the field of unmanned aerial vehicle (UAV) aerial photography, the use of existing super-resolution reconstruction models in reconstructing real-world low-resolution aerial images captured by UAVs is prone to producing some artifacts, texture detail distortion and other problems, due to compression and fusion processing of the aerial images, thereby resulting in serious loss of texture detail in the obtained low-resolution aerial images. To address this problem, this paper proposes a novel dense generative adversarial network for real aerial imagery super-resolution reconstruction (NDSRGAN), and we produce image datasets with paired high- and low-resolution real aerial remote sensing images. In the generative network, we use a multilevel dense network to connect the dense connections in a residual dense block. In the discriminative network, we use a matrix mean discriminator that can discriminate the generated images locally, no longer discriminating the whole input image using a single value but instead in chunks of regions. We also use smoothL1 loss instead of the L1 loss used in most existing super-resolution models, to accelerate the model convergence and reach the global optimum faster. Compared with traditional models, our model can better utilise the feature information in the original image and discriminate the image in patches. A series of experiments is conducted with real aerial imagery datasets, and the results show that our model achieves good performance on quantitative metrics and visual perception.},
 DOI = {10.3390/rs14071574}
 }
-
 
 @ARTICLE{resisc45,
   author={Cheng, Gong and Han, Junwei and Lu, Xiaoqiang},
@@ -495,17 +574,6 @@ DOI = {10.3390/rs14071574}
   biburl       = {https://dblp.org/rec/journals/corr/HeZR015.bib},
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
-
-@ARTICLE{featureExtraction,
-  author={Chen, Yushi and Jiang, Hanlu and Li, Chunyang and Jia, Xiuping and Ghamisi, Pedram},
-  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
-  title={Deep Feature Extraction and Classification of Hyperspectral Images Based on Convolutional Neural Networks}, 
-  year={2016},
-  volume={54},
-  number={10},
-  pages={6232-6251},
-  keywords={Feature extraction;Iron;Hyperspectral imaging;Training;Machine learning;Data mining;Convolutional neural network (CNN);deep learning;feature extraction (FE);hyperspectral image (HSI) classification},
-  doi={10.1109/TGRS.2016.2584107}}
 
 @misc{adamOptimiser,
   title={Adam: A Method for Stochastic Optimization}, 
