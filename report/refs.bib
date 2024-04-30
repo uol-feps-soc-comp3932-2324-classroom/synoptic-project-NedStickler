@@ -218,6 +218,20 @@ keywords = {image de-blurring, spatial resolution, Wiener filtering, Butterworth
 abstract = {Purpose : The quality of an image can be significantly improved by digital deconvolution with the (two-dimensional) point spread function (PSF) of the imaging system. We investigated the significance of this improvement for a projection radiograph of vertebral bone, using commercially available software. Methods : A magnified image of the PSF of a GE Advantx RFX system was obtained directly from a pinhole radiograph of the X-ray source and digitized. Images of vertebral bone obtained using similar technique factors were deconvolved with the PSF images, with due regard for magnification effects and using Wiener filtering to avoid amplifying the effects of noise. Results : The spatial resolution of these restored images was significantly better than the original images, and they were less noisy. A significant improvement in image quality could also be obtained by high-pass filtering using a Butterworth filter and a cut-off frequency matching that of the PSF. Conclusions : The quality of a degraded image can be significantly restored by deconvolution with the PSF as long as magnified images are obtained and digitized, and Wiener filtering is used. Alternatively, high-pass filtering can deliver some improvement and is even simpler to implement.}
 }
 
+@article{convBlur,
+title = {Deblurring Gaussian blur},
+journal = {Computer Vision, Graphics, and Image Processing},
+volume = {38},
+number = {1},
+pages = {66-80},
+year = {1987},
+issn = {0734-189X},
+doi = {https://doi.org/10.1016/S0734-189X(87)80153-6},
+url = {https://www.sciencedirect.com/science/article/pii/S0734189X87801536},
+author = {Robert A. Hummel and B. Kimia and Steven W. Zucker},
+abstract = {Gaussian blur, or convolution against a Gaussian kernel, is a common model for image and signal degradation. In general, the process of reversing Gaussian blur is unstable, and cannot be represented as a convolution filter in the spatial domain. If we restrict the space of allowable functions to polynomials of fixed finite degree, then a convolution inverse does exist. We give constructive formulas for the deblurring kernels in terms of Hermite polynomials, and observe that their use yields optimal approximate deblurring solutions among the space of bounded degree polynomials. The more common methods of achieving stable approximate deblurring include restrictions to band-limited functions or functions of bounded norm.}
+}
+
 @ARTICLE{sparseRep,
   author={Yang, Jianchao and Wright, John and Huang, Thomas S. and Ma, Yi},
   journal={IEEE Transactions on Image Processing}, 
@@ -764,7 +778,7 @@ url = {http://papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-perf
   note = {https://pyimg.co/lgnrx},
 }
 
-@inproceedings{Huang-CVPR-2015,
+@inproceedings{selfexsr,
     title={Single Image Super-Resolution From Transformed Self-Exemplars},
     Author = {Huang, Jia-Bin and Singh, Abhishek and Ahuja, Narendra},
     booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
