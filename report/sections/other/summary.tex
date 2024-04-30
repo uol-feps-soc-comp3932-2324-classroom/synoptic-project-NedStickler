@@ -1,1 +1,7 @@
-<Concise statement of the problem you intended to solve and main achievements (no more than one A4 page)>
+In this project, we systematically investigate the super-resolution problem in remote sensing by critically analysing existing solutions via the community-accepted taxonomy of approaches. We identify an existing generative deep learning-based solution, SRGAN, as a suitable candidate for receiving improvements.
+
+We identify appropriate remote sensing datasets for training, validating, and testing SRGAN, whilst offering a conjecture to explain the reasoning behind our customisation of the perceptual loss component, used to guide SRGAN towards generating super-resolution reconstructions that have a greater perceptual similarity to high-resolution imagery. We investigate eight distinct pretrained image classifiers as the basis for our custom perceptual loss component.
+
+Structural similarity index and peak signal-to-noise ratio are used as objective performance measures to evaluate the success of the implementation of the custom perceptual loss components. We succeed in producing an improvement over the original SRGAN model with several of our custom SRGAN implementations, namely SRGAN-DenseNet201, which beats the original SRGAN in both structural similarity index and peak signal-to-noise ratio. We also successfully train a component of SRGAN, named SRResNet, to produce reconstructions that beat our benchmark solution.
+
+Finally, we evaluate our findings and project goals, followed by a conclusion to the project and some ideas for future work.

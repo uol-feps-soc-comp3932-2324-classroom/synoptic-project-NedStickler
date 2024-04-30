@@ -29,6 +29,7 @@ Testing model performance was implemented as a script in the \code{testing.py} f
 The final implementation details we offer are related to two utility functions, located in the \code{utils.py} file. Whilst not required for project success, they offer an interface to commonly used functions and keep the project inline with good development practices. The first of these is the \code{GANSaver} class, which saves the full model state after an epoch that has produced a validation loss lower than the current best. This class exists as the SRGAN model is composed of two models, which the inbuilt \code{Keras} model saver handled incorrectly. The second utility is the \code{visualise\_generator} function, which is used to visualise the SR reconstruction of a generator, primarily used whilst developing and training models to view how their outputs look. Overall these functions were incredibly useful during implementation and helped enforce good development practices by avoiding duplicating code.
 
 \subsection{Justifying our implementation}
+Each of the aforementioned implementation areas is designed to support the training, testing and evaluation of SRGAN, using the process explained and justified in Chapter 2. We use \code{Keras} for the implementation as described, meaning that every other implementation decision was made to best support the functionality of \code{Keras} and enforce good programming practices.
 
 \section{Training}
 The following section describes the steps taken to determine the parameters used for training and overviews the training durations.
